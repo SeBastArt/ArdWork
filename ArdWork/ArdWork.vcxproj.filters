@@ -19,9 +19,6 @@
     <Filter Include="Source Files\Driver">
       <UniqueIdentifier>{7612e5bf-599d-4f45-90f7-b0d12a0aeded}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Message_System">
-      <UniqueIdentifier>{9e982f30-58dc-4fc7-9d85-a79acc4aa420}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Driver\Device_Driver">
       <UniqueIdentifier>{64ca0d7e-bf93-4d02-8526-7cc89d41d716}</UniqueIdentifier>
     </Filter>
@@ -344,9 +341,6 @@
     <ClCompile Include="Module_Driver.cpp">
       <Filter>Source Files\Driver\Module_Driver</Filter>
     </ClCompile>
-    <ClCompile Include="Int_Thread_Msg.cpp">
-      <Filter>Source Files\Message_System</Filter>
-    </ClCompile>
     <ClCompile Include="Led_Button_Module_Driver.cpp">
       <Filter>Source Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
     </ClCompile>
@@ -427,6 +421,9 @@
     </ClCompile>
     <ClCompile Include="Thread\ThreadManager.cpp">
       <Filter>Header Files\Core\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Int_Thread_Msg.cpp">
+      <Filter>Header Files\Core\Message_System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
