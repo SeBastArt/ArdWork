@@ -16,9 +16,6 @@
     <Filter Include="Header Files\Driver">
       <UniqueIdentifier>{b4df6cdd-513a-4501-a7d1-61e36400a57c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Message_System">
-      <UniqueIdentifier>{6b40e92b-f5be-493f-a2b6-8060ac3e137b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Driver">
       <UniqueIdentifier>{7612e5bf-599d-4f45-90f7-b0d12a0aeded}</UniqueIdentifier>
     </Filter>
@@ -160,17 +157,20 @@
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver">
       <UniqueIdentifier>{585b672c-ef7a-4cbf-8d5e-bf51b4be0d62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Thread">
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{a46172d1-e02b-4435-87d8-735699dba1d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Thread">
       <UniqueIdentifier>{54791a40-9a19-42f8-ab6c-decb0d5d2622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Message_System">
+      <UniqueIdentifier>{6b40e92b-f5be-493f-a2b6-8060ac3e137b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ArdWork.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Base_Consts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Driver.h">
       <Filter>Header Files\Driver</Filter>
     </ClInclude>
@@ -190,10 +190,10 @@
       <Filter>Header Files\Driver\Module_Driver</Filter>
     </ClInclude>
     <ClInclude Include="Int_Thread_Msg.h">
-      <Filter>Header Files\Message_System</Filter>
+      <Filter>Header Files\Core\Message_System</Filter>
     </ClInclude>
     <ClInclude Include="Int_Thread_Msg_Sys.h">
-      <Filter>Header Files\Message_System</Filter>
+      <Filter>Header Files\Core\Message_System</Filter>
     </ClInclude>
     <ClInclude Include="Led_Button_Module_Driver.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
@@ -254,9 +254,6 @@
     </ClInclude>
     <ClInclude Include="WiFi_Module_Driver.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="m_Vector.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mqqt_Wifi_Module_Driver.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
@@ -328,10 +325,16 @@
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClInclude>
     <ClInclude Include="Thread\Thread.h">
-      <Filter>Header Files\Thread</Filter>
+      <Filter>Header Files\Core\Thread</Filter>
     </ClInclude>
     <ClInclude Include="Thread\ThreadManager.h">
-      <Filter>Header Files\Thread</Filter>
+      <Filter>Header Files\Core\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Base_Consts.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="m_Vector.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -423,7 +426,7 @@
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClCompile>
     <ClCompile Include="Thread\ThreadManager.cpp">
-      <Filter>Header Files\Thread</Filter>
+      <Filter>Header Files\Core\Thread</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
