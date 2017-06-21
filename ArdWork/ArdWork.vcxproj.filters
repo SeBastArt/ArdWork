@@ -1,0 +1,432 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Driver">
+      <UniqueIdentifier>{b4df6cdd-513a-4501-a7d1-61e36400a57c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Message_System">
+      <UniqueIdentifier>{6b40e92b-f5be-493f-a2b6-8060ac3e137b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver">
+      <UniqueIdentifier>{7612e5bf-599d-4f45-90f7-b0d12a0aeded}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Message_System">
+      <UniqueIdentifier>{9e982f30-58dc-4fc7-9d85-a79acc4aa420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver">
+      <UniqueIdentifier>{64ca0d7e-bf93-4d02-8526-7cc89d41d716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver">
+      <UniqueIdentifier>{103cec5d-ca8c-435a-a5f5-c9bd9e03a7f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver">
+      <UniqueIdentifier>{7d60fcc3-38dd-4eb6-9cf2-12b9478ae982}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver">
+      <UniqueIdentifier>{fe408532-2036-415f-8a32-b8d8c05e245f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Module_Driver">
+      <UniqueIdentifier>{3048e1ab-0d8d-40f6-972f-dec9c4d04b3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Module_Driver">
+      <UniqueIdentifier>{75fd1c11-5e85-42fa-bd13-88443558d567}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver">
+      <UniqueIdentifier>{331e1b99-a104-42ee-a412-d84447603507}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Module_Driver\Custom_Module_Driver">
+      <UniqueIdentifier>{d9dc7b47-f8f7-4ddb-843a-7a11444fd38e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Button">
+      <UniqueIdentifier>{5b2bce60-5cab-4f3e-953e-eae949da8c64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Led">
+      <UniqueIdentifier>{f9598ec3-1f1f-4666-9acf-b5693ad52be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Button">
+      <UniqueIdentifier>{35d6768c-a449-4a99-b24e-a80b3e5bb77d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Led">
+      <UniqueIdentifier>{32aead3f-558f-4e3b-8b45-a4ced14e7955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Display">
+      <UniqueIdentifier>{1fc4901e-fbaf-489c-ac2a-9e23df28fda5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Display\OLED-Display">
+      <UniqueIdentifier>{def8c849-5081-4c08-ad9e-87a58b39cd80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Display">
+      <UniqueIdentifier>{a86d9bca-658e-441e-bf8b-a86e2d31397c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Display\OLED-Display">
+      <UniqueIdentifier>{2b1a6817-3db7-4376-af5b-9c2bb4334e52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Distance">
+      <UniqueIdentifier>{71ef85b8-33f7-4be3-87d7-8bb8d100f900}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Distance">
+      <UniqueIdentifier>{13493978-a2b5-4223-83a4-46f6041e3c99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controller">
+      <UniqueIdentifier>{a275f23e-ec9f-450e-b710-a9e2c6d0e88a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controller">
+      <UniqueIdentifier>{d0df328f-bc39-4455-a16d-7f4079e3bb81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controller\Custom_Controller">
+      <UniqueIdentifier>{ea9f3bb8-d1a3-4f22-b964-0b75b4ee1e48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controller\Custom_Controller">
+      <UniqueIdentifier>{f2f4873d-cb36-4b38-9bb0-cf65fec436a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controller\Custom_Controller\ESP_Controller">
+      <UniqueIdentifier>{cc3ea75f-541c-4662-945d-2ac6f7103079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controller\Custom_Controller\I2C_Controller">
+      <UniqueIdentifier>{1e8c10b2-1758-41ac-8f6d-a7f290fdb4e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controller\Custom_Controller\I2C_Controller\PCF8574">
+      <UniqueIdentifier>{96ee4ccf-efec-4af2-8470-32a313a1bb5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controller\Custom_Controller\I2C_Controller">
+      <UniqueIdentifier>{d46b71ca-40aa-4cfd-806e-d17be205fdd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Temperature">
+      <UniqueIdentifier>{ed5b91b7-21ea-4b1d-807f-0dec95aa7b7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Temperature">
+      <UniqueIdentifier>{1974d664-41cb-464b-98f8-3f933bfbc932}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver">
+      <UniqueIdentifier>{5303f63b-ae3a-4091-90c1-3e26144d083f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Module_Driver\WiFi_Module_Driver">
+      <UniqueIdentifier>{f8888c41-5f41-497c-a64c-087f4e97078f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver">
+      <UniqueIdentifier>{d54e5f34-f7b7-4780-9624-c677bb3ac0c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver">
+      <UniqueIdentifier>{895c2dff-0ea8-4c52-9208-3161cf8abd37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Dash_Mqqt_Wifi_Module_Driver">
+      <UniqueIdentifier>{454fe239-1348-486a-b755-0eb0c732f7c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller">
+      <UniqueIdentifier>{151311ad-dae9-47ae-9a37-9b2065474a97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controller\Custom_Controller\ESP8266_Controller">
+      <UniqueIdentifier>{f5ef22d1-7d9e-4444-8f18-21193dfaa4b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controller\Custom_Controller\ESP8266_Controller\Custom_ESP8266_Controller">
+      <UniqueIdentifier>{ace35228-2f54-41d5-aa68-7280e404d99e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Custom_Mqqt_Wifi_Module_Driver">
+      <UniqueIdentifier>{046b1cca-fd02-4c5c-814c-5a91a0245f05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Luxmeter">
+      <UniqueIdentifier>{ca351b57-bad2-4ddd-aa4e-9ae481081c57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Luxmeter">
+      <UniqueIdentifier>{5ca69efb-9d60-4a9c-ac35-ac129f5061bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi">
+      <UniqueIdentifier>{570cda52-d56a-4a95-a478-13a370f161d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver">
+      <UniqueIdentifier>{d82fb861-20d3-4724-bdc9-4afc5fc3f7bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver">
+      <UniqueIdentifier>{4c6ad80a-4352-4ba7-9ad6-493c0bde856a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi">
+      <UniqueIdentifier>{33261cb4-2982-43f5-a4cf-62899b67e52d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver">
+      <UniqueIdentifier>{8ccc1c05-a727-484f-9e78-f6d149914923}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver">
+      <UniqueIdentifier>{585b672c-ef7a-4cbf-8d5e-bf51b4be0d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Thread">
+      <UniqueIdentifier>{54791a40-9a19-42f8-ab6c-decb0d5d2622}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ArdWork.ino" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Base_Consts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Driver.h">
+      <Filter>Header Files\Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Driver_Consts.h">
+      <Filter>Header Files\Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Module_Driver_Consts.h">
+      <Filter>Header Files\Driver\Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Int_Thread_Msg.h">
+      <Filter>Header Files\Message_System</Filter>
+    </ClInclude>
+    <ClInclude Include="Int_Thread_Msg_Sys.h">
+      <Filter>Header Files\Message_System</Filter>
+    </ClInclude>
+    <ClInclude Include="Led_Button_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Led_Button_Module_Driver_Consts.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Button_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="Led_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
+    </ClInclude>
+    <ClInclude Include="Led_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
+    </ClInclude>
+    <ClInclude Include="OLED_Display_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Display\OLED-Display</Filter>
+    </ClInclude>
+    <ClInclude Include="OLED_Display_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Display\OLED-Display</Filter>
+    </ClInclude>
+    <ClInclude Include="Display_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="Display_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="Distance_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Distance</Filter>
+    </ClInclude>
+    <ClInclude Include="IO_Pin.h">
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Base_Controller.h">
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Base_Controller_Consts.h">
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="I2C_Controller.h">
+      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="I2C_Controller_Consts.h">
+      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="PCF8574_Controller.h">
+      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller\PCF8574</Filter>
+    </ClInclude>
+    <ClInclude Include="PCF8574_Controller_Consts.h">
+      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller\PCF8574</Filter>
+    </ClInclude>
+    <ClInclude Include="Temperature_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Temperature</Filter>
+    </ClInclude>
+    <ClInclude Include="Temperature_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Temperature</Filter>
+    </ClInclude>
+    <ClInclude Include="WiFi_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="m_Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mqqt_Wifi_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="WiFi_Module_Driver_Consts.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Mqqt_WiFi_Module_Driver_Consts.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Dash_Mqqt_Wifi_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Dash_Mqqt_Wifi_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="ESP8266_Controller_Consts.h">
+      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="ESP8266_Controller.h">
+      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="ESP8266_NodeMCU_Controller.h">
+      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="ESP8266_01_Controller.h">
+      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Header.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="RGBLed_Mqqt_Wifi_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Dash_Mqqt_Wifi_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Uart_GRBW_Led_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
+    </ClInclude>
+    <ClInclude Include="Uart_GRBW_Led_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
+    </ClInclude>
+    <ClInclude Include="Luxmeter_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Luxmeter</Filter>
+    </ClInclude>
+    <ClInclude Include="Luxmeter_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Luxmeter</Filter>
+    </ClInclude>
+    <ClInclude Include="Distance_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Distance</Filter>
+    </ClInclude>
+    <ClInclude Include="Wifi_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
+    </ClInclude>
+    <ClInclude Include="Wifi_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
+    </ClInclude>
+    <ClInclude Include="Picture_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Mqqt_Wifi_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Mqqt_Wifi_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="WebServer_Wifi_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="WebServer_Wifi_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Comm_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
+    </ClInclude>
+    <ClInclude Include="__vm\.ArdWork.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread\Thread.h">
+      <Filter>Header Files\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread\ThreadManager.h">
+      <Filter>Header Files\Thread</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Int_Thread_Msg.cpp">
+      <Filter>Source Files\Message_System</Filter>
+    </ClCompile>
+    <ClCompile Include="Led_Button_Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Button_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="Led_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
+    </ClCompile>
+    <ClCompile Include="OLED_Display_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Display\OLED-Display</Filter>
+    </ClCompile>
+    <ClCompile Include="Display_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="Distance_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Distance</Filter>
+    </ClCompile>
+    <ClCompile Include="IO_Pin.cpp">
+      <Filter>Source Files\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Base_Controller.cpp">
+      <Filter>Source Files\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="I2C_Controller.cpp">
+      <Filter>Source Files\Controller\Custom_Controller\I2C_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="PCF8574_Controller.cpp">
+      <Filter>Source Files\Controller\Custom_Controller\I2C_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="Temperature_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Temperature</Filter>
+    </ClCompile>
+    <ClCompile Include="WiFi_Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Mqqt_Wifi_Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Dash_Mqqt_Wifi_Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Custom_Mqqt_Wifi_Module_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="ESP8266_Controller.cpp">
+      <Filter>Source Files\Controller\Custom_Controller\ESP8266_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="ESP8266_NodeMCU_Controller.cpp">
+      <Filter>Source Files\Controller\Custom_Controller\ESP8266_Controller\Custom_ESP8266_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="ESP8266_01_Controller.cpp">
+      <Filter>Source Files\Controller\Custom_Controller\ESP8266_Controller\Custom_ESP8266_Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="RGBLed_Mqqt_Wifi_Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Custom_Mqqt_Wifi_Module_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Uart_GRBW_Led_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
+    </ClCompile>
+    <ClCompile Include="Luxmeter_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Luxmeter</Filter>
+    </ClCompile>
+    <ClCompile Include="Driver.cpp">
+      <Filter>Source Files\Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Picture_Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Wifi_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
+    </ClCompile>
+    <ClCompile Include="Mqqt_Wifi_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="WebServer_Wifi_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Comm_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread\ThreadManager.cpp">
+      <Filter>Header Files\Thread</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
