@@ -45,11 +45,13 @@ void Picture_Module_Driver::DoUpdate(uint32_t deltaTime)
 		{
 			UpdateControls();
 			switch ((pMessage)->Class) {
-			case MessageClass_Lux:
+			case MessageClass_Float:
 			{
-				LuxMessage* pLux = (LuxMessage*)(pMessage);
-				Serial.print("Lux: ");
-				Serial.println(pLux->Lux);
+				FloatMessage* pFMessage = (FloatMessage*)(pMessage);
+				Serial.print("ID:  ");
+				Serial.print(pFMessage->Id);
+				Serial.print("; Lux: ");
+				Serial.println(pFMessage->Value);
 				break;
 			}
 

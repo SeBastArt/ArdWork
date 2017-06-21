@@ -6,6 +6,15 @@
 *.lo
 *.o
 *.obj
+*.bin
+*.elf
+*.buildinfo
+*.xml
+*.vsarduino.h
+*.TMP
+*.vcxproj
+*.vcxproj.filters
+*.user
 
 # Precompiled Headers
 *.gch
@@ -30,3 +39,8 @@
 *.exe
 *.out
 *.app
+/.vs/ArdWork/v14/.suo
+/ArdWork/Luxmeter_Device_Driver.cpp.bak
+/ArdWork/Picture_Module_Driver.cpp.bak
+/ArdWork/WebServer_Wifi_Device_Driver.cpp.bak
+/ArdWork/RGBLed_Mqqt_Wifi_Module_Driver.cpp.bak

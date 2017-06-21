@@ -160,6 +160,9 @@
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver">
       <UniqueIdentifier>{585b672c-ef7a-4cbf-8d5e-bf51b4be0d62}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Thread">
+      <UniqueIdentifier>{b398cef5-cedc-481b-ab8c-0826f0c65f7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.ArdWork.vsarduino.h">
@@ -324,6 +327,12 @@
     <ClInclude Include="Comm_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClInclude>
+    <ClInclude Include="Thread\Thread.h">
+      <Filter>Header Files\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread\ThreadManager.h">
+      <Filter>Header Files\Thread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">
@@ -412,6 +421,9 @@
     </ClCompile>
     <ClCompile Include="Comm_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread\ThreadManager.cpp">
+      <Filter>Header Files\Thread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

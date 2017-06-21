@@ -25,11 +25,11 @@ void RGBLed_Mqqt_Wifi_Module_Driver::UpdateHardware(uint32_t deltaTime)
 		if (PopMessage(&pMessage))
 		{
 			switch ((pMessage)->Class){
-				case MessageClass_Lux:
+				case MessageClass_Float:
 				{
-					LuxMessage* pLux = (LuxMessage*)(pMessage);
+					FloatMessage* pFMessage = (FloatMessage*)(pMessage);
 					Serial.print("Lux: ");
-					Serial.println(pLux->Lux);
+					Serial.println(pFMessage->Value);
 					break;
 				}
 			

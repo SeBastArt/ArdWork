@@ -127,8 +127,6 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 		sResponse += "Funktion 2 erzeugt nur eine serielle Ausgabe.<BR>";
 		sResponse += "<FONT size=+1>";
 
-		Serial.print("control_list->Size() ");
-		Serial.println(__control_list->Size());
 		Control *temp;
 		if (!__control_list->Empty()) {
 			for (int I = 0; I < __control_list->Size(); I++) {
@@ -203,7 +201,7 @@ String WebServer_Wifi_Device_Driver::GenerateSwitch(Control *_conrtrol)
 	response += _conrtrol->Name;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += "pin=" + _conrtrol->Command + "ON" + "\">";
+	response += "pin=" + _conrtrol->Command + "" + "\">";
 	response += "<button>einschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
@@ -229,7 +227,12 @@ String WebServer_Wifi_Device_Driver::GenerateButton(Control *_conrtrol)
 	response += _conrtrol->Name;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += "pin=" + _conrtrol->Command + "press" + "\">";
+	response += "Name=" + _conrtrol->Name;
+	response += "&id=";
+	response +=  _conrtrol->Id;
+	response += "&value=";
+	response +=  _conrtrol->Command;
+	response += "\">";
 	response += "<button>Push</button>";
 	response += "</a>";
 	response += "&nbsp;";

@@ -7,15 +7,12 @@
 static int const BASE_FIRST_MESSAGE = 1000000;
 static int const BASE_LAST_MESSAGE = BASE_FIRST_MESSAGE;
 
-//Thread Messages
-enum MessageClass
-{
-	MessageClass_Heartbeat,
-	MessageClass_Button,
-	MessageClass_Lux,
-	MessageClass_Server,
-	MessageClass_Mqqt
-};
+static int const THREAD_PRIORITY_VERY_HIGH = 1;
+static int const THREAD_PRIORITY_HIGH = 3;
+static int const THREAD_PRIORITY_NORMAL = 10;
+static int const THREAD_PRIORITY_LOW = 25;
+static int const THREAD_PRIORITY_VERY_LOW = 50;
+
 
 static unsigned int const THREAD_MSG_BUTTONSTATE_FIRST_MESSAGE = BASE_FIRST_MESSAGE + 1000000000;
 static unsigned int const THREAD_MSG_BUTTONSTATE_TRACKING = THREAD_MSG_BUTTONSTATE_FIRST_MESSAGE;
@@ -23,6 +20,17 @@ static unsigned int const THREAD_MSG_BUTTONSTATE_PRESSED = THREAD_MSG_BUTTONSTAT
 static unsigned int const THREAD_MSG_BUTTONSTATE_AUTOREPEAT = THREAD_MSG_BUTTONSTATE_FIRST_MESSAGE + 2;
 static unsigned int const THREAD_MSG_BUTTONSTATE_RELEASED = THREAD_MSG_BUTTONSTATE_FIRST_MESSAGE + 3;
 static unsigned int const THREAD_MSG_BUTTONSTATE_LAST_MESSAGE = THREAD_MSG_BUTTONSTATE_RELEASED;
+
+
+//Thread Messages
+enum MessageClass
+{
+	MessageClass_Heartbeat,
+	MessageClass_Button,
+	MessageClass_Float,
+	MessageClass_Server,
+	MessageClass_Mqqt
+};
 
 enum Button_State
 {
@@ -32,6 +40,17 @@ enum Button_State
 	buttonstate_tracking = 0b10000001
 };
 
+enum Ctrl_Style
+{
+	Icon_Kind_none = -1,
+	Icon_Kind_switch = 0,
+	Icon_Kind_button = 1,
+	Icon_Kind_Integer = 2,
+	Icon_Kind_percent = 3,
+	Icon_Kind_string = 4,
+	Icon_Kind_comm = 5,
+	Icon_Kind_multi = 6
+};
 
 template<typename T, typename C>
 class Property {
@@ -61,17 +80,6 @@ private:
 	GetterType const itsGetter;
 };
 
-enum Ctrl_Style
-{
-	Icon_Kind_none = -1,
-	Icon_Kind_switch = 0,
-	Icon_Kind_button = 1,
-	Icon_Kind_Integer = 2,
-	Icon_Kind_percent = 3,
-	Icon_Kind_string = 4,
-	Icon_Kind_comm = 5,
-	Icon_Kind_multi = 6
-};
 
 class Control {
 public:
@@ -167,7 +175,6 @@ private:
 	{
 		return __Style;
 	}
-
 };
 
 
@@ -208,17 +215,19 @@ struct ButtonMessage : ThreadMessage
 	uint32_t State;
 };
 
-struct LuxMessage : ThreadMessage
+//Template please
+struct FloatMessage : ThreadMessage
 {
-	LuxMessage(uint8_t id, float lux) :
-		ThreadMessage(MessageClass_Lux, sizeof(LuxMessage)),
+	FloatMessage(uint8_t id, float _value) :
+		ThreadMessage(MessageClass_Float, sizeof(FloatMessage)),
 		Id(id),
-		Lux(lux)
+		Value(_value)
 	{
 	};
 	uint8_t Id;
-	float Lux;
+	float Value;
 };
+
 
 struct ServerMessage : ThreadMessage
 {
@@ -242,13 +251,8 @@ struct MqqtMessage : ThreadMessage
 	char Message[50];
 };
 
-const uint16_t MaxMessagesize = _max(_max(_max(_max(sizeof(HeartbeatMessage), sizeof(ButtonMessage)), sizeof(LuxMessage)), sizeof(ServerMessage)), sizeof(MqqtMessage));
+//const uint16_t MaxMessagesize = _max(_max(_max(_max(sizeof(HeartbeatMessage), sizeof(ButtonMessage)), sizeof(LuxMessage)), sizeof(ServerMessage)), sizeof(MqqtMessage));
 
-static int const THREAD_PRIORITY_VERY_HIGH = 1;
-static int const THREAD_PRIORITY_HIGH = 3;
-static int const THREAD_PRIORITY_NORMAL = 10;
-static int const THREAD_PRIORITY_LOW = 25;
-static int const THREAD_PRIORITY_VERY_LOW = 50;
 
 
 

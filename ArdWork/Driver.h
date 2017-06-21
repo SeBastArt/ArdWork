@@ -9,7 +9,7 @@
 #include "WProgram.h"
 #endif
 
-#include <Thread.h>
+#include "Thread/Thread.h"
 #include "Driver_Consts.h"
 #include "Int_Thread_Msg_Sys.h"
 #include "Base_Consts.h"

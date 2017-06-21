@@ -73,7 +73,7 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			if (fabs(event.light - lastLux) > EPSILON) {
 				lastLux = event.light;
 				(*ctrl_List)[0]->Data = String(lastLux) + "Lux" ;
-				LuxMessage* message = new LuxMessage(sensor.sensor_id, event.light);
+				FloatMessage* message = new FloatMessage((*ctrl_List)[0]->Id, event.light);
 				if (!parentModule->SendAsyncThreadMessage(message))
 				{
 					Serial.println(">> message buffer overflow <<");
