@@ -7,10 +7,9 @@
 
 //#define COMPILE_TEST
 
-//#define PICTURE_NodeMCU_GBR
+#define PICTURE_NodeMCU_GBR
 
-#define COMPILE_TEST
-#include <pthread.h>
+
 #ifdef COMPILE_TEST
 //Controller
 #include "PCF8574_Controller.h"
