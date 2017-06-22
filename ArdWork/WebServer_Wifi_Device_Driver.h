@@ -19,7 +19,9 @@ class WebServer_Wifi_Device_Driver : public Wifi_Device_Driver
 	class Request
 	{
 	public:
+		void Test(String _request);
 		void SetRequest(String _request);
+		void FillCtrl(String requestpart);
 		void Clear();
 		String sPath;
 		String sParam;
@@ -32,6 +34,7 @@ public:
 	WebServer_Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = NULL, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	void UpdateControls();
 private:
+	Control *control;
 	unsigned long ulReqcount;
 	unsigned long ulReconncount;
 	Request *request;

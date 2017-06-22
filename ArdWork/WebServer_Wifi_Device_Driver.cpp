@@ -13,7 +13,7 @@ WebServer_Wifi_Device_Driver::WebServer_Wifi_Device_Driver(Module_Driver * modul
 	std->Name = "WebServer Wifi";
 	std->Description = "WebServer Wifi";
 	std->Style = Icon_Kind_comm;
-
+	control = new Control(0);
 	request = new Request();
 	server = new WiFiServer(80);
 }
@@ -33,7 +33,7 @@ void WebServer_Wifi_Device_Driver::InitComm() {
 void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 	request->Clear();
 	// Check if a client has connected
-	
+
 	if (!_client)
 	{
 		return;
@@ -42,11 +42,11 @@ void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 	// Wait until the client sends some data
 	Serial.println("new client");
 	unsigned long ultimeout = millis() + 250;
-	while (!_client.available() && (millis()<ultimeout))
+	while (!_client.available() && (millis() < ultimeout))
 	{
 		delay(1);
 	}
-	if (millis()>ultimeout)
+	if (millis() > ultimeout)
 	{
 		Serial.println("client connection time-out!");
 		return;
@@ -98,7 +98,7 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 	CheckComm(client);
 	if (request->isEmpty) {
 		return;
-	}	
+	}
 
 	///////////////////////////
 	// format the html response
@@ -131,7 +131,7 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 		if (!__control_list->Empty()) {
 			for (int I = 0; I < __control_list->Size(); I++) {
 				if ((*__control_list)[I]->Style == Icon_Kind_button) {
-						sResponse += GenerateButton((*__control_list)[I]);
+					sResponse += GenerateButton((*__control_list)[I]);
 				}
 				if ((*__control_list)[I]->Style == Icon_Kind_switch) {
 					sResponse += GenerateSwitch((*__control_list)[I]);
@@ -139,14 +139,14 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 				if ((*__control_list)[I]->Style == Icon_Kind_Integer) {
 					sResponse += GenerateInteger((*__control_list)[I]);
 				}
-				
+
 			}
 		}
 		sResponse += "<FONT SIZE=-2>";
 		//////////////////////
 		// react on parameters
 		//////////////////////
-		if (request->sCmd.length()>0)
+		if (request->sCmd.length() > 0)
 		{
 			// write received command to html page
 			sResponse += "Kommando:" + request->sCmd + "<BR>";
@@ -193,7 +193,7 @@ String WebServer_Wifi_Device_Driver::GenerateInteger(Control *_conrtrol)
 
 String WebServer_Wifi_Device_Driver::GenerateSwitch(Control *_conrtrol)
 {
-	String response; 
+	String response;
 	response = "";
 	response += "<p>";
 	response += "ID: " + String(_conrtrol->Id);
@@ -229,9 +229,9 @@ String WebServer_Wifi_Device_Driver::GenerateButton(Control *_conrtrol)
 	response += "<a href=\"?";
 	response += "Name=" + _conrtrol->Name;
 	response += "&id=";
-	response +=  _conrtrol->Id;
+	response += _conrtrol->Id;
 	response += "&value=";
-	response +=  _conrtrol->Command;
+	response += _conrtrol->Command;
 	response += "\">";
 	response += "<button>Push</button>";
 	response += "</a>";
@@ -253,8 +253,50 @@ void WebServer_Wifi_Device_Driver::Request::Clear()
 }
 
 
+void WebServer_Wifi_Device_Driver::Request::FillCtrl(String requestpart) {
+	int iEnd;
+	String Key, Value;
+
+	iEnd = requestpart.indexOf("=");
+	Key = requestpart.substring(0, iEnd);
+	Value = requestpart.substring(iEnd + 1, requestpart.length());
+}
+
+void WebServer_Wifi_Device_Driver::Request::Test(String _request) {
+	String sGetstart = "GET ";
+	String get_params;
+	
+	int iStart, iEnd;
+	iStart = _request.indexOf(sGetstart);
+	if (iStart >= 0)
+	{
+		//nach GET
+		iStart += +sGetstart.length();
+		iEnd = _request.indexOf("?", iStart);
+		if (iEnd >= 0)
+		{
+			iStart = iEnd;
+			iEnd = _request.indexOf(" ", iStart);
+			get_params = _request.substring(iStart + 1, iEnd);
+			String dataPart = "";
+			for (int i = 0; i < get_params.length(); i++)
+			{
+				if (get_params[i] == '&') {
+					FillCtrl(dataPart);
+					dataPart = "";
+				}
+				else 
+					dataPart.concat(get_params[i]);
+			}
+			FillCtrl(dataPart);
+		}
+	}
+}
+
 void WebServer_Wifi_Device_Driver::Request::SetRequest(String _request) {
 	String sGetstart = "GET ";
+	Serial.println(_request);
+	Test(_request);
 	int iStart, iEndSpace, iEndQuest;
 	iStart = _request.indexOf(sGetstart);
 	if (iStart >= 0)
@@ -264,9 +306,9 @@ void WebServer_Wifi_Device_Driver::Request::SetRequest(String _request) {
 		iEndQuest = _request.indexOf("?", iStart);
 
 		// are there parameters?
-		if (iEndSpace>0)
+		if (iEndSpace > 0)
 		{
-			if (iEndQuest>0)
+			if (iEndQuest > 0)
 			{
 				// there are parameters
 				sPath = _request.substring(iStart, iEndQuest);
@@ -283,7 +325,7 @@ void WebServer_Wifi_Device_Driver::Request::SetRequest(String _request) {
 	///////////////////////////////////////////////////////////////////////////////
 	// output parameters to serial, you may connect e.g. an Arduino and react on it
 	///////////////////////////////////////////////////////////////////////////////
-	if (sParam.length()>0)
+	if (sParam.length() > 0)
 	{
 		int iStartEqu = sParam.indexOf("?");
 		int iEndEqu = sParam.indexOf("=");
