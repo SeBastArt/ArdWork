@@ -30,7 +30,7 @@ public:
 	 void DoBeforeSuspend();
 	 void DoDeviceMessage(Int_Thread_Msg message);
 	 void DoUpdate(uint32_t deltaTime);
-	 
+	 void DoExecuteCommand(String _command);
 
 private:
 	uint16_t accuracy_delta;

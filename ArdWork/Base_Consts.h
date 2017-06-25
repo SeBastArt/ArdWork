@@ -90,7 +90,7 @@ public:
 		__SubId = 0;
 		__Name = "";
 		__Descript = "";
-		__Command = "On";
+		__Command = "";
 		__Data = "none";
 		__Style = Icon_Kind_none;
 	};
@@ -229,16 +229,18 @@ struct FloatMessage : ThreadMessage
 };
 
 
+
+
 struct ServerMessage : ThreadMessage
 {
-	ServerMessage(String _sHead, String _sCmd) :
+	ServerMessage(uint16_t _Id, String _Cmd) :
 		ThreadMessage(MessageClass_Server, sizeof(ServerMessage))
 	{
-		sHead = _sHead;
-		sCmd = _sCmd;
+		Id = _Id;
+		Cmd = _Cmd;
 	};
-	String sHead;
-	String sCmd;
+	uint16_t Id;
+	String Cmd;
 };
 
 struct MqqtMessage : ThreadMessage

@@ -41,3 +41,7 @@ void Distance_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
 void Distance_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
 }
+
+void Distance_Device_Driver::DoExecuteCommand(String _command)
+{
+}

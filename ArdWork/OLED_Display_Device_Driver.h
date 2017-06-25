@@ -27,6 +27,7 @@ private:
 	void DoBeforeSuspend();
 	void DoCustomDisplayMessage(Int_Thread_Msg message);
 	void DoUpdate(uint32_t deltaTime);
+	void DoExecuteCommand(String _command);
 
 //OLED_Diplay_device_Driver
 private:

@@ -31,7 +31,7 @@ private:
 
 	Vector<Control*> *ctrl_List;
 	Vector<ThreadMessage*> queue;
-	Vector <Device_Driver*> device_list;
+
 
 	int8_t button_index;
 	int8_t distance_index;
@@ -64,6 +64,8 @@ private:
 	WebServer_Wifi_Device_Driver* Get_Selected_WebServer_Wifi_Device() const;
 
 protected:
+	Vector <Device_Driver*> *device_list;
+
 	Property<Button_Device_Driver*, Module_Driver> Selected_Button_Device{ this, nullptr, &Module_Driver::Get_Selected_Button_Device };
 	Property<Distance_Device_Driver*, Module_Driver> Selected_Distance_Device{ this, nullptr, &Module_Driver::Get_Selected_Distance_Device };
 	Property<Led_Device_Driver*, Module_Driver> Selected_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Led_Device };
@@ -74,6 +76,7 @@ protected:
 	Property<Uart_GRBW_Led_Device_Driver*, Module_Driver> Selected_Uart_GRBW_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_GRBW_Led_Device };
 	Property<WebServer_Wifi_Device_Driver*, Module_Driver> Selected_WebServer_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_WebServer_Wifi_Device };
 
+	Device_Driver *GetDeviceById(uint16 Id);
 	bool PopMessage(ThreadMessage** message);
  protected:
 	 virtual void DoBeforeSuspend() = 0;

@@ -327,9 +327,6 @@
     <ClInclude Include="Comm_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClInclude>
-    <ClInclude Include="__vm\.ArdWork.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Thread\Thread.h">
       <Filter>Header Files\Thread</Filter>
     </ClInclude>

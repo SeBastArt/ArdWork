@@ -24,6 +24,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	webserver_wifi_index = -1;
 
 	ctrl_List = new Vector<Control*>;
+	device_list = new Vector <Device_Driver*>;
 
 	button_list = new Vector <Button_Device_Driver*>;
 	distance_list = new Vector <Distance_Device_Driver*>;
@@ -38,7 +39,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 
 Module_Driver::~Module_Driver()
 {
-	device_list.Clear();
+	device_list->Clear();
 	ctrl_List->Clear();
 	queue.Clear();
 }
@@ -81,11 +82,22 @@ void Module_Driver::AddDevice(Device_Driver* device)
 		webserver_wifi_list->PushBack((WebServer_Wifi_Device_Driver*)(device));
 		webserver_wifi_index++;
 	}
-	device_list.PushBack(device);
+	device_list->PushBack(device);
 	UpdateControls();
 	device_count++;
 }
 
+
+Device_Driver *Module_Driver::GetDeviceById(uint16 Id)
+{
+	Device_Driver* result = nullptr;
+	for (uint16 i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->Id == Id) {
+			result = (*device_list)[i];
+		}
+	}
+	return result;
+}
 
 bool Module_Driver::PopMessage(ThreadMessage** message) {
 	//
@@ -110,22 +122,22 @@ void Module_Driver::DoMessage(Int_Thread_Msg message) {
 }
 
 void Module_Driver::DoInit() {
-	for (int i = 0; i < device_list.Size(); i++) {
-		device_list[i]->ExecInit();
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecInit();
 	}
 	GetControlsList();
 	DoAfterInit();
 }
 
 void Module_Driver::DoShutdown() {
-	for (int i = 0; i < device_list.Size(); i++) {
-		device_list[i]->ExecShutdown();
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecShutdown();
 	}
 }
 
 void Module_Driver::DoSuspend() {
-	for (int i = 0; i < device_list.Size(); i++) {
-		device_list[i]->ExecSuspend();
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecSuspend();
 	}
 }
 
@@ -155,9 +167,9 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 void Module_Driver::UpdateControls()
 {
 	ctrl_List->Clear();
-	for (int i = 0; i < device_list.Size(); i++) {
+	for (int i = 0; i < device_list->Size(); i++) {
 		Vector<Control*> *temp_ctrl_List;
-		temp_ctrl_List = device_list[i]->GetControls();
+		temp_ctrl_List = (*device_list)[i]->GetControls();
 		for (size_t j = 0; j < temp_ctrl_List->Size(); j++)
 		{
 			ctrl_List->PushBack((*temp_ctrl_List)[j]);

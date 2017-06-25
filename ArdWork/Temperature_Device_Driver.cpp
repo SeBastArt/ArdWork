@@ -78,6 +78,10 @@ void Temperature_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	}
 }
 
+void Temperature_Device_Driver::DoExecuteCommand(String _command)
+{
+}
+
 void Temperature_Device_Driver::Set_SI_To_Fahrenheit() {
 	fahrenheit = true;
 }

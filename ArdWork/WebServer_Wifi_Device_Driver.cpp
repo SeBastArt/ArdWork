@@ -13,8 +13,6 @@ WebServer_Wifi_Device_Driver::WebServer_Wifi_Device_Driver(Module_Driver * modul
 	std->Name = "WebServer Wifi";
 	std->Description = "WebServer Wifi";
 	std->Style = Icon_Kind_comm;
-	control = new Control(0);
-	request = new Request();
 	server = new WiFiServer(80);
 }
 
@@ -31,14 +29,13 @@ void WebServer_Wifi_Device_Driver::InitComm() {
 
 
 void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
-	request->Clear();
 	// Check if a client has connected
-
+	Serial.println("CheckComm");
 	if (!_client)
 	{
 		return;
 	}
-
+	
 	// Wait until the client sends some data
 	Serial.println("new client");
 	unsigned long ultimeout = millis() + 250;
@@ -63,7 +60,8 @@ void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 		_client.stop();
 		return;
 	}
-	request->SetRequest(sRequest);
+	Serial.println("ParseRequest(sRequest);");
+	ParseRequest(sRequest);
 }
 
 
@@ -95,78 +93,52 @@ void WebServer_Wifi_Device_Driver::SendResponse(WiFiClient _client, String _head
 void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 
 	WiFiClient client = server->available();
-	CheckComm(client);
-	if (request->isEmpty) {
+	if (!client)
+	{
 		return;
 	}
+	CheckComm(client);
 
 	///////////////////////////
 	// format the html response
 	///////////////////////////
 	String sResponse, sHeader;
 
-	////////////////////////////
-	// 404 for non-matching path
-	////////////////////////////
-	if (request->sPath != "/")
-	{
-		sResponse = "<html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL was not found on this server.</p></body></html>";
-		sHeader = GenerateHeader(sResponse, false);
-	}
-	///////////////////////
-	// format the html page
-	///////////////////////
-	else
-	{
-		ulReqcount++;
-		sResponse = "<html><head><title>Demo f&uumlr ESP8266 Steuerung</title></head><body>";
-		sResponse += "<font color=\"#000000\"><body bgcolor=\"#d0d0f0\">";
-		sResponse += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=yes\">";
-		sResponse += "<h1>Demo f&uumlr ESP8266 Steuerung</h1>";
-		sResponse += "Funktion 1 schaltet GPIO2 und erzeugt eine serielle Ausgabe.<BR>";
-		sResponse += "Funktion 2 erzeugt nur eine serielle Ausgabe.<BR>";
-		sResponse += "<FONT size=+1>";
+	ulReqcount++;
+	sResponse = "<html><head><title>Demo f&uumlr ESP8266 Steuerung</title></head><body>";
+	sResponse += "<font color=\"#000000\"><body bgcolor=\"#d0d0f0\">";
+	sResponse += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=yes\">";
+	sResponse += "<h1>Demo f&uumlr ESP8266 Steuerung</h1>";
+	sResponse += "Funktion 1 schaltet GPIO2 und erzeugt eine serielle Ausgabe.<BR>";
+	sResponse += "Funktion 2 erzeugt nur eine serielle Ausgabe.<BR>";
+	sResponse += "<FONT size=+1>";
 
-		Control *temp;
-		if (!__control_list->Empty()) {
-			for (int I = 0; I < __control_list->Size(); I++) {
-				if ((*__control_list)[I]->Style == Icon_Kind_button) {
-					sResponse += GenerateButton((*__control_list)[I]);
-				}
-				if ((*__control_list)[I]->Style == Icon_Kind_switch) {
-					sResponse += GenerateSwitch((*__control_list)[I]);
-				}
-				if ((*__control_list)[I]->Style == Icon_Kind_Integer) {
-					sResponse += GenerateInteger((*__control_list)[I]);
-				}
-
+	Control *temp;
+	if (!__control_list->Empty()) {
+		for (int I = 0; I < __control_list->Size(); I++) {
+			if ((*__control_list)[I]->Style == Icon_Kind_button) {
+				sResponse += GenerateButton((*__control_list)[I]);
 			}
-		}
-		sResponse += "<FONT SIZE=-2>";
-		//////////////////////
-		// react on parameters
-		//////////////////////
-		if (request->sCmd.length() > 0)
-		{
-			// write received command to html page
-			sResponse += "Kommando:" + request->sCmd + "<BR>";
-
-			ServerMessage* smessage = new ServerMessage(request->sHead, request->sCmd);
-			if (!parentModule->SendAsyncThreadMessage(smessage))
-			{
-				Serial.println(">> message buffer overflow <<");
+			if ((*__control_list)[I]->Style == Icon_Kind_switch) {
+				sResponse += GenerateSwitch((*__control_list)[I]);
 			}
+			if ((*__control_list)[I]->Style == Icon_Kind_Integer) {
+				sResponse += GenerateInteger((*__control_list)[I]);
+			}
+
 		}
-
-		sResponse += "<FONT size=-2>";
-		sResponse += "<BR>Aufrufz&auml;hler=";
-		sResponse += ulReqcount;
-		sResponse += " - Verbindungsz&auml;hler=";
-		sResponse += ulReconncount;
-		sResponse += "</body></html>";
-
-		sHeader = GenerateHeader(sResponse, true);
 	}
+	sResponse += "<FONT SIZE=-2>";
+
+	sResponse += "<FONT size=-2>";
+	sResponse += "<BR>Aufrufz&auml;hler=";
+	sResponse += ulReqcount;
+	sResponse += " - Verbindungsz&auml;hler=";
+	sResponse += ulReconncount;
+	sResponse += "</body></html>";
+
+	sHeader = GenerateHeader(sResponse, true);
+
 
 	// Send the response to the client
 	SendResponse(client, sHeader, sResponse);
@@ -201,12 +173,14 @@ String WebServer_Wifi_Device_Driver::GenerateSwitch(Control *_conrtrol)
 	response += _conrtrol->Name;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += "pin=" + _conrtrol->Command + "" + "\">";
+	response += _conrtrol->Id;	
+	response += "=" + _conrtrol->Command + "On" + "\">";
 	response += "<button>einschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += "pin=" + _conrtrol->Command + "OFF" + "\">";
+	response += _conrtrol->Id;
+	response += "=" + _conrtrol->Command + "Off" + "\">";
 	response += "<button>ausschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
@@ -227,10 +201,8 @@ String WebServer_Wifi_Device_Driver::GenerateButton(Control *_conrtrol)
 	response += _conrtrol->Name;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += "Name=" + _conrtrol->Name;
-	response += "&id=";
 	response += _conrtrol->Id;
-	response += "&value=";
+	response += "=";
 	response += _conrtrol->Command;
 	response += "\">";
 	response += "<button>Push</button>";
@@ -243,29 +215,36 @@ String WebServer_Wifi_Device_Driver::GenerateButton(Control *_conrtrol)
 	return response;
 }
 
-void WebServer_Wifi_Device_Driver::Request::Clear()
+void WebServer_Wifi_Device_Driver::DoExecuteCommand(String _command)
 {
-	sPath = "";
-	sParam = "";
-	sCmd = "";
-	sHead = "";
-	isEmpty = true;
 }
 
 
-void WebServer_Wifi_Device_Driver::Request::FillCtrl(String requestpart) {
+
+void WebServer_Wifi_Device_Driver::FillCtrl(String requestpart) {
 	int iEnd;
-	String Key, Value;
+	uint16_t Key;
+	String Value;
 
 	iEnd = requestpart.indexOf("=");
-	Key = requestpart.substring(0, iEnd);
+	Key = atoi(requestpart.substring(0, iEnd).c_str());
+	Serial.print("Key: ");
+	Serial.println(Key);
 	Value = requestpart.substring(iEnd + 1, requestpart.length());
+	Serial.print("Value: ");
+	Serial.println(Value);
+
+	ServerMessage* message = new ServerMessage(Key, Value);
+	if (!parentModule->SendAsyncThreadMessage(message))
+	{
+		Serial.println(">> message buffer overflow <<");
+	}
 }
 
-void WebServer_Wifi_Device_Driver::Request::Test(String _request) {
+void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 	String sGetstart = "GET ";
 	String get_params;
-	
+
 	int iStart, iEnd;
 	iStart = _request.indexOf(sGetstart);
 	if (iStart >= 0)
@@ -285,60 +264,10 @@ void WebServer_Wifi_Device_Driver::Request::Test(String _request) {
 					FillCtrl(dataPart);
 					dataPart = "";
 				}
-				else 
+				else
 					dataPart.concat(get_params[i]);
 			}
 			FillCtrl(dataPart);
 		}
 	}
-}
-
-void WebServer_Wifi_Device_Driver::Request::SetRequest(String _request) {
-	String sGetstart = "GET ";
-	Serial.println(_request);
-	Test(_request);
-	int iStart, iEndSpace, iEndQuest;
-	iStart = _request.indexOf(sGetstart);
-	if (iStart >= 0)
-	{
-		iStart += +sGetstart.length();
-		iEndSpace = _request.indexOf(" ", iStart);
-		iEndQuest = _request.indexOf("?", iStart);
-
-		// are there parameters?
-		if (iEndSpace > 0)
-		{
-			if (iEndQuest > 0)
-			{
-				// there are parameters
-				sPath = _request.substring(iStart, iEndQuest);
-				sParam = _request.substring(iEndQuest, iEndSpace);
-			}
-			else
-			{
-				// NO parameters
-				sPath = _request.substring(iStart, iEndSpace);
-			}
-		}
-	}
-
-	///////////////////////////////////////////////////////////////////////////////
-	// output parameters to serial, you may connect e.g. an Arduino and react on it
-	///////////////////////////////////////////////////////////////////////////////
-	if (sParam.length() > 0)
-	{
-		int iStartEqu = sParam.indexOf("?");
-		int iEndEqu = sParam.indexOf("=");
-		if (iStartEqu >= 0)
-		{
-			sHead = sParam.substring(iStartEqu + 1, iEndEqu - iStartEqu);
-		}
-
-		int iEqu = sParam.indexOf("=");
-		if (iEqu >= 0)
-		{
-			sCmd = sParam.substring(iEqu + 1, sParam.length());
-		}
-	}
-	isEmpty = false;
 }

@@ -40,6 +40,10 @@ void OLED_Display_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
 }
 
+void OLED_Display_Device_Driver::DoExecuteCommand(String _command)
+{
+}
+
 
 void OLED_Display_Device_Driver::DoCustomDisplayMessage(Int_Thread_Msg message)
 {

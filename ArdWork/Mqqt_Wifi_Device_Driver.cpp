@@ -42,6 +42,10 @@ void Mqqt_Wifi_Device_Driver::EventMsgIn(char* topic, uint8_t* payload, unsigned
 	Serial.println(mqtt_message);
 }
 
+void Mqqt_Wifi_Device_Driver::DoExecuteCommand(String _command)
+{
+}
+
 void Mqqt_Wifi_Device_Driver::SetMQQTBroker(String adress) {
 	Serial.print("Set MQQT-Broker to: ");
 	Serial.println(adress);

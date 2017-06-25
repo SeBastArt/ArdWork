@@ -163,11 +163,11 @@ void setup() {
 
 	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28);
 	Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D3"), true);
-	Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D3"), true);
+	Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(BUILTIN_LED), true);
 	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
-	Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, ssid, pass, led);
-	WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, ssid, pass, led);
+	Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, ssid, pass, wifi_status_led);
+	WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, ssid, pass, wifi_status_led);
 #endif // PICTURE_NodeMCU_GBR
 
 #ifdef COMPILE_TEST
@@ -255,11 +255,11 @@ void setup() {
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) || defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	Serial.println("Start LED-Driver");
-	threadManager.StartThread(led);
-
 	Serial.println("Start Wifi-Status LED-Driver");
 	threadManager.StartThread(wifi_status_led);
+
+	Serial.println("Start LED-Driver");
+	threadManager.StartThread(led);
 
 	Serial.println("Start Button-Driver");
 	threadManager.StartThread(button);

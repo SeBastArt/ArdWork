@@ -89,6 +89,10 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	}
 }
 
+void Luxmeter_Device_Driver::DoExecuteCommand(String _command)
+{
+}
+
 void Luxmeter_Device_Driver::DisplaySensorDetails(void)
 {
 	sensor_t sensor;

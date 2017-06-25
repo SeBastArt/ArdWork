@@ -48,7 +48,7 @@ void Picture_Module_Driver::DoUpdate(uint32_t deltaTime)
 			case MessageClass_Float:
 			{
 				FloatMessage* pFMessage = (FloatMessage*)(pMessage);
-				Serial.print("ID:  ");
+				Serial.print("ID: ");
 				Serial.print(pFMessage->Id);
 				Serial.print("; Lux: ");
 				Serial.println(pFMessage->Value);
@@ -58,12 +58,9 @@ void Picture_Module_Driver::DoUpdate(uint32_t deltaTime)
 			case MessageClass_Server:
 			{
 				ServerMessage* pServer = (ServerMessage*)(pMessage);
-				if (pServer->sCmd == "FUNCTION1ON") {
-					((Led_Device_Driver *)Selected_Led_Device)->Exec_Set_IO_Pin_High();
-				}
-				else if (pServer->sCmd == "FUNCTION1OFF") {
-					((Led_Device_Driver *)Selected_Led_Device)->Exec_Set_IO_Pin_Low();
-				}
+				Device_Driver*  device;
+				device = GetDeviceById(pServer->Id);
+				device->Exec_Command(pServer->Cmd);
 				break;
 			}
 			case MessageClass_Button:

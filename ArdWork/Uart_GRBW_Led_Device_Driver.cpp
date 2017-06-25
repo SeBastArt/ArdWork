@@ -121,6 +121,10 @@ void Uart_GRBW_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	strip->Show();
 }
 
+void Uart_GRBW_Led_Device_Driver::DoExecuteCommand(String _command)
+{
+}
+
 
 void Uart_GRBW_Led_Device_Driver::SetRandomSeed()
 {

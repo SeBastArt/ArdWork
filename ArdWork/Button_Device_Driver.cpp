@@ -9,6 +9,7 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 	Control *std;
 	std = ctrl_List->Front();
 	std->Name = "Button";
+	std->Command = "Push";
 	std->Description = "Button";
 	std->Style = Icon_Kind_button;
 }
@@ -35,6 +36,11 @@ void Button_Device_Driver::DoBeforeSuspend()
 	//
 
 }
+
+void Button_Device_Driver::DoExecuteCommand(String _command) {
+
+}
+
 
 
 void Button_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)

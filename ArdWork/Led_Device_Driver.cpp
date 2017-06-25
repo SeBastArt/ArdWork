@@ -9,7 +9,8 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 	Control *std;
 	std = ctrl_List->Front();
 	std->Name = "Led";
-	std->Description = "Lampe";
+	std->Command = "Switch";
+	std->Description = "Led";
 	std->Style = Icon_Kind_switch;
 };
 
@@ -166,6 +167,16 @@ void Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
 	if (blink_flag == true) {
 		Blink(deltaTime);
+	}
+}
+
+void Led_Device_Driver::DoExecuteCommand(String _command)
+{
+	if (_command.equals("SwitchOn")) {
+		Set_IO_Pin_High();
+	} 
+	else if (_command.equals("SwitchOff")) {
+		Set_IO_Pin_Low();
 	}
 }
 
