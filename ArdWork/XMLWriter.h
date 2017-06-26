@@ -76,7 +76,7 @@ public:
 	void indent();
 	void raw(char * str) { _stream->print(str); };       // TODO Q:other types?
 
-	void tagField(char* field, uint8_t  value, uint8_t base = DEC);
+	void tagField(char* field, uint8_t  value, uint8_t base = DEC); 
 	void tagField(char* field, uint16_t value, uint8_t base = DEC);
 	void tagField(char* field, uint32_t value, uint8_t base = DEC);
 	void tagField(char* field, int8_t   value, uint8_t base = DEC);

@@ -345,11 +345,14 @@
     <ClInclude Include="TinyXML.h">
       <Filter>Header Files\Helper\XML\TinyXML</Filter>
     </ClInclude>
-    <ClInclude Include="TinyXMLTable.hpp">
-      <Filter>Header Files\Helper\XML\TinyXML</Filter>
-    </ClInclude>
     <ClInclude Include="XMLWriter.h">
       <Filter>Header Files\Helper\XML\XMLWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="__vm\.ArdWork.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXMLTable.hpp">
+      <Filter>Header Files\Helper\XML\TinyXML</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -437,17 +440,17 @@
     <ClCompile Include="Comm_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClCompile>
-    <ClCompile Include="Thread\ThreadManager.cpp">
-      <Filter>Header Files\Helper\Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="Int_Thread_Msg.cpp">
-      <Filter>Header Files\Helper\Message_System</Filter>
-    </ClCompile>
     <ClCompile Include="TinyXML.cpp">
       <Filter>Header Files\Helper\XML\TinyXML</Filter>
     </ClCompile>
     <ClCompile Include="XMLWriter.cpp">
       <Filter>Header Files\Helper\XML\XMLWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="Int_Thread_Msg.cpp">
+      <Filter>Header Files\Helper\Message_System</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread\ThreadManager.cpp">
+      <Filter>Header Files\Helper\Thread</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@
 // Released to the public domain
 //
 
-#include <XMLWriter.h>
+#include "XMLWriter.h"
 
 XMLWriter::XMLWriter(Print* stream)
 {
@@ -136,12 +136,12 @@ void XMLWriter::tagField(char *field, uint32_t value, uint8_t base)
 
 void XMLWriter::tagField(char *field, int8_t value, uint8_t base)
 {
-	tagField(field, (long)value, base);
+	tagField(field, (int32_t)value, base);
 }
 
 void XMLWriter::tagField(char *field, int16_t value, uint8_t base)
 {
-	tagField(field, (long)value, base);
+	tagField(field, (int32_t)value, base);
 }
 
 void XMLWriter::tagField(char *field, int32_t value, uint8_t base)
