@@ -16,14 +16,8 @@
     <Filter Include="Header Files\Driver">
       <UniqueIdentifier>{b4df6cdd-513a-4501-a7d1-61e36400a57c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Message_System">
-      <UniqueIdentifier>{6b40e92b-f5be-493f-a2b6-8060ac3e137b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Driver">
       <UniqueIdentifier>{7612e5bf-599d-4f45-90f7-b0d12a0aeded}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Message_System">
-      <UniqueIdentifier>{9e982f30-58dc-4fc7-9d85-a79acc4aa420}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Driver\Device_Driver">
       <UniqueIdentifier>{64ca0d7e-bf93-4d02-8526-7cc89d41d716}</UniqueIdentifier>
@@ -160,17 +154,29 @@
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver">
       <UniqueIdentifier>{585b672c-ef7a-4cbf-8d5e-bf51b4be0d62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Thread">
+    <Filter Include="Header Files\Helper">
+      <UniqueIdentifier>{6d18e8c2-7225-46ef-9d12-e42f07c16cc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper\XML">
+      <UniqueIdentifier>{0a4b4742-4ccc-4352-a32f-1e709af1ed77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper\Thread">
       <UniqueIdentifier>{54791a40-9a19-42f8-ab6c-decb0d5d2622}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper\Message_System">
+      <UniqueIdentifier>{6b40e92b-f5be-493f-a2b6-8060ac3e137b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper\XML\TinyXML">
+      <UniqueIdentifier>{c4a82f44-bfaa-4e84-93dd-f05f7c851169}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper\XML\XMLWriter">
+      <UniqueIdentifier>{6b38a53a-1f29-4ba2-aa51-7f0768f9a0fb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ArdWork.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Base_Consts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Driver.h">
       <Filter>Header Files\Driver</Filter>
     </ClInclude>
@@ -190,10 +196,10 @@
       <Filter>Header Files\Driver\Module_Driver</Filter>
     </ClInclude>
     <ClInclude Include="Int_Thread_Msg.h">
-      <Filter>Header Files\Message_System</Filter>
+      <Filter>Header Files\Helper\Message_System</Filter>
     </ClInclude>
     <ClInclude Include="Int_Thread_Msg_Sys.h">
-      <Filter>Header Files\Message_System</Filter>
+      <Filter>Header Files\Helper\Message_System</Filter>
     </ClInclude>
     <ClInclude Include="Led_Button_Module_Driver.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
@@ -254,9 +260,6 @@
     </ClInclude>
     <ClInclude Include="WiFi_Module_Driver.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="m_Vector.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mqqt_Wifi_Module_Driver.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
@@ -328,10 +331,28 @@
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClInclude>
     <ClInclude Include="Thread\Thread.h">
-      <Filter>Header Files\Thread</Filter>
+      <Filter>Header Files\Helper\Thread</Filter>
     </ClInclude>
     <ClInclude Include="Thread\ThreadManager.h">
-      <Filter>Header Files\Thread</Filter>
+      <Filter>Header Files\Helper\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Base_Consts.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="m_Vector.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXML.h">
+      <Filter>Header Files\Helper\XML\TinyXML</Filter>
+    </ClInclude>
+    <ClInclude Include="XMLWriter.h">
+      <Filter>Header Files\Helper\XML\XMLWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="__vm\.ArdWork.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TinyXMLTable.hpp">
+      <Filter>Header Files\Helper\XML\TinyXML</Filter>
     </ClInclude>
     <ClInclude Include="Publisher.h">
       <Filter>Header Files</Filter>
@@ -343,9 +364,6 @@
     </ClCompile>
     <ClCompile Include="Module_Driver.cpp">
       <Filter>Source Files\Driver\Module_Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="Int_Thread_Msg.cpp">
-      <Filter>Source Files\Message_System</Filter>
     </ClCompile>
     <ClCompile Include="Led_Button_Module_Driver.cpp">
       <Filter>Source Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
@@ -425,8 +443,17 @@
     <ClCompile Include="Comm_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClCompile>
+    <ClCompile Include="TinyXML.cpp">
+      <Filter>Header Files\Helper\XML\TinyXML</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLWriter.cpp">
+      <Filter>Header Files\Helper\XML\XMLWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="Int_Thread_Msg.cpp">
+      <Filter>Header Files\Helper\Message_System</Filter>
+    </ClCompile>
     <ClCompile Include="Thread\ThreadManager.cpp">
-      <Filter>Header Files\Thread</Filter>
+      <Filter>Header Files\Helper\Thread</Filter>
     </ClCompile>
     <ClCompile Include="Publisher.cpp">
       <Filter>Source Files</Filter>
