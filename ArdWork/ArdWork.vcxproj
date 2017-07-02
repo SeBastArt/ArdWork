@@ -130,6 +130,7 @@
     <ClInclude Include="PCF8574_Controller.h" />
     <ClInclude Include="PCF8574_Controller_Consts.h" />
     <ClInclude Include="Picture_Module_Driver.h" />
+    <ClInclude Include="Publisher.h" />
     <ClInclude Include="RGBLed_Mqqt_Wifi_Module_Driver.h" />
     <ClInclude Include="Temperature_Device_Driver.h" />
     <ClInclude Include="Temperature_Device_Driver_Consts.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="OLED_Display_Device_Driver.cpp" />
     <ClCompile Include="PCF8574_Controller.cpp" />
     <ClCompile Include="Picture_Module_Driver.cpp" />
+    <ClCompile Include="Publisher.cpp" />
     <ClCompile Include="RGBLed_Mqqt_Wifi_Module_Driver.cpp" />
     <ClCompile Include="Temperature_Device_Driver.cpp" />
     <ClCompile Include="Thread\ThreadManager.cpp" />

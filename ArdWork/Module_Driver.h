@@ -29,9 +29,8 @@ class Module_Driver : public Driver
 private:
 	uint8 device_count;
 
-	Vector<Control*> *ctrl_List;
+	Vector<Publisher*> *pub_List;
 	Vector<ThreadMessage*> queue;
-
 
 	int8_t button_index;
 	int8_t distance_index;
@@ -88,7 +87,8 @@ protected:
 	void DoInit();
 	void DoShutdown();
 	void DoSuspend();
-	Vector <Control*> *GetControlsList();
+
+	Vector <Publisher*> *GetPublisherList();
 public:
 	Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
 	~Module_Driver();

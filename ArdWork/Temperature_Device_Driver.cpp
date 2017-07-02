@@ -10,10 +10,12 @@ Temperature_Device_Driver::Temperature_Device_Driver(Module_Driver* module, IO_P
 	fahrenheit(isFahrenheit)
 {
 	driver_name = "Temperature_Device_Driver";
-	(*ctrl_List)[0]->Name = "Temperature";
-	(*ctrl_List)[0]->Description = "Gibt die aktuelle Temperatur an";
-	(*ctrl_List)[0]->Style = Icon_Kind_Integer;
-	(*ctrl_List)[0]->Data = "20 K";
+	
+	publisher->name = "thermometer";
+	publisher->descr = "messeaure temperature";
+	Value_Publisher *elem = new Value_Publisher("Temperature", "actual temperature", &act_temp, "Celcius");
+	publisher->Add_Publisher_Element(elem);
+	publisher->published = true;
 
 	pin->SetPinState(LOW);
 	dht = new DHT(pin->PinNumber(), DHT11);
@@ -73,7 +75,6 @@ void Temperature_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		float t = dht->readTemperature();
 		if (!isnan(t)) {
 			act_temp = t;
-			(*ctrl_List)[0]->Data = String(act_temp) + "C";
 		}
 	}
 }

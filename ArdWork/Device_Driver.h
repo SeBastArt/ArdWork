@@ -18,10 +18,10 @@ class Device_Driver : public Driver
 public:
 	Device_Driver(Module_Driver* module, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	Property<uint16, Device_Driver> Id{ this,nullptr,&Device_Driver::GetId };
-	Vector<Control*> *GetControls();
+	Publisher *GetPublisher();
 	void Exec_Command(String _command);
 protected:
-	Vector<Control*> *ctrl_List;
+	Publisher *publisher;
 	Module_Driver* parentModule;
 private:
 	uint16 __Id;

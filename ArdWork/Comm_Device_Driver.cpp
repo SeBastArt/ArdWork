@@ -6,10 +6,10 @@
 
 Comm_Device_Driver::Comm_Device_Driver()
 {
-		__control_list = new Vector <Control*>;
+	__pub_list = new Vector <Publisher*>;
 }
 
-void Comm_Device_Driver::SetControls(Vector <Control*> *_Controls)
+void Comm_Device_Driver::SetPublisher(Vector <Publisher*> *_publisher)
 {
-	__control_list = _Controls;
+	__pub_list = _publisher;
 }

@@ -10,11 +10,6 @@ Mqqt_Wifi_Device_Driver::Mqqt_Wifi_Device_Driver(Module_Driver * module, String 
 	Wifi_Device_Driver(module, _ssid, _password, _statusLED, priority)
 {
 	driver_name = "Mqqt_Wifi_Device_Driver";
-	Control *std;
-	std = ctrl_List->Front();
-	std->Name = "Mqqt Wifi";
-	std->Description = "Mqqt Wifi";
-	std->Style = Icon_Kind_comm;
 
 	outTopic = "/";
 	inTopic = "/";

@@ -10,11 +10,12 @@ Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pi
 	pin_e(pin_echo)
 {
 	driver_name = "Distance_Device_Driver";
-	Control *std;
-	std = ctrl_List->Front();
-	std->Name = "Distance";
-	std->Description = "Distance";
-	std->Style = Icon_Kind_Integer;
+
+	publisher->name = "SuperSonic Distance";
+	publisher->descr = "Distance to target";
+	Value_Publisher *elem = new Value_Publisher("Distance", "Distance to Target", 0, "cm");
+	publisher->Add_Publisher_Element(elem);
+	publisher->published = true;
 }
 
 

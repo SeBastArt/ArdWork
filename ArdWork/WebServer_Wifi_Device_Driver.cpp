@@ -8,11 +8,6 @@ WebServer_Wifi_Device_Driver::WebServer_Wifi_Device_Driver(Module_Driver * modul
 	Wifi_Device_Driver(module, _ssid, _password, _statusLED, priority)
 {
 	driver_name = "WebServer_Wifi_Device_Driver";
-	Control *std;
-	std = ctrl_List->Front();
-	std->Name = "WebServer Wifi";
-	std->Description = "WebServer Wifi";
-	std->Style = Icon_Kind_comm;
 	server = new WiFiServer(80);
 }
 
@@ -113,21 +108,19 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 	sResponse += "Funktion 2 erzeugt nur eine serielle Ausgabe.<BR>";
 	sResponse += "<FONT size=+1>";
 
-	Control *temp;
-	if (!__control_list->Empty()) {
-		for (int I = 0; I < __control_list->Size(); I++) {
-			if ((*__control_list)[I]->Style == Icon_Kind_button) {
-				sResponse += GenerateButton((*__control_list)[I]);
+	if (!__pub_list->Empty()) {
+		for (int I = 0; I < __pub_list->Size(); I++) {
+			for (int j = 0; j < (*__pub_list)[I]->elem_count; j++) {
+				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Button_Publisher")) {
+					sResponse += GenerateButton((*__pub_list)[I]->id, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+				}
+				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Value_Publisher")) {
+					sResponse += GenerateValue((*__pub_list)[I]->id, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+				}
 			}
-			if ((*__control_list)[I]->Style == Icon_Kind_switch) {
-				sResponse += GenerateSwitch((*__control_list)[I]);
-			}
-			if ((*__control_list)[I]->Style == Icon_Kind_Integer) {
-				sResponse += GenerateInteger((*__control_list)[I]);
-			}
-
 		}
 	}
+
 	sResponse += "<FONT SIZE=-2>";
 
 	sResponse += "<FONT size=-2>";
@@ -145,71 +138,71 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 }
 
 
-String WebServer_Wifi_Device_Driver::GenerateInteger(Control *_conrtrol)
+String WebServer_Wifi_Device_Driver::GenerateValue(uint8 _id, Value_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "ID: " + String(_conrtrol->Id);
+	response += "ID: " + String(_id);
 	response += "&nbsp;";
-	response += _conrtrol->Name;
+	response += _pub_elem->name;
 	response += "&nbsp;";
-	response += " Wert = " + _conrtrol->Data;
+	response += " Wert = " + String(*_pub_elem->value);
 	response += "&nbsp;";
 	response += "<FONT SIZE=-1>";
-	response += _conrtrol->Description;
+	response += _pub_elem->descr;
 	response += "<FONT SIZE=+1>";
 	response += "<BR>";
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateSwitch(Control *_conrtrol)
+String WebServer_Wifi_Device_Driver::GenerateSwitch(uint8 _id, Switch_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "ID: " + String(_conrtrol->Id);
+	response += "ID: " + String(_id);
 	response += "&nbsp;";
-	response += _conrtrol->Name;
+	response += _pub_elem->name;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += _conrtrol->Id;	
-	response += "=" + _conrtrol->Command + "On" + "\">";
+	response += _id;
+	response += "=" + _pub_elem->cmdOn + "\">";
 	response += "<button>einschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += _conrtrol->Id;
-	response += "=" + _conrtrol->Command + "Off" + "\">";
+	response += _id;
+	response += "=" + _pub_elem->cmdOff + "\">";
 	response += "<button>ausschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
 	response += "<FONT SIZE=-1>";
-	response += _conrtrol->Description;
+	response += _pub_elem->descr;
 	response += "<FONT SIZE=+1>";
 	response += "<BR>";
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateButton(Control *_conrtrol)
+String WebServer_Wifi_Device_Driver::GenerateButton(uint8 _id, Button_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "ID: " + String(_conrtrol->Id);
+	response += "ID: " + String(_id);
 	response += "&nbsp;";
-	response += _conrtrol->Name;
+	response += _pub_elem->name;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += _conrtrol->Id;
+	response += _id;
 	response += "=";
-	response += _conrtrol->Command;
+	response += _pub_elem->cmd;
 	response += "\">";
 	response += "<button>Push</button>";
 	response += "</a>";
 	response += "&nbsp;";
 	response += "<FONT SIZE=-1>";
-	response += _conrtrol->Description;
+	response += _pub_elem->descr;
 	response += "<FONT SIZE=+1>";
 	response += "<BR>";
 	return response;

@@ -8,13 +8,6 @@
 
 OLED_Display_Device_Driver::OLED_Display_Device_Driver(Module_Driver* module, uint8_t _reset_pin, uint8_t priority) : Display_Device_Driver(module, priority) {
 	driver_name = "OLED_Display_Device_Driver";
-
-	Control *std;
-	std = ctrl_List->Front();
-	std->Name = "Oled_Display";
-	std->Description = "Oled_Display";
-	std->Style = Icon_Kind_comm;
-
 	reset_pin = _reset_pin;
 	display = new Adafruit_SSD1306(reset_pin);
 };

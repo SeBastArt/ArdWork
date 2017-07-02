@@ -19,11 +19,6 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	Device_Driver(module, priority)
 {
 	driver_name = "Uart_GRBW_Led_Device_Driver";
-	Control *std;
-	std = ctrl_List->Front();
-	std->Name = "GRBW Led";
-	std->Description = "GRBW Led";
-	std->Style = Icon_Kind_multi;
 
 	pixelCount = _pixelcount;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma

@@ -6,12 +6,11 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 	hasPullUp(_hasPullUp)
 {
 	driver_name = "Led_Device_Driver";
-	Control *std;
-	std = ctrl_List->Front();
-	std->Name = "Led";
-	std->Command = "Switch";
-	std->Description = "Led";
-	std->Style = Icon_Kind_switch;
+	publisher->name = "Led";
+	publisher->descr = "Led-Device";
+	Boolean_Publisher *elem = new Boolean_Publisher("Led", "Led is On or Off", false);
+	publisher->Add_Publisher_Element(elem);
+	publisher->published = true;
 };
 
 void Led_Device_Driver::SetPullUp(bool _hasPullUp)

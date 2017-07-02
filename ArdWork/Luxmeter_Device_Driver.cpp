@@ -8,11 +8,12 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 	Device_Driver(module, priority)
 {
 	driver_name = "Luxmeter_Device_Driver";
-	(*ctrl_List)[0]->Name = "Luxmeter";
-	(*ctrl_List)[0]->Description = "Gibt die aktuelle Helligkeit an";
-	(*ctrl_List)[0]->Style = Icon_Kind_Integer;
-	(*ctrl_List)[0]->Data = "0 Lux";
 
+	publisher->name = "Luxmeter";
+	publisher->descr = "messeaure brightness";
+	Value_Publisher *elem = new Value_Publisher("Luxmeter", "actual brightness", &lastLux, "Lux");
+	publisher->Add_Publisher_Element(elem);
+	publisher->published = true;
 	tsl = new Adafruit_TSL2561_Unified(adress, 1);
 }
 
@@ -72,8 +73,7 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		if (event.light) {
 			if (fabs(event.light - lastLux) > EPSILON) {
 				lastLux = event.light;
-				(*ctrl_List)[0]->Data = String(lastLux) + "Lux" ;
-				FloatMessage* message = new FloatMessage((*ctrl_List)[0]->Id, event.light);
+				FloatMessage* message = new FloatMessage(publisher->id, event.light);
 				if (!parentModule->SendAsyncThreadMessage(message))
 				{
 					Serial.println(">> message buffer overflow <<");

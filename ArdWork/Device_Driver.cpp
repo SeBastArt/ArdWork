@@ -4,8 +4,7 @@ Device_Driver::Device_Driver(Module_Driver* module, uint8_t priority) :
 	Driver(priority),
 	parentModule(module)
 {
-	ctrl_List = new Vector<Control*>;
-	ctrl_List->PushBack(new Control(device_count));
+	publisher = new Publisher(device_count);
 	__Id = device_count;
 }
 
@@ -38,9 +37,10 @@ void Device_Driver::DoSuspend() {
 	DoBeforeSuspend();
 }
 
-Vector<Control*> *Device_Driver::GetControls()
+
+Publisher *Device_Driver::GetPublisher()
 {
-	return ctrl_List;
+	return publisher;
 }
 
 void Device_Driver::Exec_Command(String _command)

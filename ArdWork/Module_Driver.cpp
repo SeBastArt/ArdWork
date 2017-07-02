@@ -23,7 +23,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	Uart_GRBW_Led_index = -1;
 	webserver_wifi_index = -1;
 
-	ctrl_List = new Vector<Control*>;
+	pub_List = new Vector<Publisher*>;
 	device_list = new Vector <Device_Driver*>;
 
 	button_list = new Vector <Button_Device_Driver*>;
@@ -39,8 +39,8 @@ Module_Driver::Module_Driver(uint8_t priority) :
 
 Module_Driver::~Module_Driver()
 {
+	pub_List->Clear();
 	device_list->Clear();
-	ctrl_List->Clear();
 	queue.Clear();
 }
 
@@ -82,6 +82,7 @@ void Module_Driver::AddDevice(Device_Driver* device)
 		webserver_wifi_list->PushBack((WebServer_Wifi_Device_Driver*)(device));
 		webserver_wifi_index++;
 	}
+
 	device_list->PushBack(device);
 	UpdateControls();
 	device_count++;
@@ -125,7 +126,6 @@ void Module_Driver::DoInit() {
 	for (int i = 0; i < device_list->Size(); i++) {
 		(*device_list)[i]->ExecInit();
 	}
-	GetControlsList();
 	DoAfterInit();
 }
 
@@ -141,10 +141,11 @@ void Module_Driver::DoSuspend() {
 	}
 }
 
-Vector<Control*>* Module_Driver::GetControlsList()
+Vector<Publisher*>* Module_Driver::GetPublisherList()
 {
-	return ctrl_List;
+	return pub_List;
 }
+
 
 
 bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr) {
@@ -166,14 +167,9 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 
 void Module_Driver::UpdateControls()
 {
-	ctrl_List->Clear();
+	pub_List->Clear();
 	for (int i = 0; i < device_list->Size(); i++) {
-		Vector<Control*> *temp_ctrl_List;
-		temp_ctrl_List = (*device_list)[i]->GetControls();
-		for (size_t j = 0; j < temp_ctrl_List->Size(); j++)
-		{
-			ctrl_List->PushBack((*temp_ctrl_List)[j]);
-		}
+		pub_List->PushBack((*device_list)[i]->GetPublisher());
 	}
 }
 

@@ -111,10 +111,6 @@ uint32_t start;
 void setup() {
 	WiFi.forceSleepWake(); // Wlan ON für neue Zyklus	
 	Serial.begin(115200);
-	Serial.println("");
-	Serial.println("Start");
-	Serial.println("<p>Funktion 1 <a href=\"?pin=FUNCTION1ON\"><button>einschalten</button></a>&nbsp;<a href=\"?pin=FUNCTION1OFF\"><button>ausschalten</button></a></p>");
-
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) 
 	Dash_Mqqt_Wifi_Module_Driver *dash_mqqt_wifi_module = new Dash_Mqqt_Wifi_Module_Driver("ESP8266", ssid, pass);

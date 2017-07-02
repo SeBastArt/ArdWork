@@ -35,8 +35,8 @@ void Picture_Module_Driver::DoModuleMessage(Int_Thread_Msg message)
 
 void Picture_Module_Driver::DoUpdate(uint32_t deltaTime)
 {
-	Vector <Control*> *ctrls = GetControlsList();
-	((WebServer_Wifi_Device_Driver *)Selected_WebServer_Wifi_Device)->control_list = ctrls;
+	Vector <Publisher*> *publisher = GetPublisherList();
+	((WebServer_Wifi_Device_Driver *)Selected_WebServer_Wifi_Device)->pub_list = publisher;
 
 	if ((Selected_Button_Device != NULL) && (Selected_Led_Device != NULL)) {
 

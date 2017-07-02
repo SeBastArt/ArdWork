@@ -24,9 +24,9 @@ private:
 	unsigned long ulReconncount;
 	WiFiServer *server;
 	String GenerateHeader(String _response, bool _found);
-	String GenerateInteger(Control * _conrtrol);
-	String GenerateSwitch(Control * _conrtrol);
-	String GenerateButton(Control * _conrtrol);
+	String GenerateValue(uint8 _id, Value_Publisher * _pub_elem);
+	String GenerateSwitch(uint8 _id, Switch_Publisher * _pub_elem);
+	String GenerateButton(uint8 _id, Button_Publisher * _pub_elem);
 	void DoExecuteCommand(String _command);
 protected:
 	void FillCtrl(String requestpart);

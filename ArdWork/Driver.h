@@ -13,8 +13,7 @@
 #include "Driver_Consts.h"
 #include "Int_Thread_Msg_Sys.h"
 #include "Base_Consts.h"
-
-
+#include "Publisher.h"
 
 class Driver : public Thread, public Int_Thread_Msg_Sys
 {

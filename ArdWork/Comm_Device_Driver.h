@@ -11,17 +11,18 @@
 
 #include "Base_Consts.h"
 #include "m_Vector.h"
+#include "Publisher.h"
 
 class Comm_Device_Driver 
 {
 private:
-	void SetControls(Vector <Control*> *_Controls);
+	void SetPublisher(Vector <Publisher*> *_publisher);
 protected:
-	Vector <Control*> *__control_list;
+	Vector <Publisher*> *__pub_list;
 public:
 	Comm_Device_Driver();
 	virtual void UpdateControls() = 0;
-	Property<Vector <Control*>*, Comm_Device_Driver> control_list{ this,&Comm_Device_Driver::SetControls,nullptr };
+	Property<Vector <Publisher*>*, Comm_Device_Driver> pub_list{ this,&Comm_Device_Driver::SetPublisher,nullptr };
 };
 
 #endif

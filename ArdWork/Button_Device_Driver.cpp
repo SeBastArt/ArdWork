@@ -6,12 +6,11 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 	hasPullUp(_hasPullUp)
 {
 	driver_name = "Button_Device_Driver";
-	Control *std;
-	std = ctrl_List->Front();
-	std->Name = "Button";
-	std->Command = "Push";
-	std->Description = "Button";
-	std->Style = Icon_Kind_button;
+	publisher->name = "Button";
+	publisher->descr = "Push Me";
+	Button_Publisher *elem = new Button_Publisher("Push", "Push the Button", "Press");
+	publisher->Add_Publisher_Element(elem);
+	publisher->published = true;
 }
 
 void Button_Device_Driver::DoAfterInit()
