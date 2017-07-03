@@ -15,14 +15,16 @@ private:
 	String ParamString;
 	String GetStringPartByNr(String data, char separator, int index);
 public:
-	Int_Thread_Msg(int ID);
+	Int_Thread_Msg(uint32 ID);
+	void AddParam(bool boolean);
 	void AddParam(int intNumber);
 	void AddParam(unsigned char c);
 	void AddParam(String text);
 	void AddParam(float floatNumber);
-	int GetID();
-	int GetIntParamByIndex(int index);
+	uint16 GetID();
+	uint16 GetIntParamByIndex(int index);
 	float GetFloatParamByIndex(int index);
+	bool GetBoolParamByIndex(int index);
 	unsigned char GetCharParamByIndex(int index);
 	String GetStringParamByIndex(int index);
 };

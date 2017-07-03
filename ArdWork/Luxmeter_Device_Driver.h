@@ -10,7 +10,7 @@
 #endif
 
 #include "Device_Driver.h"
-#include "Temperature_Device_Driver_Consts.h"
+#include "Luxmeter_Device_Driver_Consts.h"
 
 #include <pgmspace.h>
 #include <Adafruit_Sensor.h>
@@ -37,6 +37,17 @@ private:
 	uint16_t accuracy_delay;
 	Adafruit_TSL2561_Unified *tsl;
 	void DisplaySensorDetails(void);
+
+protected:
+	void Set_Accuracy_Delay(uint16 _milliseconds);
+	void Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime);
+	void Set_Set_Gain(tsl2561Gain_t _gain);
+	void Set_Set_Enable_AutoRange(bool _autoRange);
+public:
+	void Exec_Set_Accuracy_Delay(uint16 _milliseconds);
+	void Exec_Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime);
+	void Exec_Set_Gain(tsl2561Gain_t _gain);
+	void Exec_Set_Enable_AutoRange(bool _autoRange);
 };
 
 #endif

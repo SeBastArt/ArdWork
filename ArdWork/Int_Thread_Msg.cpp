@@ -4,9 +4,15 @@
 
 #include "Int_Thread_Msg.h"
 
-Int_Thread_Msg::Int_Thread_Msg(int ID) {
+Int_Thread_Msg::Int_Thread_Msg(uint32 ID) {
 	ParamString = "";
 	ParamString += ID;
+	ParamString += ":";
+}
+
+void Int_Thread_Msg::AddParam(bool boolean)
+{
+	ParamString += boolean;
 	ParamString += ":";
 }
 
@@ -30,7 +36,7 @@ void Int_Thread_Msg::AddParam(float floatNumber) {
 	ParamString += ":";
 }
 
-int Int_Thread_Msg::GetID() {
+uint16 Int_Thread_Msg::GetID() {
 	int i = 0;
 	String ParamStr;
 	ParamStr = GetStringPartByNr(ParamString, ':', 0);
@@ -38,13 +44,27 @@ int Int_Thread_Msg::GetID() {
 	return i;
 }
 
-int Int_Thread_Msg::GetIntParamByIndex(int index) {
+uint16 Int_Thread_Msg::GetIntParamByIndex(int index) {
 	String ParamStr;
 	ParamStr = GetStringPartByNr(ParamString, ':', index);
 	return ParamStr.toInt();
 }
 
 float Int_Thread_Msg::GetFloatParamByIndex(int index) {
+	String ParamStr;
+	bool tempResult = false;
+	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	if (ParamStr.toInt() > 0) {
+		tempResult = true;
+	}
+	else {
+		tempResult = false;
+	}
+	return tempResult;
+}
+
+bool Int_Thread_Msg::GetBoolParamByIndex(int index)
+{
 	String ParamStr;
 	ParamStr = GetStringPartByNr(ParamString, ':', index);
 	return ParamStr.toFloat();
