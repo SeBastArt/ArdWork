@@ -24,12 +24,12 @@ private:
 	unsigned long ulReconncount;
 	WiFiServer *server;
 	String GenerateHeader(String _response, bool _found);
-	String GenerateValue(uint8 _id, Value_Publisher * _pub_elem);
-	String GenerateSwitch(uint8 _id, Switch_Publisher * _pub_elem);
-	String GenerateButton(uint8 _id, Button_Publisher * _pub_elem);
-	void DoExecuteCommand(String _command);
+	String GenerateValue(uint16_t _deviceId, Value_Publisher * _pub_elem);
+	String GenerateSwitch(uint16_t _deviceId, Switch_Publisher * _pub_elem);
+	String GenerateButton(uint16_t _deviceId, Button_Publisher * _pub_elem);
+	String GetKey(String requestpart);
+	String GetValue(String requestpart);
 protected:
-	void FillCtrl(String requestpart);
 	void ParseRequest(String _request);
 	void UpdateComm(uint32_t deltaTime);
 	void SendResponse(WiFiClient _client, String _header, String _response);

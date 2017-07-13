@@ -43,9 +43,9 @@ Publisher *Device_Driver::GetPublisher()
 	return publisher;
 }
 
-void Device_Driver::Exec_Command(String _command)
+void Device_Driver::Exec_Command(uint32_t _cmdId, String _command)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DEVICE_DRIVER_EXECUTE_COMMAND);
+	Int_Thread_Msg *message = new Int_Thread_Msg(_cmdId);
 	message->AddParam(_command);
 	PostMessage(&message);
 }

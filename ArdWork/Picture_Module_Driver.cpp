@@ -55,12 +55,12 @@ void Picture_Module_Driver::DoUpdate(uint32_t deltaTime)
 				break;
 			}
 
-			case MessageClass_Server:
+			case MessageClass_Communication:
 			{
-				ServerMessage* pServer = (ServerMessage*)(pMessage);
-				Device_Driver*  device;
-				device = GetDeviceById(pServer->Id);
-				device->Exec_Command(pServer->Cmd);
+				CommunicationMessage* pCommunication = (CommunicationMessage*)(pMessage);
+				Device_Driver* device;
+				device = GetDeviceById(pCommunication->Id);
+				device->Exec_Command(pCommunication->CmdId, pCommunication->Values);
 				break;
 			}
 			case MessageClass_Button:

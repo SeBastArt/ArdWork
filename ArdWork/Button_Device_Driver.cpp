@@ -8,7 +8,7 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 	driver_name = "Button_Device_Driver";
 	publisher->name = "Button";
 	publisher->descr = "Push Me";
-	Button_Publisher *elem = new Button_Publisher("Push", "Push the Button", "Press");
+	Button_Publisher *elem = new Button_Publisher(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, "Push", "Push the Button");
 	publisher->Add_Publisher_Element(elem);
 	publisher->published = true;
 }
@@ -40,6 +40,16 @@ void Button_Device_Driver::DoExecuteCommand(String _command) {
 
 }
 
+void Button_Device_Driver::Do_Push_Button()
+{
+	ButtonMessage* message = new ButtonMessage(pin->GetID(), THREAD_MSG_BUTTONSTATE_PRESSED);
+	if (!parentModule->SendAsyncThreadMessage(message))
+	{
+		Serial.println(">> message buffer overflow <<");
+	}
+	lastMessage = THREAD_MSG_BUTTONSTATE_PRESSED;
+}
+
 
 
 void Button_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
@@ -47,12 +57,22 @@ void Button_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	int messageID = message.GetID();
 	switch (messageID)
 	{
+		case BUTTON_DEVICE_DRIVER_PUSH_BUTTON:
+		{
+			Do_Push_Button();
+		}
 		break;
 	}
 }
 
 uint8_t Button_Device_Driver::GetButtonPinID() {
 	return pin->GetID();
+}
+
+void Button_Device_Driver::Exec_Push_Button()
+{
+	Int_Thread_Msg *message = new Int_Thread_Msg(BUTTON_DEVICE_DRIVER_PUSH_BUTTON);
+	PostMessage(&message);
 }
 
 void Button_Device_Driver::SetPullUp(bool _hasPullUp)

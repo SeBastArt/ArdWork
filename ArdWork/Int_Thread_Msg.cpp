@@ -49,8 +49,7 @@ uint16 Int_Thread_Msg::GetIntParamByIndex(int index) {
 	ParamStr = GetStringPartByNr(ParamString, ':', index);
 	return ParamStr.toInt();
 }
-
-float Int_Thread_Msg::GetFloatParamByIndex(int index) {
+bool Int_Thread_Msg::GetBoolParamByIndex(int index) {
 	String ParamStr;
 	bool tempResult = false;
 	ParamStr = GetStringPartByNr(ParamString, ':', index);
@@ -63,7 +62,7 @@ float Int_Thread_Msg::GetFloatParamByIndex(int index) {
 	return tempResult;
 }
 
-bool Int_Thread_Msg::GetBoolParamByIndex(int index)
+float Int_Thread_Msg::GetFloatParamByIndex(int index)
 {
 	String ParamStr;
 	ParamStr = GetStringPartByNr(ParamString, ':', index);

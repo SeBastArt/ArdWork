@@ -10,8 +10,10 @@
 #endif
 
 #include "Device_Driver.h"
+#include "Button_Device_Driver_Consts.h"
 #include "Module_Driver.h"
 #include "IO_Pin.h" 
+
 
 class Button_Device_Driver : public Device_Driver
 {
@@ -37,11 +39,13 @@ private:
 	void DoUpdate(uint32_t deltaTime);
 	void DoExecuteCommand(String _command);
 	
-
+	void Do_Push_Button();
 public:
 	Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp = false, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	void SetPullUp(bool _hasPullUp);
 	uint8_t GetButtonPinID();
+
+	void Exec_Push_Button();
 };
 
 #endif
