@@ -28,7 +28,7 @@ enum MessageClass
 	MessageClass_Heartbeat,
 	MessageClass_Button,
 	MessageClass_Float,
-	MessageClass_Server,
+	MessageClass_Communication,
 	MessageClass_Mqqt
 };
 
@@ -124,16 +124,18 @@ struct FloatMessage : ThreadMessage
 
 
 
-struct ServerMessage : ThreadMessage
+struct CommunicationMessage : ThreadMessage
 {
-	ServerMessage(uint16_t _Id, String _Cmd) :
-		ThreadMessage(MessageClass_Server, sizeof(ServerMessage))
+	CommunicationMessage(uint16_t _Id, uint16_t _CmdId, String _Values) :
+		ThreadMessage(MessageClass_Communication, sizeof(CommunicationMessage))
 	{
 		Id = _Id;
-		Cmd = _Cmd;
+		CmdId = _CmdId;
+		Values = _Values;
 	};
 	uint16_t Id;
-	String Cmd;
+	uint16_t CmdId;
+	String Values;
 };
 
 struct MqqtMessage : ThreadMessage

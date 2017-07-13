@@ -8,7 +8,8 @@
 //#define COMPILE_TEST
 
 #define PICTURE_NodeMCU_GBR
-
+#define pass ""
+#define ssid ""
 
 #ifdef COMPILE_TEST
 //Controller
@@ -104,8 +105,7 @@
 ThreadManager threadManager;
 
 uint32_t start;
-#define pass "59049598120613392417"
-#define ssid "FRITZ!Box 7490"
+
 
 
 void setup() {

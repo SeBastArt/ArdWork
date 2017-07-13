@@ -19,7 +19,7 @@ public:
 	Device_Driver(Module_Driver* module, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	Property<uint16, Device_Driver> Id{ this,nullptr,&Device_Driver::GetId };
 	Publisher *GetPublisher();
-	void Exec_Command(String _command);
+	void Exec_Command(uint32_t _cmdId, String _command);
 protected:
 	Publisher *publisher;
 	Module_Driver* parentModule;

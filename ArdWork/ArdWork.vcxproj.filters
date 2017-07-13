@@ -357,6 +357,9 @@
     <ClInclude Include="Publisher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Button_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">

@@ -4,6 +4,9 @@
 
 #include "WebServer_Wifi_Device_Driver.h"
 
+#define StrDeviceId "Id"
+#define StrCmdId "cmdId"
+
 WebServer_Wifi_Device_Driver::WebServer_Wifi_Device_Driver(Module_Driver * module, String _ssid, String _password, Led_Device_Driver * _statusLED, uint8_t priority) :
 	Wifi_Device_Driver(module, _ssid, _password, _statusLED, priority)
 {
@@ -30,7 +33,7 @@ void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 	{
 		return;
 	}
-	
+
 	// Wait until the client sends some data
 	Serial.println("new client");
 	unsigned long ultimeout = millis() + 250;
@@ -138,14 +141,14 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 }
 
 
-String WebServer_Wifi_Device_Driver::GenerateValue(uint8 _id, Value_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateValue(uint16_t _deviceId, Value_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "ID: " + String(_id);
+	response += "ID: " + String(_deviceId);
 	response += "&nbsp;";
-	response += _pub_elem->name;
+	response += _pub_elem->cmdId;
 	response += "&nbsp;";
 	response += " Wert = " + String(*_pub_elem->value);
 	response += "&nbsp;";
@@ -156,17 +159,17 @@ String WebServer_Wifi_Device_Driver::GenerateValue(uint8 _id, Value_Publisher * 
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateSwitch(uint8 _id, Switch_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateSwitch(uint16_t _deviceId, Switch_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "ID: " + String(_id);
+	response += "DeviceID: " + String(_deviceId);
 	response += "&nbsp;";
-	response += _pub_elem->name;
+	response += _pub_elem->lable;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += _id;
+	response += StrDeviceId;
 	response += "=" + _pub_elem->cmdOn + "\">";
 	response += "<button>einschalten</button>";
 	response += "</a>";
@@ -184,21 +187,25 @@ String WebServer_Wifi_Device_Driver::GenerateSwitch(uint8 _id, Switch_Publisher 
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateButton(uint8 _id, Button_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateButton(uint16_t _deviceId, Button_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
 	response += "ID: " + String(_id);
 	response += "&nbsp;";
-	response += _pub_elem->name;
+	response += _pub_elem->lable;
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += _id;
+	response += StrDeviceId;
 	response += "=";
-	response += _pub_elem->cmd;
+	response += _id;
+	response += "&";
+	response += StrCmdId;
+	response += "=";
+	response += _pub_elem->cmdId;
 	response += "\">";
-	response += "<button>Push</button>";
+	response += "<button>" + String(_pub_elem->lable) + "</button>";
 	response += "</a>";
 	response += "&nbsp;";
 	response += "<FONT SIZE=-1>";
@@ -208,35 +215,30 @@ String WebServer_Wifi_Device_Driver::GenerateButton(uint8 _id, Button_Publisher 
 	return response;
 }
 
-void WebServer_Wifi_Device_Driver::DoExecuteCommand(String _command)
-{
+
+String WebServer_Wifi_Device_Driver::GetKey(String requestpart) {
+	int iEnd;
+	String Key;
+	iEnd = requestpart.indexOf("=");
+	Key = requestpart.substring(0, iEnd).c_str());
+	return Key;
 }
 
-
-
-void WebServer_Wifi_Device_Driver::FillCtrl(String requestpart) {
+String WebServer_Wifi_Device_Driver::GetValue(String requestpart) {
 	int iEnd;
-	uint16_t Key;
 	String Value;
-
 	iEnd = requestpart.indexOf("=");
-	Key = atoi(requestpart.substring(0, iEnd).c_str());
-	Serial.print("Key: ");
-	Serial.println(Key);
 	Value = requestpart.substring(iEnd + 1, requestpart.length());
-	Serial.print("Value: ");
-	Serial.println(Value);
-
-	ServerMessage* message = new ServerMessage(Key, Value);
-	if (!parentModule->SendAsyncThreadMessage(message))
-	{
-		Serial.println(">> message buffer overflow <<");
-	}
+	return Value;
 }
 
 void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 	String sGetstart = "GET ";
 	String get_params;
+
+	uint16 deviceId = -1;
+	uint16 cmdId = -1;
+	String Values = "";
 
 	int iStart, iEnd;
 	iStart = _request.indexOf(sGetstart);
@@ -254,13 +256,27 @@ void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 			for (int i = 0; i < get_params.length(); i++)
 			{
 				if (get_params[i] == '&') {
-					FillCtrl(dataPart);
+					if (GetKey(dataPart).equals(StrDeviceId)) {
+						deviceId = atoi(GetValue(dataPart).c_str());
+					}
+					else if (GetKey(dataPart).equals(StrCmdId)) {
+						cmdId = atoi(GetValue(dataPart).c_str());
+					}
+					else {
+						Values += GetValue(dataPart) + ':';
+					}
 					dataPart = "";
 				}
 				else
 					dataPart.concat(get_params[i]);
 			}
-			FillCtrl(dataPart);
+			Values += GetValue(dataPart);
+
+			CommunicationMessage* message = new CommunicationMessage(deviceId, cmdId, Values);
+			if (!parentModule->SendAsyncThreadMessage(message))
+			{
+				Serial.println(">> message buffer overflow <<");
+			}
 		}
 	}
 }

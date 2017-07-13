@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClInclude Include="Base_Controller.h" />
     <ClInclude Include="Base_Controller_Consts.h" />
+    <ClInclude Include="Button_Device_Driver_Consts.h" />
     <ClInclude Include="Comm_Device_Driver.h" />
     <ClInclude Include="Dash_Mqqt_Wifi_Module_Driver.h" />
     <ClInclude Include="Device_Driver.h" />

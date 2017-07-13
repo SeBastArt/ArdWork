@@ -60,6 +60,34 @@ void Luxmeter_Device_Driver::DoBeforeSuspend() {
 }
 
 void Luxmeter_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
+	int messageID = message.GetID();
+	switch (messageID)
+	{
+	case LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY:
+	{
+		uint16 _milliseconds = message.GetIntParamByIndex(1);
+		Set_Accuracy_Delay(_milliseconds);
+	}
+	break;
+	case LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME:
+	{
+		uint16 _integrationTime = message.GetIntParamByIndex(1);
+		Set_Integration_Time((tsl2561IntegrationTime_t)_integrationTime);
+	}
+	break;
+	case LUXMETER_DEVICE_DRIVER_SET_GAIN:
+	{
+		uint16 _gain = message.GetIntParamByIndex(1);
+		Set_Set_Gain((tsl2561Gain_t)_gain);
+	}
+	break;
+	case LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE:
+	{
+		uint16 _autoRange = message.GetBoolParamByIndex(1);
+		Set_Set_Enable_AutoRange(_autoRange);
+	}
+	break;
+	}
 }
 
 void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
@@ -106,4 +134,47 @@ void Luxmeter_Device_Driver::DisplaySensorDetails(void)
 	Serial.print("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" lux");
 	Serial.println("------------------------------------");
 	Serial.println("");
+}
+
+
+void Luxmeter_Device_Driver::Set_Accuracy_Delay(uint16 _milliseconds) {
+	if (_milliseconds > 0) {
+		accuracy_delta = _milliseconds;
+	}
+}
+
+void Luxmeter_Device_Driver::Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime) {
+	tsl->setIntegrationTime(_integrationTime);
+}
+
+void Luxmeter_Device_Driver::Set_Set_Gain(tsl2561Gain_t _gain) {
+	tsl->setGain(_gain);
+}
+
+void Luxmeter_Device_Driver::Set_Set_Enable_AutoRange(bool _autoRange) {
+	tsl->enableAutoRange(_autoRange);
+}
+
+void Luxmeter_Device_Driver::Exec_Set_Accuracy_Delay(uint16 _milliseconds) {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY);
+	message->AddParam(_milliseconds);
+	PostMessage(&message);
+}
+
+void Luxmeter_Device_Driver::Exec_Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime) {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME);
+	message->AddParam(_integrationTime);
+	PostMessage(&message);
+}
+
+void Luxmeter_Device_Driver::Exec_Set_Gain(tsl2561Gain_t _gain) {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_SET_GAIN);
+	message->AddParam(_gain);
+	PostMessage(&message);
+}
+
+void Luxmeter_Device_Driver::Exec_Set_Enable_AutoRange(bool _autoRange) {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE);
+	message->AddParam(_autoRange);
+	PostMessage(&message);
 }
