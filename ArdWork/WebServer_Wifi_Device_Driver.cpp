@@ -111,14 +111,17 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 	sResponse += "Funktion 2 erzeugt nur eine serielle Ausgabe.<BR>";
 	sResponse += "<FONT size=+1>";
 
+	Serial.println("!__pub_list->Empty()");
 	if (!__pub_list->Empty()) {
 		for (int I = 0; I < __pub_list->Size(); I++) {
+			Serial.println(I);
 			for (int j = 0; j < (*__pub_list)[I]->elem_count; j++) {
+				Serial.println(j);
 				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Button_Publisher")) {
-					sResponse += GenerateButton((*__pub_list)[I]->id, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+					sResponse += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
 				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Value_Publisher")) {
-					sResponse += GenerateValue((*__pub_list)[I]->id, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+					sResponse += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
 			}
 		}
@@ -141,12 +144,12 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 }
 
 
-String WebServer_Wifi_Device_Driver::GenerateValue(uint16_t _deviceId, Value_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateValue(uint16_t _driverId, Value_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "ID: " + String(_deviceId);
+	response += "ID: " + String(_driverId);
 	response += "&nbsp;";
 	response += _pub_elem->cmdId;
 	response += "&nbsp;";
@@ -159,24 +162,24 @@ String WebServer_Wifi_Device_Driver::GenerateValue(uint16_t _deviceId, Value_Pub
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateSwitch(uint16_t _deviceId, Switch_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateSwitch(uint16_t _driverId, Switch_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "DeviceID: " + String(_deviceId);
+	response += "DeviceID: " + String(_driverId);
 	response += "&nbsp;";
 	response += _pub_elem->lable;
 	response += "&nbsp;";
 	response += "<a href=\"?";
 	response += StrDeviceId;
-	response += "=" + _pub_elem->cmdOn + "\">";
+	response += "=" + _pub_elem->cmdId + String("\">");
 	response += "<button>einschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
 	response += "<a href=\"?";
-	response += _id;
-	response += "=" + _pub_elem->cmdOff + "\">";
+	response += _driverId;
+	response += "=" + _pub_elem->cmdIdOff + String("\">");
 	response += "<button>ausschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
@@ -187,19 +190,19 @@ String WebServer_Wifi_Device_Driver::GenerateSwitch(uint16_t _deviceId, Switch_P
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateButton(uint16_t _deviceId, Button_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateButton(uint16_t _driverId, Button_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
 	response += "<p>";
-	response += "ID: " + String(_id);
+	response += "ID: " + String(_driverId);
 	response += "&nbsp;";
 	response += _pub_elem->lable;
 	response += "&nbsp;";
 	response += "<a href=\"?";
 	response += StrDeviceId;
 	response += "=";
-	response += _id;
+	response += _driverId;
 	response += "&";
 	response += StrCmdId;
 	response += "=";
@@ -211,7 +214,7 @@ String WebServer_Wifi_Device_Driver::GenerateButton(uint16_t _deviceId, Button_P
 	response += "<FONT SIZE=-1>";
 	response += _pub_elem->descr;
 	response += "<FONT SIZE=+1>";
-	response += "<BR>";
+	response += "<BR>"; 
 	return response;
 }
 
@@ -220,7 +223,7 @@ String WebServer_Wifi_Device_Driver::GetKey(String requestpart) {
 	int iEnd;
 	String Key;
 	iEnd = requestpart.indexOf("=");
-	Key = requestpart.substring(0, iEnd).c_str());
+	Key = requestpart.substring(0, iEnd).c_str();
 	return Key;
 }
 
@@ -272,6 +275,12 @@ void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 			}
 			Values += GetValue(dataPart);
 
+			Serial.print("deviceId: ");
+			Serial.print(deviceId);
+			Serial.print(", cmdId: ");
+			Serial.print(cmdId);
+			Serial.print(", Values: ");
+			Serial.println(Values);
 			CommunicationMessage* message = new CommunicationMessage(deviceId, cmdId, Values);
 			if (!parentModule->SendAsyncThreadMessage(message))
 			{

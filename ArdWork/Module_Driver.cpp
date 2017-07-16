@@ -93,7 +93,7 @@ Device_Driver *Module_Driver::GetDeviceById(uint16 Id)
 {
 	Device_Driver* result = nullptr;
 	for (uint16 i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->Id == Id) {
+		if ((*device_list)[i]->DriverId == Id) {
 			result = (*device_list)[i];
 		}
 	}
@@ -147,6 +147,33 @@ Vector<Publisher*>* Module_Driver::GetPublisherList()
 }
 
 
+void Module_Driver::DoUpdate(uint32_t deltaTime) {
+	UpdateControls();
+	//((WebServer_Wifi_Device_Driver *)Selected_WebServer_Wifi_Device)->pub_list = GetPublisherList();
+
+	ThreadMessage *pMessage;
+	if (PopMessage(&pMessage))
+	{
+		switch ((pMessage)->Class) {
+			case MessageClass_Communication:
+			{
+				CommunicationMessage* pCommunication = (CommunicationMessage*)(pMessage);
+				Device_Driver* device;
+				device = GetDeviceById(pCommunication->Id);
+				device->Exec_Command(pCommunication->CmdId, pCommunication->Values);
+				break;
+			}
+		}
+
+		DoThreadMessage(pMessage);
+
+		if (pMessage != NULL) {
+			delete pMessage; //objekt löschen 
+			pMessage = NULL;
+		}
+	}
+}
+
 
 bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr) {
 	bool result = false;
@@ -169,6 +196,7 @@ void Module_Driver::UpdateControls()
 {
 	pub_List->Clear();
 	for (int i = 0; i < device_list->Size(); i++) {
+		Serial.println((*device_list)[i]->GetDriverName());
 		pub_List->PushBack((*device_list)[i]->GetPublisher());
 	}
 }

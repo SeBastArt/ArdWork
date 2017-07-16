@@ -77,23 +77,28 @@ protected:
 
 	Device_Driver *GetDeviceById(uint16 Id);
 	bool PopMessage(ThreadMessage** message);
+private:
+	void DoUpdate(uint32_t deltaTime);
+	void UpdateControls();
  protected:
 	 virtual void DoBeforeSuspend() = 0;
 	 virtual void DoBeforeShutdown() = 0;
 	 virtual void DoAfterInit() = 0;
 	 virtual void DoModuleMessage(Int_Thread_Msg message) = 0;
+	 virtual void DoThreadMessage(ThreadMessage *message) = 0;
 protected:
 	void DoMessage(Int_Thread_Msg message);
 	void DoInit();
 	void DoShutdown();
 	void DoSuspend();
-
+	
+	
 	Vector <Publisher*> *GetPublisherList();
 public:
 	Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
 	~Module_Driver();
 	bool SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr = false);
-	void UpdateControls();
+
 	void AddDevice(Device_Driver* device);
 };
 

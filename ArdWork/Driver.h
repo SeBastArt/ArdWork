@@ -17,9 +17,16 @@
 
 class Driver : public Thread, public Int_Thread_Msg_Sys
 {
+private:
+	uint16 __DriverId;
+	uint16 GetDriverId() const
+	{
+		return __DriverId;
+	}
 protected:
+	Publisher *publisher;
 	String driver_name;
-	static int device_count;
+	static int driver_count;
 	int error_Code;
 	bool is_Error;
 	bool is_Suspend;
@@ -37,8 +44,8 @@ protected:
 	virtual void DoShutdown() = 0;
 	virtual void DoSuspend() = 0;
 public:
-	Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) : Thread(MsToThreadTime(priority)) { device_count++; };
-
+	Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) : Thread(MsToThreadTime(priority)) { publisher = new Publisher(driver_count++); };
+	Property<uint16, Driver> DriverId{ this,nullptr,&Driver::GetDriverId };
 	void ExecInit();
 	void ExecShutdown();
 	void ExecSuspend();
@@ -49,6 +56,9 @@ public:
 	bool isIdle() const;
 	bool isBusy() const;
 	bool isInactive() const;
+
+	Publisher *GetPublisher();
+	void Exec_Command(uint32_t _cmdId, String _command);
 	String GetDriverName();
 };
 

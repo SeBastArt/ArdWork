@@ -172,6 +172,9 @@
     <Filter Include="Header Files\Helper\XML\XMLWriter">
       <UniqueIdentifier>{6b38a53a-1f29-4ba2-aa51-7f0768f9a0fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\Picture_Module_Driver">
+      <UniqueIdentifier>{2e51a740-8e78-4097-a87e-fd86966cc89a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ArdWork.ino" />
@@ -312,9 +315,6 @@
     <ClInclude Include="Wifi_Device_Driver_Consts.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClInclude>
-    <ClInclude Include="Picture_Module_Driver.h">
-      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
-    </ClInclude>
     <ClInclude Include="Mqqt_Wifi_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver</Filter>
     </ClInclude>
@@ -359,6 +359,12 @@
     </ClInclude>
     <ClInclude Include="Button_Device_Driver_Consts.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="Picture_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\Picture_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Picture_Module_Driver_Consts.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\Picture_Module_Driver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -17,24 +17,13 @@ class Device_Driver : public Driver
 {
 public:
 	Device_Driver(Module_Driver* module, uint8_t priority = THREAD_PRIORITY_NORMAL);
-	Property<uint16, Device_Driver> Id{ this,nullptr,&Device_Driver::GetId };
-	Publisher *GetPublisher();
-	void Exec_Command(uint32_t _cmdId, String _command);
 protected:
-	Publisher *publisher;
 	Module_Driver* parentModule;
-private:
-	uint16 __Id;
-	uint16 GetId() const
-	{
-		return __Id;
-	}
 protected:
 	virtual void DoBeforeSuspend() = 0;
 	virtual void DoBeforeShutdown() = 0;
 	virtual void DoAfterInit() = 0;
 	virtual void DoDeviceMessage(Int_Thread_Msg message) = 0;
-	virtual void DoExecuteCommand(String _command) = 0;
 protected:
 	void DoMessage(Int_Thread_Msg message);
 	void DoInit();

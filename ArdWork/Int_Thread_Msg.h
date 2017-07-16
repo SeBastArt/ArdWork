@@ -21,8 +21,8 @@ public:
 	void AddParam(unsigned char c);
 	void AddParam(String text);
 	void AddParam(float floatNumber);
-	uint16 GetID();
-	uint16 GetIntParamByIndex(int index);
+	int GetID();
+	int GetIntParamByIndex(int index);
 	float GetFloatParamByIndex(int index);
 	bool GetBoolParamByIndex(int index);
 	unsigned char GetCharParamByIndex(int index);

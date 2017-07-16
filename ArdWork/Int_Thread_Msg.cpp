@@ -36,7 +36,7 @@ void Int_Thread_Msg::AddParam(float floatNumber) {
 	ParamString += ":";
 }
 
-uint16 Int_Thread_Msg::GetID() {
+int Int_Thread_Msg::GetID() {
 	int i = 0;
 	String ParamStr;
 	ParamStr = GetStringPartByNr(ParamString, ':', 0);
@@ -44,7 +44,7 @@ uint16 Int_Thread_Msg::GetID() {
 	return i;
 }
 
-uint16 Int_Thread_Msg::GetIntParamByIndex(int index) {
+int Int_Thread_Msg::GetIntParamByIndex(int index) {
 	String ParamStr;
 	ParamStr = GetStringPartByNr(ParamString, ':', index);
 	return ParamStr.toInt();

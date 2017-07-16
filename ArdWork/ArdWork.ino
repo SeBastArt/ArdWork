@@ -8,8 +8,7 @@
 //#define COMPILE_TEST
 
 #define PICTURE_NodeMCU_GBR
-#define pass ""
-#define ssid ""
+
 
 #ifdef COMPILE_TEST
 //Controller
@@ -106,7 +105,8 @@ ThreadManager threadManager;
 
 uint32_t start;
 
-
+#define pass "59049598120613392417"
+#define Wifissid "FRITZ!Box 7490"
 
 void setup() {
 	WiFi.forceSleepWake(); // Wlan ON für neue Zyklus	
@@ -162,8 +162,8 @@ void setup() {
 	Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(BUILTIN_LED), true);
 	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
-	Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, ssid, pass, wifi_status_led);
-	WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, ssid, pass, wifi_status_led);
+	Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
+	WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
 #endif // PICTURE_NodeMCU_GBR
 
 #ifdef COMPILE_TEST

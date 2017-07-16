@@ -18,13 +18,20 @@ public:
 
 private:
 	uint8 device_count;
-
+	void Pattern_Next();
+	void Pattern_Prev();
+	void Pattern_Off();
 protected:
 	void DoBeforeSuspend();
 	void DoBeforeShutdown();
 	void DoAfterInit();
 	void DoModuleMessage(Int_Thread_Msg message);
-	void DoUpdate(uint32_t deltaTime);
+	void DoThreadMessage(ThreadMessage *message);
+
+public:
+	void Exec_Pattern_Next();
+	void Exec_Pattern_Prev();
+	void Exec_Pattern_Off();
 };
 
 #endif
