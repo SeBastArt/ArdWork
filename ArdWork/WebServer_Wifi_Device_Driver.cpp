@@ -28,7 +28,6 @@ void WebServer_Wifi_Device_Driver::InitComm() {
 
 void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 	// Check if a client has connected
-	Serial.println("CheckComm");
 	if (!_client)
 	{
 		return;
@@ -58,7 +57,6 @@ void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 		_client.stop();
 		return;
 	}
-	Serial.println("ParseRequest(sRequest);");
 	ParseRequest(sRequest);
 }
 
@@ -111,7 +109,6 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 	sResponse += "Funktion 2 erzeugt nur eine serielle Ausgabe.<BR>";
 	sResponse += "<FONT size=+1>";
 
-	Serial.println("!__pub_list->Empty()");
 	if (!__pub_list->Empty()) {
 		for (int I = 0; I < __pub_list->Size(); I++) {
 			for (int j = 0; j < (*__pub_list)[I]->elem_count; j++) {
@@ -273,9 +270,12 @@ void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 			iEnd = _request.indexOf(" ", iStart);
 			get_params = _request.substring(iStart + 1, iEnd);
 			String dataPart = "";
+			Serial.print("get_params: ");
+			Serial.println(get_params);
 			for (int i = 0; i < get_params.length(); i++)
 			{
 				if (get_params[i] == '&') {
+					
 					if (GetKey(dataPart).equals(StrDeviceId)) {
 						deviceId = atoi(GetValue(dataPart).c_str());
 					}
@@ -283,14 +283,25 @@ void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 						cmdId = atoi(GetValue(dataPart).c_str());
 					}
 					else {
-						Values += GetValue(dataPart) + ':';
+						if (Values.length() > 0) {
+							Values += ':';
+						}
+						Values += GetValue(dataPart);
 					}
 					dataPart = "";
 				}
 				else
 					dataPart.concat(get_params[i]);
 			}
-			Values += GetValue(dataPart);
+			if (GetKey(dataPart).equals(StrDeviceId)) {
+				deviceId = atoi(GetValue(dataPart).c_str());
+			}
+			else if (GetKey(dataPart).equals(StrCmdId)) {
+				cmdId = atoi(GetValue(dataPart).c_str());
+			}
+			else {
+				Values += GetValue(dataPart);
+			}
 
 			Serial.print("deviceId: ");
 			Serial.print(deviceId);

@@ -11,7 +11,6 @@ extern "C" {
 
 Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
-	device_count = 0;
 	isdebug = false;
 
 	button_index = -1;
@@ -36,8 +35,6 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	temperature_list = new Vector <Temperature_Device_Driver*>;
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
 	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
-
-	device_list->PushBack(this);
 
 	Switch_Publisher *debug_elem = new Switch_Publisher(MODULE_DRIVER_SET_DEBUG, "Debug", "Debug Devices");
 	publisher->Add_Publisher_Element(debug_elem);
@@ -88,9 +85,7 @@ void Module_Driver::AddDevice(Device_Driver* device)
 		webserver_wifi_list->PushBack((WebServer_Wifi_Device_Driver*)(device));
 		webserver_wifi_index++;
 	}
-
 	device_list->PushBack(device);
-	device_count++;
 }
 
 
@@ -180,6 +175,7 @@ Vector<Publisher*>* Module_Driver::GetPublisherList()
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
 	ThreadMessage *pMessage;
+	UpdateCommunication();
 	if (PopMessage(&pMessage))
 	{
 		switch ((pMessage)->Class) {
@@ -189,17 +185,12 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			Driver* device = nullptr;
 			device = GetDeviceById(pCommunication->Id);
 			if (device != nullptr) {
-				Serial.print("looking for DeviceID ");
-				Serial.println(pCommunication->Id);
-				Serial.print(" - Device found: ");
-				Serial.print(device->GetDriverName());
 				device->Exec_Command(pCommunication->CmdId, pCommunication->Values);
 				
 			}
 			break;
 		}
 		}
-
 		DoThreadMessage(pMessage);
 
 		if (pMessage != NULL) {
@@ -235,7 +226,7 @@ void Module_Driver::UpdateControls()
 			pub_List->PushBack((*device_list)[i]->GetPublisher());
 		}
 	}
-	pub_List->PushBack(publisher);
+	pub_List->PushBack(GetPublisher());
 }
 
 Button_Device_Driver *Module_Driver::Get_Selected_Button_Device() const
@@ -304,7 +295,6 @@ WebServer_Wifi_Device_Driver *Module_Driver::Get_Selected_WebServer_Wifi_Device(
 
 void Module_Driver::Set_Set_Debug(bool _isdebug)
 {
-	Serial.println("Module_Driver::Set_Set_Debug");
 	isdebug = _isdebug;
 }
 

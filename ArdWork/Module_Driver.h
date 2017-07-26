@@ -27,7 +27,6 @@ class Temperature_Device_Driver;
 class Module_Driver : public Driver
 {
 private:
-	int device_count;
 	bool isdebug;
 	Vector<Publisher*> *pub_List;
 	Vector<ThreadMessage*> queue;
@@ -64,6 +63,7 @@ private:
 
 	void DoUpdate(uint32_t deltaTime);
 	void UpdateControls();
+	virtual void UpdateCommunication() = 0;
 protected:
 	Vector <Driver*> *device_list;
 	Vector <Publisher*> *GetPublisherList();

@@ -105,7 +105,7 @@ ThreadManager threadManager;
 
 uint32_t start;
 
-#define pass ""
+#define pass "59049598120613392417"
 #define Wifissid "FRITZ!Box 7490"
 
 void setup() {

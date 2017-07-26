@@ -19,8 +19,8 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority):
 	publisher->descr = "nice looking picture background";
 
 	Button_Publisher *next_elem = new Button_Publisher(PICTURE_MODULE_DRIVER_PATTERN_NEXT, "Next", "switch to the next led-pattern");
-	Button_Publisher *prev_elem = new Button_Publisher(PICTURE_MODULE_DRIVER_PATTERN_NEXT, "Prev", "switch to the previous led-pattern");
-	Button_Publisher *off_elem = new Button_Publisher(PICTURE_MODULE_DRIVER_PATTERN_NEXT, "Off", "turn background off");
+	Button_Publisher *prev_elem = new Button_Publisher(PICTURE_MODULE_DRIVER_PATTERN_PREV, "Prev", "switch to the previous led-pattern");
+	Button_Publisher *off_elem = new Button_Publisher(PICTURE_MODULE_DRIVER_PATTERN_OFF, "Off", "turn background off");
 
 	publisher->Add_Publisher_Element(next_elem);
 	publisher->Add_Publisher_Element(prev_elem);
@@ -39,15 +39,17 @@ void Picture_Module_Driver::DoBeforeShutdown()
 {
 }
 
+void Picture_Module_Driver::UpdateCommunication() {
+	((WebServer_Wifi_Device_Driver *)Selected_WebServer_Wifi_Device)->pub_list = GetPublisherList();
+}
+
 void Picture_Module_Driver::DoAfterInit()
 {
+
 }
 
 void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 {
-
-	((WebServer_Wifi_Device_Driver *)Selected_WebServer_Wifi_Device)->pub_list = GetPublisherList();
-
 	switch ((message)->Class) {
 	case MessageClass_Float:
 	{

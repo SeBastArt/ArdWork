@@ -30,8 +30,6 @@ int Publisher::GetElemCount() const
 }
 int Publisher::GetDriverId() const
 {
-	Serial.print(" Publisher::GetDriverId() - __driverId:");
-	Serial.println(__driverId);
 	return __driverId;
 }
 

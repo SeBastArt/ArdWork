@@ -59,8 +59,6 @@ bool Int_Thread_Msg::GetBoolParamByIndex(int index) {
 	else {
 		tempResult = false;
 	}
-	Serial.print("Int_Thread_Msg::GetBoolParamByIndex - result: ");
-	Serial.println(tempResult);
 	return tempResult;
 }
 
