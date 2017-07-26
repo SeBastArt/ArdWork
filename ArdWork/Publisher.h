@@ -14,7 +14,7 @@ public:
 	virtual String GetClassName();
 	Publisher_Element(int _cmdId, String _lable, String _descr);
 	virtual  ~Publisher_Element();
-	uint16_t cmdId;
+	int cmdId;
 	String lable;
 	String descr;
 };
@@ -38,9 +38,8 @@ public:
 class Switch_Publisher : public Publisher_Element
 {
 public:
-	Switch_Publisher(int _cmdIdOn, int _cmdIdOff, String _lable, String _descr);
+	Switch_Publisher(int _cmdId, String _lable, String _descr);
 	virtual  ~Switch_Publisher();
-	uint16_t cmdIdOff;
 };
 
 
@@ -56,22 +55,22 @@ class Publisher
 {
 private:
 	Vector<Publisher_Element*> *pub_elem_list;
-	uint8_t __driverId;
-	uint8_t __elem_count;
-	uint8_t GetElemCount() const;
-	uint8_t GetDriverId() const;
+	int __driverId;
+	int __elem_count;
+	int GetElemCount() const;
+	int GetDriverId() const;
 public:
-	Publisher(uint8_t _deviceId);
+	Publisher(int _driverId);
 
 	String name;
 	String descr;
 	bool published;
 
-	Publisher_Element *GetElemByIndex(uint8_t _index);
+	Publisher_Element *GetElemByIndex(int _index);
 	void Add_Publisher_Element(Publisher_Element *_elem);
 
-	Property<uint8_t, Publisher> elem_count{ this, nullptr, &Publisher::GetElemCount };
-	Property<uint8_t, Publisher> driverId{ this, nullptr, &Publisher::GetDriverId };
+	Property<int, Publisher> elem_count{ this, nullptr, &Publisher::GetElemCount };
+	Property<int, Publisher> driverId{ this, nullptr, &Publisher::GetDriverId };
 };
 
 

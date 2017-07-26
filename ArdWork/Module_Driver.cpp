@@ -12,6 +12,7 @@ extern "C" {
 Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
 	device_count = 0;
+	isdebug = false;
 
 	button_index = -1;
 	distance_index = -1;
@@ -24,7 +25,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	webserver_wifi_index = -1;
 
 	pub_List = new Vector<Publisher*>;
-	device_list = new Vector <Device_Driver*>;
+	driver_list = new Vector <Driver*>;
 
 	button_list = new Vector <Button_Device_Driver*>;
 	distance_list = new Vector <Distance_Device_Driver*>;
@@ -35,12 +36,17 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	temperature_list = new Vector <Temperature_Device_Driver*>;
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
 	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
+
+	driver_list->PushBack(this);
+
+	Switch_Publisher *debug_elem = new Switch_Publisher(MODULE_DRIVER_SET_DEBUG, "Debug", "Debug Devices");
+	publisher->Add_Publisher_Element(debug_elem);
 }
 
 Module_Driver::~Module_Driver()
 {
 	pub_List->Clear();
-	device_list->Clear();
+	driver_list->Clear();
 	queue.Clear();
 }
 
@@ -83,18 +89,24 @@ void Module_Driver::AddDevice(Device_Driver* device)
 		webserver_wifi_index++;
 	}
 
-	device_list->PushBack(device);
-	UpdateControls();
+	driver_list->PushBack(device);
 	device_count++;
 }
 
 
-Device_Driver *Module_Driver::GetDeviceById(uint16 Id)
+
+
+Driver *Module_Driver::GetDeviceById(int Id)
 {
-	Device_Driver* result = nullptr;
-	for (uint16 i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverId == Id) {
-			result = (*device_list)[i];
+	Driver* result = nullptr;
+
+	for (int i = 0; i < driver_list->Size(); i++) {
+		Serial.print("(*device_list)[i]->DriverId: ");
+		Serial.print((*driver_list)[i]->DriverId);
+		Serial.print(" - Id: ");
+		Serial.println(Id);
+		if ((*driver_list)[i]->DriverId == Id) {	
+			result = (*driver_list)[i];
 		}
 	}
 	return result;
@@ -119,38 +131,49 @@ bool Module_Driver::PopMessage(ThreadMessage** message) {
 }
 
 void Module_Driver::DoMessage(Int_Thread_Msg message) {
+
+	int messageID = message.GetID();
+	switch (messageID)
+	{
+	case MODULE_DRIVER_SET_DEBUG:
+	{
+		Serial.println("Module_Driver::DoMessage - MODULE_DRIVER_SET_DEBUG");
+		bool _isDebug = message.GetBoolParamByIndex(1);
+		Set_Set_Debug(_isDebug);
+	}
+	break;
+	}
+
 	DoModuleMessage(message);
 }
 
 void Module_Driver::DoInit() {
-	for (int i = 0; i < device_list->Size(); i++) {
-		(*device_list)[i]->ExecInit();
+	for (int i = 0; i < driver_list->Size(); i++) {
+		(*driver_list)[i]->ExecInit();
 	}
 	DoAfterInit();
 }
 
 void Module_Driver::DoShutdown() {
-	for (int i = 0; i < device_list->Size(); i++) {
-		(*device_list)[i]->ExecShutdown();
+	for (int i = 0; i < driver_list->Size(); i++) {
+		(*driver_list)[i]->ExecShutdown();
 	}
 }
 
 void Module_Driver::DoSuspend() {
-	for (int i = 0; i < device_list->Size(); i++) {
-		(*device_list)[i]->ExecSuspend();
+	for (int i = 0; i < driver_list->Size(); i++) {
+		(*driver_list)[i]->ExecSuspend();
 	}
 }
 
 Vector<Publisher*>* Module_Driver::GetPublisherList()
 {
+	UpdateControls();
 	return pub_List;
 }
 
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
-	UpdateControls();
-	//((WebServer_Wifi_Device_Driver *)Selected_WebServer_Wifi_Device)->pub_list = GetPublisherList();
-
 	ThreadMessage *pMessage;
 	if (PopMessage(&pMessage))
 	{
@@ -158,8 +181,11 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			case MessageClass_Communication:
 			{
 				CommunicationMessage* pCommunication = (CommunicationMessage*)(pMessage);
-				Device_Driver* device;
+				Driver* device;
 				device = GetDeviceById(pCommunication->Id);
+				Serial.print("GetDeviceById: ");
+				Serial.println(pCommunication->Id);
+				Serial.println(device->GetDriverName());
 				device->Exec_Command(pCommunication->CmdId, pCommunication->Values);
 				break;
 			}
@@ -195,10 +221,12 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 void Module_Driver::UpdateControls()
 {
 	pub_List->Clear();
-	for (int i = 0; i < device_list->Size(); i++) {
-		Serial.println((*device_list)[i]->GetDriverName());
-		pub_List->PushBack((*device_list)[i]->GetPublisher());
+	if (isdebug) {
+		for (int i = 0; i < driver_list->Size(); i++) {
+			pub_List->PushBack((*driver_list)[i]->GetPublisher());
+		}
 	}
+	pub_List->PushBack(publisher);
 }
 
 Button_Device_Driver *Module_Driver::Get_Selected_Button_Device() const
@@ -263,3 +291,19 @@ WebServer_Wifi_Device_Driver *Module_Driver::Get_Selected_WebServer_Wifi_Device(
 		return (*webserver_wifi_list)[webserver_wifi_index];
 	}
 }
+
+
+void Module_Driver::Set_Set_Debug(bool _isdebug)
+{
+	Serial.println("Module_Driver::Set_Set_Debug");
+	isdebug = _isdebug;
+}
+
+void Module_Driver::Exec_Set_Debug(bool _isdebug)
+{
+	Int_Thread_Msg *message = new Int_Thread_Msg(MODULE_DRIVER_SET_DEBUG);
+	Serial.println("HIer vielleicht");
+	message->AddParam(_isdebug);
+	PostMessage(&message);
+}
+

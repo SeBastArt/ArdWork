@@ -1,13 +1,13 @@
 #include "Publisher.h"
 
-Publisher::Publisher(uint8_t _driverId):
+Publisher::Publisher(int _driverId) :
 	__driverId(_driverId),
 	name("Device"),
 	descr("Description Text")
 {
-		pub_elem_list = new Vector<Publisher_Element*>;
-		__elem_count = 0;
-		published = false;
+	pub_elem_list = new Vector<Publisher_Element*>;
+	__elem_count = 0;
+	published = false;
 }
 
 void Publisher::Add_Publisher_Element(Publisher_Element *_elem)
@@ -16,20 +16,22 @@ void Publisher::Add_Publisher_Element(Publisher_Element *_elem)
 	__elem_count++;
 }
 
-Publisher_Element *Publisher::GetElemByIndex(uint8_t _index)
+Publisher_Element *Publisher::GetElemByIndex(int _index)
 {
 	Publisher_Element *result_elem = nullptr;
 	if ((index >= 0) && (_index < __elem_count))
 		result_elem = (*pub_elem_list)[_index];
-		return result_elem;
+	return result_elem;
 }
 
-uint8_t Publisher::GetElemCount() const
+int Publisher::GetElemCount() const
 {
 	return __elem_count;
 }
-uint8_t Publisher::GetDriverId() const
+int Publisher::GetDriverId() const
 {
+	Serial.print(" Publisher::GetDriverId() - __driverId:");
+	Serial.println(__driverId);
 	return __driverId;
 }
 
@@ -74,9 +76,8 @@ Value_Publisher::~Value_Publisher()
 {
 }
 
-Switch_Publisher::Switch_Publisher(int _cmdIdOn, int _cmdIdOff, String _lable, String _descr) :
-	Publisher_Element(_cmdIdOn, _lable, _descr),
-	cmdIdOff(_cmdIdOff)
+Switch_Publisher::Switch_Publisher(int _cmdId, String _lable, String _descr) :
+	Publisher_Element(_cmdId, _lable, _descr)
 {
 	__class_name = "Switch_Publisher";
 }

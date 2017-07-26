@@ -27,8 +27,8 @@ class Temperature_Device_Driver;
 class Module_Driver : public Driver
 {
 private:
-	uint8 device_count;
-
+	int device_count;
+	bool isdebug;
 	Vector<Publisher*> *pub_List;
 	Vector<ThreadMessage*> queue;
 
@@ -62,9 +62,11 @@ private:
 	Uart_GRBW_Led_Device_Driver* Get_Selected_Uart_GRBW_Led_Device() const;
 	WebServer_Wifi_Device_Driver* Get_Selected_WebServer_Wifi_Device() const;
 
+	void DoUpdate(uint32_t deltaTime);
+	void UpdateControls();
 protected:
-	Vector <Device_Driver*> *device_list;
-
+	Vector <Driver*> *driver_list;
+	Vector <Publisher*> *GetPublisherList();
 	Property<Button_Device_Driver*, Module_Driver> Selected_Button_Device{ this, nullptr, &Module_Driver::Get_Selected_Button_Device };
 	Property<Distance_Device_Driver*, Module_Driver> Selected_Distance_Device{ this, nullptr, &Module_Driver::Get_Selected_Distance_Device };
 	Property<Led_Device_Driver*, Module_Driver> Selected_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Led_Device };
@@ -75,31 +77,28 @@ protected:
 	Property<Uart_GRBW_Led_Device_Driver*, Module_Driver> Selected_Uart_GRBW_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_GRBW_Led_Device };
 	Property<WebServer_Wifi_Device_Driver*, Module_Driver> Selected_WebServer_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_WebServer_Wifi_Device };
 
-	Device_Driver *GetDeviceById(uint16 Id);
+	Driver *GetDeviceById(int Id);
+
+	void DoMessage(Int_Thread_Msg message);
+	void DoInit();
+	void DoShutdown();
+	void DoSuspend();
 	bool PopMessage(ThreadMessage** message);
-private:
-	void DoUpdate(uint32_t deltaTime);
-	void UpdateControls();
+
+	void Set_Set_Debug(bool _isdebug);
  protected:
 	 virtual void DoBeforeSuspend() = 0;
 	 virtual void DoBeforeShutdown() = 0;
 	 virtual void DoAfterInit() = 0;
 	 virtual void DoModuleMessage(Int_Thread_Msg message) = 0;
 	 virtual void DoThreadMessage(ThreadMessage *message) = 0;
-protected:
-	void DoMessage(Int_Thread_Msg message);
-	void DoInit();
-	void DoShutdown();
-	void DoSuspend();
-	
-	
-	Vector <Publisher*> *GetPublisherList();
 public:
 	Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
 	~Module_Driver();
 	bool SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr = false);
-
 	void AddDevice(Device_Driver* device);
+
+	void Exec_Set_Debug(bool _isdebug);
 };
 
 #endif

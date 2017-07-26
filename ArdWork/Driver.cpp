@@ -4,7 +4,18 @@
 
 #include "Driver.h"
 
-int Driver::driver_count = 0;
+int Driver::driver_count = 1000;
+
+
+Driver::Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) :
+	Thread(MsToThreadTime(priority))
+{
+	driver_count++;
+	publisher = new Publisher(driver_count);
+	Serial.print("Driver::Driver - publisher->driverId: ");
+	Serial.println(publisher->driverId);
+	__DriverId = driver_count;
+}
 
 bool Driver::OnStart() {
 
@@ -19,6 +30,19 @@ String Driver::GetDriverName()
 	return driver_name;
 }
 
+void Driver::Exec_Command(int _cmdId, String _command)
+{
+	Int_Thread_Msg *message = new Int_Thread_Msg(_cmdId);
+	Serial.print("Driver::Exec_Command - _cmdId: ");
+	Serial.println(_cmdId);
+	Serial.print("Driver::Exec_Command - _command: ");
+	Serial.println(_command);
+	message->AddParam(_command);
+	Serial.print("Done1");
+	PostMessage(&message);
+	Serial.print("Done2");
+}
+
 void Driver::OnUpdate(uint32_t deltaTime) {
 	if (!message_queue.Empty()) {
 		for (unsigned i = 0; i < message_queue.Size(); i++) {
@@ -26,23 +50,32 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 			switch (messageID)
 			{
 			case DRIVER_INIT:
+			{
 				DoInit();
 				break;
+			}
 			case DRIVER_SHUTDOWN:
+			{
 				DoShutdown();
 				break;
+			}
 			case DRIVER_SUSPEND:
+			{
 				DoSuspend();
 				break;
+			}
 			default:
+			{
+				Serial.println("DoMessage(*message_queue[i]);");
 				DoMessage(*message_queue[i]);
+			}
 			}
 			delete message_queue[i];
 		}
 		message_queue.Clear();
 	}
 	DoUpdate(deltaTime);
-	delay(1);
+	yield;
 }
 
 
@@ -66,12 +99,7 @@ Publisher *Driver::GetPublisher()
 	return publisher;
 }
 
-void Driver::Exec_Command(uint32_t _cmdId, String _command)
-{
-	Int_Thread_Msg *message = new Int_Thread_Msg(_cmdId);
-	message->AddParam(_command);
-	PostMessage(&message);
-}
+
 
 int Driver::GetError() {
 	return error_Code;

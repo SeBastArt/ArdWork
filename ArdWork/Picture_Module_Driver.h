@@ -17,7 +17,6 @@ public:
 	Picture_Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
 
 private:
-	uint8 device_count;
 	void Pattern_Next();
 	void Pattern_Prev();
 	void Pattern_Off();

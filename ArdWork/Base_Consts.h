@@ -97,27 +97,27 @@ struct HeartbeatMessage : ThreadMessage
 
 struct ButtonMessage : ThreadMessage
 {
-	ButtonMessage(uint8_t id, uint32_t state) :
+	ButtonMessage(int id, uint32_t state) :
 		ThreadMessage(MessageClass_Button, sizeof(ButtonMessage)),
 		Id(id),
 		State(state)
 	{
 	};
 
-	uint8_t Id;
+	int Id;
 	uint32_t State;
 };
 
 //Template please
 struct FloatMessage : ThreadMessage
 {
-	FloatMessage(uint8_t id, float _value) :
+	FloatMessage(int id, float _value) :
 		ThreadMessage(MessageClass_Float, sizeof(FloatMessage)),
 		Id(id),
 		Value(_value)
 	{
 	};
-	uint8_t Id;
+	int Id;
 	float Value;
 };
 
@@ -126,15 +126,15 @@ struct FloatMessage : ThreadMessage
 
 struct CommunicationMessage : ThreadMessage
 {
-	CommunicationMessage(uint16_t _Id, uint16_t _CmdId, String _Values) :
+	CommunicationMessage(int _Id, int _CmdId, String _Values) :
 		ThreadMessage(MessageClass_Communication, sizeof(CommunicationMessage))
 	{
 		Id = _Id;
 		CmdId = _CmdId;
 		Values = _Values;
 	};
-	uint16_t Id;
-	uint16_t CmdId;
+	int Id;
+	int CmdId;
 	String Values;
 };
 

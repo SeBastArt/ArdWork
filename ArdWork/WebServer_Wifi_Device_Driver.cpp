@@ -114,14 +114,15 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 	Serial.println("!__pub_list->Empty()");
 	if (!__pub_list->Empty()) {
 		for (int I = 0; I < __pub_list->Size(); I++) {
-			Serial.println(I);
 			for (int j = 0; j < (*__pub_list)[I]->elem_count; j++) {
-				Serial.println(j);
 				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Button_Publisher")) {
 					sResponse += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
 				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Value_Publisher")) {
 					sResponse += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+				}
+				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Switch_Publisher")) {
+					sResponse += GenerateSwitch((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
 			}
 		}
@@ -144,7 +145,7 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 }
 
 
-String WebServer_Wifi_Device_Driver::GenerateValue(uint16_t _driverId, Value_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateValue(int _driverId, Value_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
@@ -162,7 +163,7 @@ String WebServer_Wifi_Device_Driver::GenerateValue(uint16_t _driverId, Value_Pub
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateSwitch(uint16_t _driverId, Switch_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateSwitch(int _driverId, Switch_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
@@ -173,13 +174,29 @@ String WebServer_Wifi_Device_Driver::GenerateSwitch(uint16_t _driverId, Switch_P
 	response += "&nbsp;";
 	response += "<a href=\"?";
 	response += StrDeviceId;
-	response += "=" + _pub_elem->cmdId + String("\">");
+	response += "=";
+	response += _driverId;
+	response += "&";
+	response += StrCmdId;
+	response += "=";
+	response += _pub_elem->cmdId;
+	response += "&";
+	response += "1";
+	response += "\">";
 	response += "<button>einschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
 	response += "<a href=\"?";
+	response += StrDeviceId;
+	response += "=";
 	response += _driverId;
-	response += "=" + _pub_elem->cmdIdOff + String("\">");
+	response += "&";
+	response += StrCmdId;
+	response += "=";
+	response += _pub_elem->cmdId;
+	response += "&";
+	response += "0";
+	response += "\">";
 	response += "<button>ausschalten</button>";
 	response += "</a>";
 	response += "&nbsp;";
@@ -190,7 +207,7 @@ String WebServer_Wifi_Device_Driver::GenerateSwitch(uint16_t _driverId, Switch_P
 	return response;
 }
 
-String WebServer_Wifi_Device_Driver::GenerateButton(uint16_t _driverId, Button_Publisher * _pub_elem)
+String WebServer_Wifi_Device_Driver::GenerateButton(int _driverId, Button_Publisher * _pub_elem)
 {
 	String response;
 	response = "";
@@ -239,8 +256,8 @@ void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 	String sGetstart = "GET ";
 	String get_params;
 
-	uint16 deviceId = -1;
-	uint16 cmdId = -1;
+	int deviceId = -1;
+	int cmdId = -1;
 	String Values = "";
 
 	int iStart, iEnd;
