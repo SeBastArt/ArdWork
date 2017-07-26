@@ -25,7 +25,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	webserver_wifi_index = -1;
 
 	pub_List = new Vector<Publisher*>;
-	driver_list = new Vector <Driver*>;
+	device_list = new Vector <Driver*>;
 
 	button_list = new Vector <Button_Device_Driver*>;
 	distance_list = new Vector <Distance_Device_Driver*>;
@@ -37,7 +37,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
 	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
 
-	driver_list->PushBack(this);
+	device_list->PushBack(this);
 
 	Switch_Publisher *debug_elem = new Switch_Publisher(MODULE_DRIVER_SET_DEBUG, "Debug", "Debug Devices");
 	publisher->Add_Publisher_Element(debug_elem);
@@ -46,7 +46,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 Module_Driver::~Module_Driver()
 {
 	pub_List->Clear();
-	driver_list->Clear();
+	device_list->Clear();
 	queue.Clear();
 }
 
@@ -89,7 +89,7 @@ void Module_Driver::AddDevice(Device_Driver* device)
 		webserver_wifi_index++;
 	}
 
-	driver_list->PushBack(device);
+	device_list->PushBack(device);
 	device_count++;
 }
 
@@ -100,13 +100,18 @@ Driver *Module_Driver::GetDeviceById(int Id)
 {
 	Driver* result = nullptr;
 
-	for (int i = 0; i < driver_list->Size(); i++) {
-		Serial.print("(*device_list)[i]->DriverId: ");
-		Serial.print((*driver_list)[i]->DriverId);
-		Serial.print(" - Id: ");
-		Serial.println(Id);
-		if ((*driver_list)[i]->DriverId == Id) {	
-			result = (*driver_list)[i];
+	if (DriverId == Id) {
+		result = this;
+	}
+	else {
+		for (int i = 0; i < device_list->Size(); i++) {
+			Serial.print("(*device_list)[i]->DriverId: ");
+			Serial.print((*device_list)[i]->DriverId);
+			Serial.print(" - Id: ");
+			Serial.println(Id);
+			if ((*device_list)[i]->DriverId == Id) {
+				result = (*device_list)[i];
+			}
 		}
 	}
 	return result;
@@ -148,21 +153,21 @@ void Module_Driver::DoMessage(Int_Thread_Msg message) {
 }
 
 void Module_Driver::DoInit() {
-	for (int i = 0; i < driver_list->Size(); i++) {
-		(*driver_list)[i]->ExecInit();
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecInit();
 	}
 	DoAfterInit();
 }
 
 void Module_Driver::DoShutdown() {
-	for (int i = 0; i < driver_list->Size(); i++) {
-		(*driver_list)[i]->ExecShutdown();
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecShutdown();
 	}
 }
 
 void Module_Driver::DoSuspend() {
-	for (int i = 0; i < driver_list->Size(); i++) {
-		(*driver_list)[i]->ExecSuspend();
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecSuspend();
 	}
 }
 
@@ -178,17 +183,21 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 	if (PopMessage(&pMessage))
 	{
 		switch ((pMessage)->Class) {
-			case MessageClass_Communication:
-			{
-				CommunicationMessage* pCommunication = (CommunicationMessage*)(pMessage);
-				Driver* device;
-				device = GetDeviceById(pCommunication->Id);
-				Serial.print("GetDeviceById: ");
+		case MessageClass_Communication:
+		{
+			CommunicationMessage* pCommunication = (CommunicationMessage*)(pMessage);
+			Driver* device = nullptr;
+			device = GetDeviceById(pCommunication->Id);
+			if (device != nullptr) {
+				Serial.print("looking for DeviceID ");
 				Serial.println(pCommunication->Id);
-				Serial.println(device->GetDriverName());
+				Serial.print(" - Device found: ");
+				Serial.print(device->GetDriverName());
 				device->Exec_Command(pCommunication->CmdId, pCommunication->Values);
-				break;
+				
 			}
+			break;
+		}
 		}
 
 		DoThreadMessage(pMessage);
@@ -222,8 +231,8 @@ void Module_Driver::UpdateControls()
 {
 	pub_List->Clear();
 	if (isdebug) {
-		for (int i = 0; i < driver_list->Size(); i++) {
-			pub_List->PushBack((*driver_list)[i]->GetPublisher());
+		for (int i = 0; i < device_list->Size(); i++) {
+			pub_List->PushBack((*device_list)[i]->GetPublisher());
 		}
 	}
 	pub_List->PushBack(publisher);
@@ -302,7 +311,6 @@ void Module_Driver::Set_Set_Debug(bool _isdebug)
 void Module_Driver::Exec_Set_Debug(bool _isdebug)
 {
 	Int_Thread_Msg *message = new Int_Thread_Msg(MODULE_DRIVER_SET_DEBUG);
-	Serial.println("HIer vielleicht");
 	message->AddParam(_isdebug);
 	PostMessage(&message);
 }

@@ -65,7 +65,7 @@ private:
 	void DoUpdate(uint32_t deltaTime);
 	void UpdateControls();
 protected:
-	Vector <Driver*> *driver_list;
+	Vector <Driver*> *device_list;
 	Vector <Publisher*> *GetPublisherList();
 	Property<Button_Device_Driver*, Module_Driver> Selected_Button_Device{ this, nullptr, &Module_Driver::Get_Selected_Button_Device };
 	Property<Distance_Device_Driver*, Module_Driver> Selected_Distance_Device{ this, nullptr, &Module_Driver::Get_Selected_Distance_Device };

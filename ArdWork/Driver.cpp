@@ -12,8 +12,6 @@ Driver::Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) :
 {
 	driver_count++;
 	publisher = new Publisher(driver_count);
-	Serial.print("Driver::Driver - publisher->driverId: ");
-	Serial.println(publisher->driverId);
 	__DriverId = driver_count;
 }
 
@@ -33,14 +31,8 @@ String Driver::GetDriverName()
 void Driver::Exec_Command(int _cmdId, String _command)
 {
 	Int_Thread_Msg *message = new Int_Thread_Msg(_cmdId);
-	Serial.print("Driver::Exec_Command - _cmdId: ");
-	Serial.println(_cmdId);
-	Serial.print("Driver::Exec_Command - _command: ");
-	Serial.println(_command);
 	message->AddParam(_command);
-	Serial.print("Done1");
 	PostMessage(&message);
-	Serial.print("Done2");
 }
 
 void Driver::OnUpdate(uint32_t deltaTime) {
@@ -66,7 +58,6 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 			}
 			default:
 			{
-				Serial.println("DoMessage(*message_queue[i]);");
 				DoMessage(*message_queue[i]);
 			}
 			}
