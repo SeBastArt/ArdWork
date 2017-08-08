@@ -8,7 +8,12 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 	driver_name = "Led_Device_Driver";
 	publisher->name = "Led";
 	publisher->descr = "Led-Device";
-	Boolean_Publisher *elem = new Boolean_Publisher("Led", "Led is On or Off", false);
+	isOn = false;
+	Switch_Publisher *elem = new Switch_Publisher("Led", "Led is On or Off");
+	elem->cmdOnId = LED_DEVICE_DRIVER_PIN_HIGH;
+	elem->cmdOffId = LED_DEVICE_DRIVER_PIN_LOW;
+	elem->status = &isOn;
+
 	publisher->Add_Publisher_Element(elem);
 	publisher->published = true;
 };
@@ -53,12 +58,14 @@ void Led_Device_Driver::DoBeforeSuspend()
 
 
 void Led_Device_Driver::Exec_Set_IO_Pin_High() {
+	Serial.println("Led_Device_Driver::Exec_Set_IO_Pin_High()");
 	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_PIN_HIGH);
 	PostMessage(&message);
 }
 
 
 void Led_Device_Driver::Exec_Set_IO_Pin_Low() {
+	Serial.println("Led_Device_Driver::Exec_Set_IO_Pin_Low()");
 	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_PIN_LOW);
 	PostMessage(&message);
 }
@@ -173,7 +180,7 @@ void Led_Device_Driver::DoExecuteCommand(String _command)
 {
 	if (_command.equals("SwitchOn")) {
 		Set_IO_Pin_High();
-	} 
+	}
 	else if (_command.equals("SwitchOff")) {
 		Set_IO_Pin_Low();
 	}
@@ -181,6 +188,8 @@ void Led_Device_Driver::DoExecuteCommand(String _command)
 
 void Led_Device_Driver::Set_IO_Pin_High()
 {
+	Serial.println("Led_Device_Driver::Set_IO_Pin_High()");
+	isOn = true;
 	(hasPullUp) ? pin->SetPinState(LOW) : pin->SetPinState(HIGH);
 	//pin->SetPinState(HIGH);
 	blink_flag = false;
@@ -188,6 +197,8 @@ void Led_Device_Driver::Set_IO_Pin_High()
 
 void Led_Device_Driver::Set_IO_Pin_Low()
 {
+	Serial.println("Led_Device_Driver::Set_IO_Pin_Low()");
+	isOn = false;
 	(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
 	//pin->SetPinState(LOW);
 	blink_flag = false;

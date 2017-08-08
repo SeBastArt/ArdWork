@@ -61,6 +61,8 @@ private:
 	Uart_GRBW_Led_Device_Driver* Get_Selected_Uart_GRBW_Led_Device() const;
 	WebServer_Wifi_Device_Driver* Get_Selected_WebServer_Wifi_Device() const;
 
+	void Set_Set_Debug_On(bool _isdebug);
+
 	void DoUpdate(uint32_t deltaTime);
 	void UpdateControls();
 	virtual void UpdateCommunication() = 0;
@@ -85,7 +87,8 @@ protected:
 	void DoSuspend();
 	bool PopMessage(ThreadMessage** message);
 
-	void Set_Set_Debug(bool _isdebug);
+	void Set_Debug_On();
+	void Set_Debug_Off();
  protected:
 	 virtual void DoBeforeSuspend() = 0;
 	 virtual void DoBeforeShutdown() = 0;
@@ -98,7 +101,8 @@ public:
 	bool SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr = false);
 	void AddDevice(Device_Driver* device);
 
-	void Exec_Set_Debug(bool _isdebug);
+	void Exec_Set_Debug_On();
+	void Exec_Set_Debug_Off();
 };
 
 #endif

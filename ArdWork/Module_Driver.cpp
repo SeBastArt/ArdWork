@@ -11,7 +11,7 @@ extern "C" {
 
 Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
-	isdebug = false;
+	isdebug = true;
 
 	button_index = -1;
 	distance_index = -1;
@@ -36,7 +36,10 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
 	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
 
-	Switch_Publisher *debug_elem = new Switch_Publisher(MODULE_DRIVER_SET_DEBUG, "Debug", "Debug Devices");
+	Switch_Publisher *debug_elem = new Switch_Publisher("Debug", "Debug Devices");
+	debug_elem->cmdOnId = MODULE_DRIVER_SET_DEBUG_ON;
+	debug_elem->cmdOffId = MODULE_DRIVER_SET_DEBUG_OFF;
+	debug_elem->status = &isdebug;
 	publisher->Add_Publisher_Element(debug_elem);
 }
 
@@ -135,11 +138,14 @@ void Module_Driver::DoMessage(Int_Thread_Msg message) {
 	int messageID = message.GetID();
 	switch (messageID)
 	{
-	case MODULE_DRIVER_SET_DEBUG:
+	case MODULE_DRIVER_SET_DEBUG_ON:
 	{
-		Serial.println("Module_Driver::DoMessage - MODULE_DRIVER_SET_DEBUG");
-		bool _isDebug = message.GetBoolParamByIndex(1);
-		Set_Set_Debug(_isDebug);
+		Set_Debug_On();
+	}
+	break;
+	case MODULE_DRIVER_SET_DEBUG_OFF:
+	{
+		Set_Debug_Off();
 	}
 	break;
 	}
@@ -293,15 +299,27 @@ WebServer_Wifi_Device_Driver *Module_Driver::Get_Selected_WebServer_Wifi_Device(
 }
 
 
-void Module_Driver::Set_Set_Debug(bool _isdebug)
+void Module_Driver::Set_Debug_On()
 {
-	isdebug = _isdebug;
+	isdebug = true;
 }
 
-void Module_Driver::Exec_Set_Debug(bool _isdebug)
+void Module_Driver::Set_Debug_Off()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(MODULE_DRIVER_SET_DEBUG);
-	message->AddParam(_isdebug);
+	isdebug = false;
+}
+
+void Module_Driver::Exec_Set_Debug_On()
+{
+
+	Int_Thread_Msg *message = new Int_Thread_Msg(MODULE_DRIVER_SET_DEBUG_ON);
 	PostMessage(&message);
 }
+
+void Module_Driver::Exec_Set_Debug_Off()
+{
+	Int_Thread_Msg *message = new Int_Thread_Msg(MODULE_DRIVER_SET_DEBUG_OFF);
+	PostMessage(&message);
+}
+
 

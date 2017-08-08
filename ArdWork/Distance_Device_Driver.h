@@ -18,6 +18,7 @@ class Distance_Device_Driver : public Device_Driver
 private:
 	uint8_t pin_t;
 	uint8_t pin_e;
+	float _distance;
 
 private:
 	void DoAfterInit();

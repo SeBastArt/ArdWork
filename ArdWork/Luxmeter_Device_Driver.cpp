@@ -11,7 +11,9 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 
 	publisher->name = "Luxmeter";
 	publisher->descr = "messeaure brightness";
-	Value_Publisher *elem = new Value_Publisher("Luxmeter", "actual brightness", &lastLux, "Lux");
+	Value_Publisher_Impl<float> *elem = new Value_Publisher_Impl<float>("Luxmeter", "actual brightness");
+	elem->unit = "lux";
+	elem->value = &lastLux;
 	publisher->Add_Publisher_Element(elem);
 	publisher->published = true;
 	tsl = new Adafruit_TSL2561_Unified(adress, 1);

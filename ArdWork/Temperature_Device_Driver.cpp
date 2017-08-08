@@ -13,7 +13,9 @@ Temperature_Device_Driver::Temperature_Device_Driver(Module_Driver* module, IO_P
 	
 	publisher->name = "thermometer";
 	publisher->descr = "messeaure temperature";
-	Value_Publisher *elem = new Value_Publisher("Temperature", "actual temperature", &act_temp, "Celcius");
+	Value_Publisher_Impl<float> *elem = new Value_Publisher_Impl<float>("Temperature", "actual temperature");
+	elem->value = &act_temp;
+	elem->unit = "Celcius";
 	publisher->Add_Publisher_Element(elem);
 	publisher->published = true;
 

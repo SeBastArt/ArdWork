@@ -39,8 +39,7 @@ String Publisher_Element::GetClassName()
 	return __class_name;
 }
 
-Publisher_Element::Publisher_Element(int _cmdId, String _lable, String _descr) :
-	cmdId(_cmdId),
+Publisher_Element::Publisher_Element(String _lable, String _descr) :
 	lable(_lable),
 	descr(_descr)
 {
@@ -51,9 +50,11 @@ Publisher_Element::~Publisher_Element()
 }
 
 
-Button_Publisher::Button_Publisher(int _cmdId, String _lable, String _descr) :
-	Publisher_Element(_cmdId, _lable, _descr)
+
+Button_Publisher::Button_Publisher(String _lable, String _descr) :
+	Publisher_Element(_lable, _descr)
 {
+	atomic_cmd_elem = nullptr;
 	__class_name = "Button_Publisher";
 };
 
@@ -62,40 +63,127 @@ Button_Publisher::~Button_Publisher()
 }
 
 
-Value_Publisher::Value_Publisher(String _lable, String _descr, float *_value, String _unit) :
-	Publisher_Element(default_cmdId, _lable, _descr),
-	value(_value),
-	unit(_unit)
+int Button_Publisher::GetCommand() const
 {
-	__class_name = "Value_Publisher";
-};
-
-Value_Publisher::~Value_Publisher()
-{
+	if (atomic_cmd_elem)
+	{
+		return atomic_cmd_elem->cmdId;
+	}
+	else {
+		return -1;
+	}
 }
 
-Switch_Publisher::Switch_Publisher(int _cmdId, String _lable, String _descr) :
-	Publisher_Element(_cmdId, _lable, _descr)
+void Button_Publisher::SetCommand(int _cmdId)
 {
+	if (atomic_cmd_elem)
+	{
+		delete atomic_cmd_elem;
+		atomic_cmd_elem = nullptr;
+	}
+	atomic_cmd_elem = new Atomic_Command_Element(_cmdId);
+}
+
+
+Switch_Publisher::Switch_Publisher(String _lable, String _descr) :
+	Publisher_Element(_lable, _descr)
+{
+	__atomic_On_cmd_elem = nullptr;
+	__atomic_Off_cmd_elem = nullptr;
+	__atomic_status_attr_elem = nullptr;
 	__class_name = "Switch_Publisher";
 }
 
-Switch_Publisher::~Switch_Publisher()
-{
+int Switch_Publisher::GetOnCommand() const {
+	if (__atomic_On_cmd_elem)
+	{
+		return __atomic_On_cmd_elem->cmdId;
+	}
+	else {
+		return -1;
+	}
 }
 
-Boolean_Publisher::Boolean_Publisher(String _lable, String _descr, bool * _isActive) :
-	Publisher_Element(default_cmdId, _lable, _descr),
-	isActive(_isActive)
-{
-	__class_name = "Boolean_Publisher";
+void Switch_Publisher::SetOnCommand(int _cmdId) {
+	if (__atomic_On_cmd_elem)
+	{
+		delete __atomic_On_cmd_elem;
+		__atomic_On_cmd_elem = nullptr;
+	}
+	__atomic_On_cmd_elem = new Atomic_Command_Element(_cmdId);
+}
+
+int Switch_Publisher::GetOffCommand() const {
+	if (__atomic_Off_cmd_elem)
+	{
+		return __atomic_Off_cmd_elem->cmdId;
+	}
+	else {
+		return -1;
+	}
+}
+
+void Switch_Publisher::SetOffCommand(int _cmdId) {
+	if (__atomic_Off_cmd_elem)
+	{
+		delete __atomic_Off_cmd_elem;
+		__atomic_Off_cmd_elem = nullptr;
+	}
+	__atomic_Off_cmd_elem = new Atomic_Command_Element(_cmdId);
 }
 
 
-Boolean_Publisher::~Boolean_Publisher()
-{
+bool *Switch_Publisher::GetStatus() const {
+	if (__atomic_status_attr_elem)
+	{
+		return __atomic_status_attr_elem->atrribute;
+	}
+	else {
+		return nullptr;
+	}
 }
 
+
+void Switch_Publisher::SetStatus(bool *_status) {
+	if (__atomic_status_attr_elem)
+	{
+		delete __atomic_status_attr_elem;
+		__atomic_status_attr_elem = nullptr;
+	}
+	__atomic_status_attr_elem = new Atomic_Attribute_Element<bool>(_status);
+}
+
+
+
+
+//template <class T>
+//Value_Publisher<T>::Value_Publisher(String _lable, String _descr)
+//{
+//	Publisher_Element(_lable, _descr);
+//	__atomic_value_attr_elem = nullptr;
+//	__class_name = "Value_Publisher";
+//};
+//
+//template <class T>
+//T *Value_Publisher<T>::GetValue() const {
+//	if (__atomic_value_attr_elem)
+//	{
+//		return __atomic_value_attr_elem->atrribute;
+//	}
+//	else {
+//		return nullptr;
+//	}
+//}
+//
+//template <class T>
+//void Value_Publisher<T>::SetValue(T *_status) {
+//	if (__atomic_value_attr_elem)
+//	{
+//		delete __atomic_value_attr_elem;
+//		__atomic_value_attr_elem = nullptr;
+//	}
+//	__atomic_value_attr_elem = new Atomic_Attribute_Element<T>(_status);
+//}
 
 //<!DOCTYPE html>
 //<html>

@@ -8,7 +8,8 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 	driver_name = "Button_Device_Driver";
 	publisher->name = "Button";
 	publisher->descr = "Push Me";
-	Button_Publisher *elem = new Button_Publisher(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, "Push", "Push the Button");
+	Button_Publisher *elem = new Button_Publisher("Push", "Push the Button");
+	elem->cmdId = BUTTON_DEVICE_DRIVER_PUSH_BUTTON;
 	publisher->Add_Publisher_Element(elem);
 	publisher->published = true;
 }

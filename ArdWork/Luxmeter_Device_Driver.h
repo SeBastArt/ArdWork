@@ -23,6 +23,7 @@ class Luxmeter_Device_Driver : public Device_Driver
 {
 public:
 	Luxmeter_Device_Driver(Module_Driver* module, uint8_t adress = TSL2561_ADDR_FLOAT, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	
  private:
 	 float lastLux;
 	 void DoAfterInit();
