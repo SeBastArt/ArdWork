@@ -174,8 +174,8 @@ void setup() {
 	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
 	//Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
-	WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, WifiSsid, password, wifi_status_led);
-	//WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(picture_module, WifiSsid, password);
+	//WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, WifiSsid, password, wifi_status_led);
+	WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(picture_module, WifiSsid, password);
 #endif // PICTURE_NodeMCU_GBR
 
 #ifdef COMPILE_TEST
@@ -224,8 +224,8 @@ void setup() {
 	picture_module->AddDevice(strip);
 	picture_module->AddDevice(luxmeter);
 	//picture_module->AddDevice(mqqt_wifi);
-	picture_module->AddDevice(server_wifi);
-	//picture_module->AddDevice(webSocket_server_wifi);
+	//picture_module->AddDevice(server_wifi);
+	picture_module->AddDevice(webSocket_server_wifi);
 #endif
 
 	Serial.println("Try to start resident driver...");
@@ -276,11 +276,11 @@ void setup() {
 	//Serial.println("Start MQQT_Wifi-Driver");
 	//threadManager.StartThread(mqqt_wifi);
 
-	Serial.println("Start WebServer_Wifi-Driver");
-	threadManager.StartThread(server_wifi);
+	//Serial.println("Start WebServer_Wifi-Driver");
+	//threadManager.StartThread(server_wifi);
 
-	//Serial.println("Start WebSocket_Wifi-Driver");
-	//threadManager.StartThread(webSocket_server_wifi);
+	Serial.println("Start WebSocket_Wifi-Driver");
+	threadManager.StartThread(webSocket_server_wifi);
 #endif
 
 	Serial.flush();

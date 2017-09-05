@@ -170,7 +170,7 @@ String WebServer_Wifi_Device_Driver::GenerateCSS() {
 void WebServer_Wifi_Device_Driver::SendResponse(WiFiClient _client, String _header, String _response)
 {
 	_client.print(_header);
-	_client.print(_response);
+	_client.print(_response); 
 
 	// and stop the client
 	_client.stop();

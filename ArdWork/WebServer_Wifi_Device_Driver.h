@@ -12,6 +12,9 @@
 #include <ESP8266WiFi.h>
 #include "Wifi_Device_Driver.h"
 #include "WebServer_Wifi_Device_Driver_Consts.h"
+#include "Index_html.h"
+
+
 
 
 class WebServer_Wifi_Device_Driver : public Wifi_Device_Driver
