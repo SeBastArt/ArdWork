@@ -6,7 +6,13 @@
 //#define SLEEP
 
 //#define COMPILE_TEST
-
+#include "Filesystem.h"
+#include <ESP8266WebServer.h>
+#include <WebSocketsServer.h>
+#include <WebSocketsClient.h>
+#include <WebSockets.h>
+#include <ArduinoJson.h>
+#include "FS.h"
 #define PICTURE_NodeMCU_GBR
 
 
@@ -62,6 +68,7 @@
 #include "Luxmeter_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
 #include "WebServer_Wifi_Device_Driver.h"
+#include "WebSocket_Wifi_Device_Driver.h"
 #endif // PICTURE_NodeMCU_GBR
 
 
@@ -101,21 +108,25 @@
 //Main
 #include "Thread/ThreadManager.h"
 
+FileSystem _filesystem;
 ThreadManager threadManager;
 
 uint32_t start;
-
-#define pass ""
-#define Wifissid "FRITZ!Box 7490"
+String WifiSsid;
+String password;
 
 void setup() {
-	WiFi.forceSleepWake(); // Wlan ON für neue Zyklus	
+	WiFi.forceSleepWake(); // Wlan ON fï¿½r neue Zyklus	
 	Serial.begin(115200);
+
+	_filesystem.OpenFile("/config.json");
+	WifiSsid = _filesystem.Json_GetvalueFromKey("WifiSsid");
+	password = _filesystem.Json_GetvalueFromKey("password");
+	_filesystem.CloseFile();
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) 
 	Dash_Mqqt_Wifi_Module_Driver *dash_mqqt_wifi_module = new Dash_Mqqt_Wifi_Module_Driver("ESP8266", ssid, pass);
 #endif
-
 
 #ifdef DASH_ESP01
 	ESP8266_01_Controller* esp8266_01_controller = new ESP8266_01_Controller();
@@ -162,8 +173,9 @@ void setup() {
 	Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(BUILTIN_LED), true);
 	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
-	Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
-	WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
+	//Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
+	WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, WifiSsid, password, wifi_status_led);
+	//WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(picture_module, WifiSsid, password);
 #endif // PICTURE_NodeMCU_GBR
 
 #ifdef COMPILE_TEST
@@ -203,16 +215,17 @@ void setup() {
 
 
 #if defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	mqqt_wifi->SetHostName("ESP_MQQT_RGB_WZ");
-	mqqt_wifi->SetInTopic("esp/wohnzimmer/rgb");
-    mqqt_wifi->SetOutTopic("fhem/wohnzimmer/rgb/set");
-	mqqt_wifi->SetMQQTBroker("192.168.178.33");
+	//mqqt_wifi->SetHostName("ESP_MQQT_RGB_WZ");
+	//mqqt_wifi->SetInTopic("esp/wohnzimmer/rgb");
+	//mqqt_wifi->SetOutTopic("fhem/wohnzimmer/rgb/set");
+	//mqqt_wifi->SetMQQTBroker("192.168.178.33");
 	picture_module->AddDevice(button);
 	picture_module->AddDevice(led);
 	picture_module->AddDevice(strip);
 	picture_module->AddDevice(luxmeter);
 	//picture_module->AddDevice(mqqt_wifi);
 	picture_module->AddDevice(server_wifi);
+	//picture_module->AddDevice(webSocket_server_wifi);
 #endif
 
 	Serial.println("Try to start resident driver...");
@@ -240,7 +253,7 @@ void setup() {
 	/*Serial.println("Start Uart_GRBW_Led_Device_Driver");
 	threadManager.StartThread(rgb_mqqt_wifi_module);*/
 
-	Serial.println("Start Uart_GRBW_Led_Device_Driver");
+	Serial.println("Start Picture_Module_Driver");
 	threadManager.StartThread(picture_module);
 
 	Serial.println("Start UART_Rgb_Led-Driver");
@@ -265,6 +278,9 @@ void setup() {
 
 	Serial.println("Start WebServer_Wifi-Driver");
 	threadManager.StartThread(server_wifi);
+
+	//Serial.println("Start WebSocket_Wifi-Driver");
+	//threadManager.StartThread(webSocket_server_wifi);
 #endif
 
 	Serial.flush();
@@ -275,7 +291,6 @@ void setup() {
 #endif
 
 #if defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	//rgb_mqqt_wifi_module->ExecInit();
 	picture_module->ExecInit();
 #endif
 
@@ -293,5 +308,5 @@ void loop() {
 	}
 #endif // SLEEP
 	threadManager.Loop();
-}
+	}
 

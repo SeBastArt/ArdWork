@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _PUBLISHER_h
+#define _PUBLISHER_h
 
 #include "Arduino.h"
 #include <sstream>
@@ -54,17 +55,22 @@ class Value_Publisher : public Publisher_Element
 {
 private:
 	String __unit;
+	String __type;
 	void SetUnit(String _unit) { __unit = _unit; }
+	void SetType(String _type) { __type = _type; }
 	String GetUnit() const { return __unit; }
+	String GetType() const { return __type; }
 public:
 	Value_Publisher(String _lable, String _descr) :
 		Publisher_Element(_lable, _descr) {
 		__class_name = "Value_Publisher";
 		__unit = "";
+		__type = "text";
 	}
 	virtual ~Value_Publisher() {}
 	virtual String ValueToString() const = 0;
 	Property<String, Value_Publisher> unit{ this, &Value_Publisher::SetUnit, &Value_Publisher::GetUnit };
+	Property<String, Value_Publisher> type{ this, &Value_Publisher::SetType, &Value_Publisher::GetType };
 };
 
 
@@ -165,3 +171,67 @@ public:
 	Property<int, Publisher> elem_count{ this, nullptr, &Publisher::GetElemCount };
 	Property<int, Publisher> driverId{ this, nullptr, &Publisher::GetDriverId };
 };
+
+
+//-----------------------------------------------------
+// Observer Class			
+//-----------------------------------------------------
+class Observer
+{
+public:
+	virtual ~Observer() {};		// Destructor
+	virtual void Notify(Vector <Publisher*> *pub_list) = 0;
+protected:
+	//constructor is protected because this class is abstract, it’s only meant to be inherited!
+	Observer() {};
+private:
+	// -------------------------
+	// Disabling default copy constructor and default 
+	// assignment operator.
+	// -------------------------
+	Observer(const Observer& yRef) = delete;
+	Observer& operator=(const Observer& yRef) = delete;
+};
+
+class Observee
+{
+public:
+	virtual ~Observee() { m_ObserverVec->Clear(); m_ObserverVec = nullptr; };        //destructor
+	bool AddObserver(Observer* observer) {
+		if (m_ObserverVec->Find(observer) > -1) {
+			return false;
+		}
+
+		m_ObserverVec->PushBack(observer);
+		return true;
+	};
+	bool RemoveObserver(Observer* observer) {
+		int temp = m_ObserverVec->Find(observer);
+		if (temp > -1) {
+			m_ObserverVec->Erase(temp);
+			return true;
+		}
+		else {
+			return false;
+		}
+	};
+	bool NotifyObservers(Vector <Publisher*> *pub_list) {
+		for (int i = 0; i < m_ObserverVec->Size(); i++) {
+			(*m_ObserverVec)[i]->Notify(pub_list);
+		}
+	};
+protected:
+	//constructor is protected because this class is abstract, it’s only meant to be inherited!
+	Observee() { m_ObserverVec = new Vector<Observer*>; };
+private:
+	Vector<Observer*> *m_ObserverVec;
+	// -------------------------
+	// Disabling default copy constructor and default
+	// assignment operator.
+	// -------------------------
+	Observee(const Observee& yRef) = delete;
+	Observee& operator=(const Observee& yRef) = delete;
+};
+
+
+#endif

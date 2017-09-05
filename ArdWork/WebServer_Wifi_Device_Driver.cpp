@@ -25,6 +25,43 @@ void WebServer_Wifi_Device_Driver::InitComm() {
 	server->begin();
 }
 
+void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
+
+	WiFiClient client = server->available();
+	if (!client)
+	{
+		return;
+	}
+	CheckComm(client);
+
+	///////////////////////////
+	// format the html response
+	///////////////////////////
+	String sResponse, sHeader;
+
+	ulReqcount++;
+	sResponse = "<body>";
+	sResponse += "<font color=\"#000000\"><body bgcolor=\"#d0d0f0\">";
+	sResponse += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=yes\">";
+	sResponse += "<h1>Demo f&uumlr ESP8266 Steuerung</h1>";
+	sResponse += "<FONT size=+1>";
+
+	sResponse += GenerateControlElemnts();
+
+	sResponse += "<FONT SIZE=-2>";
+	sResponse += "<BR>Aufrufz&auml;hler=";
+	sResponse += ulReqcount;
+	sResponse += " - Verbindungsz&auml;hler=";
+	sResponse += ulReconncount;
+	sResponse += "</body></html>";
+
+	sHeader = GenerateHeader(sResponse, true);
+
+
+	// Send the response to the client
+	SendResponse(client, sHeader, sResponse);
+}
+
 
 void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 	// Check if a client has connected
@@ -141,42 +178,6 @@ void WebServer_Wifi_Device_Driver::SendResponse(WiFiClient _client, String _head
 }
 
 
-void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
-
-	WiFiClient client = server->available();
-	if (!client)
-	{
-		return;
-	}
-	CheckComm(client);
-
-	///////////////////////////
-	// format the html response
-	///////////////////////////
-	String sResponse, sHeader;
-
-	ulReqcount++;
-	sResponse = "<body>";
-	sResponse += "<font color=\"#000000\"><body bgcolor=\"#d0d0f0\">";
-	sResponse += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=yes\">";
-	sResponse += "<h1>Demo f&uumlr ESP8266 Steuerung</h1>";
-	sResponse += "<FONT size=+1>";
-
-	sResponse += GenerateControlElemnts();
-
-	sResponse += "<FONT SIZE=-2>";
-	sResponse += "<BR>Aufrufz&auml;hler=";
-	sResponse += ulReqcount;
-	sResponse += " - Verbindungsz&auml;hler=";
-	sResponse += ulReconncount;
-	sResponse += "</body></html>";
-
-	sHeader = GenerateHeader(sResponse, true);
-
-
-	// Send the response to the client
-	SendResponse(client, sHeader, sResponse);
-}
 
 String WebServer_Wifi_Device_Driver::GenerateControlElemnts() {
 	String sResponse;

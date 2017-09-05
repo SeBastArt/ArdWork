@@ -20,6 +20,7 @@ Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, String _ssid, Stri
 
 void Wifi_Device_Driver::DoAfterInit()
 {
+	Serial.println("Wifi_Device_Driver::DoAfterInit()");
 	const char* _ssid = &Ssid[0];
 	const char* _password = &Password[0];
 
@@ -33,6 +34,7 @@ void Wifi_Device_Driver::DoAfterInit()
 		Serial.println("]");
 		InitComm();
 	}	
+	Serial.println("Wifi_Device_Driver::DoAfterInit() Done");
 }
 
 void Wifi_Device_Driver::DoBeforeShutdown()

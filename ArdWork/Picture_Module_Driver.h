@@ -23,7 +23,6 @@ private:
 protected:
 	void DoBeforeSuspend();
 	void DoBeforeShutdown();
-	void UpdateCommunication();
 	void DoAfterInit();
 	void DoModuleMessage(Int_Thread_Msg message);
 	void DoThreadMessage(ThreadMessage *message);

@@ -32,6 +32,8 @@ void Device_Driver::DoMessage(Int_Thread_Msg message) {
 }
 
 void Device_Driver::DoInit() {
+	Serial.print("Device_Driver::DoInit() with ");
+	Serial.println(GetDriverName());
 	DoAfterInit();
 }
 

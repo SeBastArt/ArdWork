@@ -36,13 +36,15 @@ void Driver::Exec_Command(int _cmdId, String _command)
 }
 
 void Driver::OnUpdate(uint32_t deltaTime) {
-	if (!message_queue.Empty()) {
+	if (!message_queue.Empty()) {	
 		for (unsigned i = 0; i < message_queue.Size(); i++) {
 			int messageID = message_queue[i]->GetID();
 			switch (messageID)
 			{
 			case DRIVER_INIT:
 			{
+				//Serial.print("Driver::OnUpdate::DRIVER_INIT with ");
+				//Serial.println(GetDriverName());
 				DoInit();
 				break;
 			}
@@ -71,6 +73,10 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 
 
 void Driver::ExecInit() {
+	//Serial.print("Driver::ExecInit() with ");
+	//Serial.print(GetDriverName());
+	//Serial.print(" and message: ");
+	//Serial.println(DRIVER_INIT);
 	Int_Thread_Msg *message = new Int_Thread_Msg(DRIVER_INIT);
 	PostMessage(&message);
 }

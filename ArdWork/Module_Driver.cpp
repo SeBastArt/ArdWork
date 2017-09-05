@@ -9,6 +9,17 @@ extern "C" {
 #include "user_interface.h"
 }
 
+#include "Button_Device_Driver.h"
+#include "Led_Device_Driver.h"
+#include "Luxmeter_Device_Driver.h"
+#include "Mqqt_Wifi_Device_Driver.h"
+#include "WebServer_Wifi_Device_Driver.h"
+#include "WebSocket_Wifi_Device_Driver.h"
+#include "Uart_GRBW_Led_Device_Driver.h"
+#include "OLED_Display_Device_Driver.h"
+#include "Distance_Device_Driver.h"
+#include "Temperature_Device_Driver.h"
+
 Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
 	isdebug = true;
@@ -22,6 +33,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	temperature_index = -1;
 	Uart_GRBW_Led_index = -1;
 	webserver_wifi_index = -1;
+	websocket_wifi_index = -1;
 
 	pub_List = new Vector<Publisher*>;
 	device_list = new Vector <Driver*>;
@@ -35,6 +47,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	temperature_list = new Vector <Temperature_Device_Driver*>;
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
 	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
+	websocket_wifi_list = new Vector <WebSocket_Wifi_Device_Driver*>;
 
 	Switch_Publisher *debug_elem = new Switch_Publisher("Debug", "Debug Devices");
 	debug_elem->cmdOnId = MODULE_DRIVER_SET_DEBUG_ON;
@@ -53,40 +66,56 @@ Module_Driver::~Module_Driver()
 void Module_Driver::AddDevice(Device_Driver* device)
 {
 	if ((device)->GetDriverName().equals("Button_Device_Driver")) {
+		Serial.println("Add Button_Device_Driver");
 		button_list->PushBack((Button_Device_Driver*)(device));
 		button_index++;
 	}
 	if ((device)->GetDriverName().equals("Distance_Device_Driver")) {
+		Serial.println("Add Distance_Device_Driver");
 		distance_list->PushBack((Distance_Device_Driver*)(device));
 		distance_index++;
 	}
 	if ((device)->GetDriverName().equals("Led_Device_Driver")) {
+		Serial.println("Add Led_Device_Driver");
 		led_list->PushBack((Led_Device_Driver*)(device));
 		led_index++;
 	}
 	if ((device)->GetDriverName().equals("Luxmeter_Device_Driver")) {
+		Serial.println("Add Luxmeter_Device_Driver");
 		luxmeter_list->PushBack((Luxmeter_Device_Driver*)(device));
 		luxmeter_index++;
 	}
 	if ((device)->GetDriverName().equals("Mqqt_Wifi_Device_Driver")) {
+		Serial.println("Add Mqqt_Wifi_Device_Driver");
 		mqqt_wifi_list->PushBack((Mqqt_Wifi_Device_Driver*)(device));
 		mqqt_wifi_index++;
 	}
 	if ((device)->GetDriverName().equals("OLED_Display_Device_Driver")) {
+		Serial.println("Add OLED_Display_Device_Driver");
 		oled_display_list->PushBack((OLED_Display_Device_Driver*)(device));
 		oled_display_index++;
 	}
 	if ((device)->GetDriverName().equals("Temperature_Device_Driver")) {
+		Serial.println("Add Temperature_Device_Driver");
 		temperature_list->PushBack((Temperature_Device_Driver*)(device));
 		temperature_index++;
 	}
 	if ((device)->GetDriverName().equals("Uart_GRBW_Led_Device_Driver")) {
+		Serial.println("Add Uart_GRBW_Led_Device_Driver");
 		Uart_GRBW_Led_list->PushBack((Uart_GRBW_Led_Device_Driver*)(device));
 		Uart_GRBW_Led_index++;
 	}
 	if ((device)->GetDriverName().equals("WebServer_Wifi_Device_Driver")) {
+		Serial.println("Add WebServer_Wifi_Device_Driver");
 		webserver_wifi_list->PushBack((WebServer_Wifi_Device_Driver*)(device));
+		AddObserver((WebServer_Wifi_Device_Driver*)(device));
 		webserver_wifi_index++;
+	}
+	if ((device)->GetDriverName().equals("WebSocket_Wifi_Device_Driver")) {
+		Serial.println("Add WebSocket_Wifi_Device_Driver");
+		websocket_wifi_list->PushBack((WebSocket_Wifi_Device_Driver*)(device));
+		AddObserver((WebSocket_Wifi_Device_Driver*)(device));
+		websocket_wifi_index++;
 	}
 	device_list->PushBack(device);
 }
@@ -103,10 +132,10 @@ Driver *Module_Driver::GetDeviceById(int Id)
 	}
 	else {
 		for (int i = 0; i < device_list->Size(); i++) {
-			Serial.print("(*device_list)[i]->DriverId: ");
-			Serial.print((*device_list)[i]->DriverId);
-			Serial.print(" - Id: ");
-			Serial.println(Id);
+			//Serial.print("(*device_list)[i]->DriverId: ");
+			//Serial.print((*device_list)[i]->DriverId);
+			//Serial.print(" - Id: ");
+			//Serial.println(Id);
 			if ((*device_list)[i]->DriverId == Id) {
 				result = (*device_list)[i];
 			}
@@ -155,6 +184,10 @@ void Module_Driver::DoMessage(Int_Thread_Msg message) {
 
 void Module_Driver::DoInit() {
 	for (int i = 0; i < device_list->Size(); i++) {
+		Serial.print("Init driver index: ");
+		Serial.print(i);
+		Serial.print(" with Driver Name: ");
+		Serial.println((*device_list)[i]->GetDriverName());
 		(*device_list)[i]->ExecInit();
 	}
 	DoAfterInit();
@@ -181,7 +214,9 @@ Vector<Publisher*>* Module_Driver::GetPublisherList()
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
 	ThreadMessage *pMessage;
-	UpdateCommunication();
+
+	NotifyObservers(GetPublisherList());
+
 	if (PopMessage(&pMessage))
 	{
 		switch ((pMessage)->Class) {
@@ -192,7 +227,6 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			device = GetDeviceById(pCommunication->Id);
 			if (device != nullptr) {
 				device->Exec_Command(pCommunication->CmdId, pCommunication->Values);
-				
 			}
 			break;
 		}
@@ -295,6 +329,13 @@ WebServer_Wifi_Device_Driver *Module_Driver::Get_Selected_WebServer_Wifi_Device(
 {
 	if ((webserver_wifi_index > -1) && (webserver_wifi_index < webserver_wifi_list->Size())) {
 		return (*webserver_wifi_list)[webserver_wifi_index];
+	}
+}
+
+WebSocket_Wifi_Device_Driver *Module_Driver::Get_Selected_WebSocket_Wifi_Device() const
+{
+	if ((websocket_wifi_index > -1) && (websocket_wifi_index < websocket_wifi_list->Size())) {
+		return (*websocket_wifi_list)[websocket_wifi_index];
 	}
 }
 

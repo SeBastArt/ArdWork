@@ -8,6 +8,7 @@
 #include "Led_Device_Driver.h"
 #include "Luxmeter_Device_Driver.h"
 #include "WebServer_Wifi_Device_Driver.h"
+#include "WebSocket_Wifi_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
 
@@ -40,10 +41,6 @@ void Picture_Module_Driver::DoBeforeSuspend()
 
 void Picture_Module_Driver::DoBeforeShutdown()
 {
-}
-
-void Picture_Module_Driver::UpdateCommunication() {
-	((WebServer_Wifi_Device_Driver *)Selected_WebServer_Wifi_Device)->pub_list = GetPublisherList();
 }
 
 void Picture_Module_Driver::DoAfterInit()
