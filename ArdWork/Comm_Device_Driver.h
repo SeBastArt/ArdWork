@@ -19,10 +19,10 @@ private:
 	Comm_Device_Driver(const Comm_Device_Driver& yRef) = delete;
 	Comm_Device_Driver& operator=(const Comm_Device_Driver& yRef) = delete;
 protected:
-	Vector <Publisher*> *__pub_list;
+	Vector <Descriptor*> *__descriptor_list;
 public:
-	Comm_Device_Driver() {__pub_list = new Vector <Publisher*>;};
-	virtual void Notify(Vector <Publisher*> *pub_list) { __pub_list = pub_list; };
+	Comm_Device_Driver() { __descriptor_list = new Vector <Descriptor*>;};
+	virtual void Notify(Vector <Descriptor*> *_descriptor_list) { __descriptor_list = _descriptor_list; };
 };
 
 #endif

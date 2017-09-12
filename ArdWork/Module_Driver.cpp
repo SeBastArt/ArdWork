@@ -35,7 +35,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	webserver_wifi_index = -1;
 	websocket_wifi_index = -1;
 
-	pub_List = new Vector<Publisher*>;
+	descriptor_List = new Vector<Descriptor*>;
 	device_list = new Vector <Driver*>;
 
 	button_list = new Vector <Button_Device_Driver*>;
@@ -48,17 +48,11 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
 	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
 	websocket_wifi_list = new Vector <WebSocket_Wifi_Device_Driver*>;
-
-	Switch_Publisher *debug_elem = new Switch_Publisher("Debug", "Debug Devices");
-	debug_elem->cmdOnId = MODULE_DRIVER_SET_DEBUG_ON;
-	debug_elem->cmdOffId = MODULE_DRIVER_SET_DEBUG_OFF;
-	debug_elem->status = &isdebug;
-	publisher->Add_Publisher_Element(debug_elem);
 }
 
 Module_Driver::~Module_Driver()
 {
-	pub_List->Clear();
+	descriptor_List->Clear();
 	device_list->Clear();
 	queue.Clear();
 }
@@ -205,17 +199,17 @@ void Module_Driver::DoSuspend() {
 	}
 }
 
-Vector<Publisher*>* Module_Driver::GetPublisherList()
+Vector<Descriptor*>* Module_Driver::GetDescriptrorList()
 {
 	UpdateControls();
-	return pub_List;
+	return descriptor_List;
 }
 
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
 	ThreadMessage *pMessage;
 
-	NotifyObservers(GetPublisherList());
+	NotifyObservers(GetDescriptrorList());
 
 	if (PopMessage(&pMessage))
 	{
@@ -260,13 +254,13 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 
 void Module_Driver::UpdateControls()
 {
-	pub_List->Clear();
+	descriptor_List->Clear();
 	if (isdebug) {
 		for (int i = 0; i < device_list->Size(); i++) {
-			pub_List->PushBack((*device_list)[i]->GetPublisher());
+			descriptor_List->PushBack((*device_list)[i]->GetDescriptor());
 		}
 	}
-	pub_List->PushBack(GetPublisher());
+	descriptor_List->PushBack(GetDescriptor());
 }
 
 Button_Device_Driver *Module_Driver::Get_Selected_Button_Device() const

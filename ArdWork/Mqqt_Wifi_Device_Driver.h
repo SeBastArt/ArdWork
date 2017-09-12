@@ -39,6 +39,7 @@ protected:
 	void UpdateComm(uint32_t deltaTime);
 	void CheckComm(uint32_t deltaTime);
 	void InitComm();
+	void Build_Descriptor();
 public:
 	void SetOutTopic(String topic);
 	void SetInTopic(String topic);

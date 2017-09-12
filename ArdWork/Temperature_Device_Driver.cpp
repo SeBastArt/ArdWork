@@ -10,19 +10,26 @@ Temperature_Device_Driver::Temperature_Device_Driver(Module_Driver* module, IO_P
 	fahrenheit(isFahrenheit)
 {
 	driver_name = "Temperature_Device_Driver";
-	
-	publisher->name = "thermometer";
-	publisher->descr = "messeaure temperature";
-	Value_Publisher_Impl<float> *elem = new Value_Publisher_Impl<float>("Temperature", "actual temperature");
-	elem->value = &act_temp;
-	elem->unit = "Celcius";
-	publisher->Add_Publisher_Element(elem);
-	publisher->published = true;
 
 	pin->SetPinState(LOW);
 	dht = new DHT(pin->PinNumber(), DHT11);
 	dht->begin();
 };
+
+void Temperature_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "Temperatur Device";
+	__descriptor->descr = "Measure the temperatur of the environment";
+	__descriptor->published = true;
+
+	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(0, "Temperatur", value, "actual temperature");
+	ctrl_elem->published = true;
+
+	Atomic<float> *atomic_temperature = new Atomic<float>(0, &act_temp, "°C");
+
+	ctrl_elem->AddAtomic(atomic_temperature);
+
+	__descriptor->Add_Descriptor_Element(ctrl_elem);
+}
 
 void Temperature_Device_Driver::DoAfterInit()
 {

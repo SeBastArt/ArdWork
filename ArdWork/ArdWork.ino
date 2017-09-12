@@ -37,7 +37,6 @@
 //Modules
 #include "RGBLed_Mqqt_Wifi_Module_Driver.h"
 #include "Dash_Mqqt_Wifi_Module_Driver.h"
-#include "Led_Button_Module_Driver.h"
 #include "Picture_Module_Driver.h"
 #endif // COMPILE_TEST
 
@@ -122,6 +121,10 @@ void setup() {
 	_filesystem.OpenFile("/config.json");
 	WifiSsid = _filesystem.Json_GetvalueFromKey("WifiSsid");
 	password = _filesystem.Json_GetvalueFromKey("password");
+
+	WifiSsid = "ESP";
+	password = "1234";
+
 	_filesystem.CloseFile();
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) 
@@ -186,7 +189,6 @@ void setup() {
 	Picture_Module_Driver *picture_module = new Picture_Module_Driver();
 	RGBLed_Mqqt_Wifi_Module_Driver *rgb_mqqt_wifi_module = new RGBLed_Mqqt_Wifi_Module_Driver("ESP8266", ssid, pass);
 	Dash_Mqqt_Wifi_Module_Driver *mqqt_wifi_module = new Dash_Mqqt_Wifi_Module_Driver("ESP8266", ssid, pass);
-	Led_Button_Module_Driver *led_button_module = new Led_Button_Module_Driver();
 
 	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28);
 	Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(BUILTIN_LED), true);
@@ -222,7 +224,7 @@ void setup() {
 	picture_module->AddDevice(button);
 	picture_module->AddDevice(led);
 	picture_module->AddDevice(strip);
-	picture_module->AddDevice(luxmeter);
+	//picture_module->AddDevice(luxmeter);
 	//picture_module->AddDevice(mqqt_wifi);
 	//picture_module->AddDevice(server_wifi);
 	picture_module->AddDevice(webSocket_server_wifi);
@@ -259,8 +261,8 @@ void setup() {
 	Serial.println("Start UART_Rgb_Led-Driver");
 	threadManager.StartThread(strip);
 
-	Serial.println("Start Luxmeter-Driver");
-	threadManager.StartThread(luxmeter);
+	//Serial.println("Start Luxmeter-Driver");
+	//threadManager.StartThread(luxmeter);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) || defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)

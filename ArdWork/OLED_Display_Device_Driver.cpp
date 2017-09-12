@@ -12,6 +12,11 @@ OLED_Display_Device_Driver::OLED_Display_Device_Driver(Module_Driver* module, ui
 	display = new Adafruit_SSD1306(reset_pin);
 };
 
+void OLED_Display_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "Display";
+	__descriptor->descr = "a monochrome Display";
+}
+
 void OLED_Display_Device_Driver::DoAfterInit()
 {
 	display->begin(SSD1306_SWITCHCAPVCC, 0x3C);

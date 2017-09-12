@@ -6,170 +6,151 @@
 #include "m_Vector.h"
 #include "Base_Consts.h"
 
-#define default_cmdId 0
-
-class Atomic_Element
+enum func_type
 {
-
+	text,
+	pass,
+	value,
+	select,
+	button
 };
 
-class Atomic_Command_Element
+class Atomic_Base
 {
 private:
-	int __cmdId;
-	int GetCmdId() const { return __cmdId; }
-public:
-	Atomic_Command_Element(int _cmdId) { __cmdId = _cmdId; }
-	virtual  ~Atomic_Command_Element() {}
-	Property<int, Atomic_Command_Element> cmdId{ this, nullptr, &Atomic_Command_Element::GetCmdId };
-};
-
-
-template <class T>
-class Atomic_Attribute_Element
-{
-private:
+	int __id;
 	String __unit;
-	T *__value;
-	T *GetAttribute() const { return __value; }
-public:
-	Atomic_Attribute_Element(T *_pAttribute) { __value = _pAttribute; }
-	virtual  ~Atomic_Attribute_Element() {}
-	Property<T*, Atomic_Attribute_Element> atrribute{ this, nullptr, &Atomic_Attribute_Element::GetAttribute };
-};
-
-class Publisher_Element
-{
-protected:
-	String __class_name;
-public:
-	virtual String GetClassName();
-	Publisher_Element(String _lable, String _descr);
-	virtual  ~Publisher_Element();
-	String lable;
-	String descr;
-};
-
-
-class Value_Publisher : public Publisher_Element
-{
-private:
-	String __unit;
-	String __type;
-	void SetUnit(String _unit) { __unit = _unit; }
-	void SetType(String _type) { __type = _type; }
+	int GetId() const { return __id; }
 	String GetUnit() const { return __unit; }
-	String GetType() const { return __type; }
 public:
-	Value_Publisher(String _lable, String _descr) :
-		Publisher_Element(_lable, _descr) {
-		__class_name = "Value_Publisher";
-		__unit = "";
-		__type = "text";
-	}
-	virtual ~Value_Publisher() {}
-	virtual String ValueToString() const = 0;
-	Property<String, Value_Publisher> unit{ this, &Value_Publisher::SetUnit, &Value_Publisher::GetUnit };
-	Property<String, Value_Publisher> type{ this, &Value_Publisher::SetType, &Value_Publisher::GetType };
+	Atomic_Base(int _Id, String _unit) { __id = _Id; __unit = _unit; }
+	virtual  ~Atomic_Base() {}
+
+	Property<int, Atomic_Base> id{ this, nullptr, &Atomic_Base::GetId };
+	Property<String, Atomic_Base> unit{ this, nullptr, &Atomic_Base::GetUnit };
 };
 
+class Atomic_Impl : public Atomic_Base
+{
+public:
+	Atomic_Impl(int _id, String _unit) : Atomic_Base(id, _unit) {}
+	virtual String ValueToString() const = 0;
+};
 
 template <class T>
-class Value_Publisher_Impl : public Value_Publisher
+class Atomic : public Atomic_Impl
 {
 private:
-	Atomic_Attribute_Element<T> *__atomic_value_attr_elem;
-	T *GetValue() const {
-		if (__atomic_value_attr_elem)
-		{
-			return __atomic_value_attr_elem->atrribute;
+	T *__value;
+	void SetValue(T * _value) { __value = _value; }
+	T* GetValue() const { return __value; }
+public:
+	Atomic(int _id, T* _value, String _unit) : Atomic_Impl(_id, _unit) { __value = _value; }
+	virtual  ~Atomic() {}
+	virtual String ValueToString() const { return String(*__value); }
+};
+
+class Ctrl_Elem
+{
+private:
+	Vector<Atomic_Base*> *__vec_atomic;
+	func_type __type;
+	int __id;
+	String __name;
+	String __descr;
+	int __atomic_count;
+	bool __published;
+
+	bool GetPublished() const { return __published; }
+	String GetName() const { return __name; }
+	String GetDescr() const { return __descr; }
+	int GetId() const { return __id; }
+	func_type GetType() const { return __type; }
+	void SetPublished(bool _published) { __published = _published; }
+	int GetAtomicCount() const { return __atomic_count; }
+public:
+	Ctrl_Elem(int _id, String _name, func_type _type, String _descr = "Control Element Description") :
+		__id(_id),
+		__name(_name),
+		__type(_type),
+		__descr(_descr),
+		__atomic_count(0)
+	{
+		__vec_atomic = new Vector<Atomic_Base*>;
+	}
+
+	virtual ~Ctrl_Elem() {
+		delete __vec_atomic;
+	}
+
+	void AddAtomic(Atomic_Base *atomic) {
+		__vec_atomic->PushBack(atomic);
+		__atomic_count++;
+	}
+
+	Atomic_Base *GetAtomicByIndex(int _index) {
+		if ((index >= 0) && (_index < __atomic_count)) {
+			return (*__vec_atomic)[_index];
 		}
 		else {
 			return nullptr;
 		}
 	}
 
-	void SetValue(T *_valuePointer) {
-		if (__atomic_value_attr_elem)
-		{
-			delete __atomic_value_attr_elem;
-			__atomic_value_attr_elem = nullptr;
-		}
-		__atomic_value_attr_elem = new Atomic_Attribute_Element<T>(_valuePointer);
-	}
-public:
-	Value_Publisher_Impl(String _lable, String _descr) :
-		Value_Publisher(_lable, _descr) {
-		__atomic_value_attr_elem = nullptr;
-	}
-	
-	virtual String ValueToString() const
-	{
-		String result = "";
-		if (__atomic_value_attr_elem) {
-			result = String(*__atomic_value_attr_elem->atrribute);
-		}
-		return result;
-	}
-	Property<T*, Value_Publisher_Impl> value{ this, &Value_Publisher_Impl::SetValue, &Value_Publisher_Impl::GetValue };
+	Property<int, Ctrl_Elem> id1{ this, nullptr, &Ctrl_Elem::GetId };
+	Property<String, Ctrl_Elem> name{ this, nullptr, &Ctrl_Elem::GetName };
+	Property<func_type, Ctrl_Elem> type{ this, nullptr, &Ctrl_Elem::GetType };
+	Property<String, Ctrl_Elem> descr{ this, nullptr, &Ctrl_Elem::GetDescr };
+	Property<int, Ctrl_Elem> atomic_count{ this, nullptr, &Ctrl_Elem::GetAtomicCount };
+	Property<bool, Ctrl_Elem> published{ this, &Ctrl_Elem::SetPublished, &Ctrl_Elem::GetPublished };
 };
 
 
-class Button_Publisher : public Publisher_Element
+class Descriptor
 {
 private:
-	Atomic_Command_Element *atomic_cmd_elem;
-	int GetCommand() const;
-	void SetCommand(int _cmdId);
+	Vector<Ctrl_Elem*> *__vec_ctrl_elem;
+	int __id;
+	String __name;
+	String __descr;
+	bool __published;
+	int __ctrl_elem_count;
+
+	int GetCtrlElemCount() const { return __id; }
+	int GetId() const { return __id; }
+	bool GetPublished() const { return __published; }
+	void SetPublished(bool _published) { __published = _published; }
+	String GetName() const { return __name; }
+	void SetName(String _name) { __name = _name; }
+	String GetDescr() const { return __descr; }
+	void SetDescr(String _descr) { __descr = _descr; }
 public:
-	Button_Publisher(String _lable, String _descr);
-	virtual  ~Button_Publisher();
-	Property<int, Button_Publisher> cmdId{ this, &Button_Publisher::SetCommand, &Button_Publisher::GetCommand };
-};
+	Descriptor(int _id) :
+		__id(_id),
+		__name("Driver Descriptor"),
+		__descr("Driver Description"),
+		__ctrl_elem_count(0),
+		__published(false) {
+		__vec_ctrl_elem = new Vector<Ctrl_Elem*>;
+	};
+	virtual ~Descriptor() { delete  __vec_ctrl_elem; }
 
+	Ctrl_Elem *GetCtrlElemByIndex(int _index) {
+		if ((index >= 0) && (_index < __ctrl_elem_count))
+			return (*__vec_ctrl_elem)[_index];
+		else
+			return nullptr;
+	}
+	void Add_Descriptor_Element(Ctrl_Elem *_ctrl_elem) {
+		__vec_ctrl_elem->PushBack(_ctrl_elem);
+		__ctrl_elem_count++;
+	}
 
-class Switch_Publisher : public Publisher_Element
-{
-private:
-	Atomic_Attribute_Element<bool> *__atomic_status_attr_elem;
-	Atomic_Command_Element *__atomic_On_cmd_elem;
-	Atomic_Command_Element *__atomic_Off_cmd_elem;
-	int GetOnCommand() const;
-	void SetOnCommand(int _cmdId);
-	int GetOffCommand() const;
-	void SetOffCommand(int _cmdId);
-
-	bool *GetStatus() const;
-	void SetStatus(bool *_status);
-public:
-	Switch_Publisher(String _lable, String _descr);
-	virtual  ~Switch_Publisher() {}
-	Property<int, Switch_Publisher> cmdOnId{ this, &Switch_Publisher::SetOnCommand, &Switch_Publisher::GetOnCommand };
-	Property<int, Switch_Publisher> cmdOffId{ this, &Switch_Publisher::SetOffCommand, &Switch_Publisher::GetOffCommand };
-	Property<bool*, Switch_Publisher> status{ this, &Switch_Publisher::SetStatus, &Switch_Publisher::GetStatus };
-};
-
-
-class Publisher
-{
-private:
-	Vector<Publisher_Element*> *pub_elem_list;
-	int __driverId;
-	int __elem_count;
-	int GetElemCount() const;
-	int GetDriverId() const;
-public:
-	Publisher(int _driverId);
-
-	String name;
-	String descr;
-	bool published;
-
-	Publisher_Element *GetElemByIndex(int _index);
-	void Add_Publisher_Element(Publisher_Element *_elem);
-
-	Property<int, Publisher> elem_count{ this, nullptr, &Publisher::GetElemCount };
-	Property<int, Publisher> driverId{ this, nullptr, &Publisher::GetDriverId };
+	Property<int, Descriptor> id{ this, nullptr, &Descriptor::GetId };
+	Property<String, Descriptor> name{ this, &Descriptor::SetName, &Descriptor::GetName };
+	Property<String, Descriptor> descr{ this, &Descriptor::SetDescr, &Descriptor::GetDescr };
+	Property<int, Descriptor> ctrl_count{ this, nullptr, &Descriptor::GetCtrlElemCount };
+	Property<bool, Descriptor> published{ this, &Descriptor::SetPublished, &Descriptor::GetPublished };
 };
 
 
@@ -180,7 +161,7 @@ class Observer
 {
 public:
 	virtual ~Observer() {};		// Destructor
-	virtual void Notify(Vector <Publisher*> *pub_list) = 0;
+	virtual void Notify(Vector <Descriptor*> *driver_descr_list) = 0;
 protected:
 	//constructor is protected because this class is abstract, it’s only meant to be inherited!
 	Observer() {};
@@ -215,9 +196,9 @@ public:
 			return false;
 		}
 	};
-	bool NotifyObservers(Vector <Publisher*> *pub_list) {
+	bool NotifyObservers(Vector <Descriptor*> *driver_descr_list) {
 		for (int i = 0; i < m_ObserverVec->Size(); i++) {
-			(*m_ObserverVec)[i]->Notify(pub_list);
+			(*m_ObserverVec)[i]->Notify(driver_descr_list);
 		}
 	};
 protected:

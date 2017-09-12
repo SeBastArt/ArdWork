@@ -25,6 +25,8 @@ class Dash_Mqqt_Wifi_Module_Driver : public Mqqt_Wifi_Module_Driver
 	 void UpdateHardware(uint32_t deltaTime);
 
 	 void DoMQTTMessage(String message);
+protected:
+	void Build_Descriptor();
  public:
 	 Dash_Mqqt_Wifi_Module_Driver(String _hostname, String _ssid, String _password, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	 void AddComponent(Led_Device_Driver *led);

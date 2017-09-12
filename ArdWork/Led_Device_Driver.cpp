@@ -6,17 +6,12 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 	hasPullUp(_hasPullUp)
 {
 	driver_name = "Led_Device_Driver";
-	publisher->name = "Led";
-	publisher->descr = "Led-Device";
-	isOn = false;
-	Switch_Publisher *elem = new Switch_Publisher("Led", "Led is On or Off");
-	elem->cmdOnId = LED_DEVICE_DRIVER_PIN_HIGH;
-	elem->cmdOffId = LED_DEVICE_DRIVER_PIN_LOW;
-	elem->status = &isOn;
-
-	publisher->Add_Publisher_Element(elem);
-	publisher->published = true;
 };
+
+void Led_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "LED";
+	__descriptor->descr = "a simple LED";
+}
 
 void Led_Device_Driver::SetPullUp(bool _hasPullUp)
 {

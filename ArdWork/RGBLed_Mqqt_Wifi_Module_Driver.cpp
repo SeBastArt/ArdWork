@@ -17,6 +17,9 @@ RGBLed_Mqqt_Wifi_Module_Driver::RGBLed_Mqqt_Wifi_Module_Driver(String _hostname,
 	resident_luxmeter = NULL;
 }
 
+void RGBLed_Mqqt_Wifi_Module_Driver::Build_Descriptor() {
+}
+
 
 void RGBLed_Mqqt_Wifi_Module_Driver::UpdateHardware(uint32_t deltaTime)
 {

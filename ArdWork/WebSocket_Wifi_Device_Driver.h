@@ -31,6 +31,7 @@ private:
 protected:
 	void UpdateComm(uint32_t deltaTime);
 	void InitComm();
+	void Build_Descriptor();
 };
 
 #endif

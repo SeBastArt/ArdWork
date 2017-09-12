@@ -28,7 +28,7 @@ class Module_Driver : public Driver, public Observee
 {
 private:
 	bool isdebug;
-	Vector<Publisher*> *pub_List;
+	Vector<Descriptor*> *descriptor_List;
 	Vector<ThreadMessage*> queue;
 
 	int8_t button_index;
@@ -68,7 +68,7 @@ private:
 	void UpdateControls();
 protected:
 	Vector <Driver*> *device_list;
-	Vector <Publisher*> *GetPublisherList();
+	Vector <Descriptor*> *GetDescriptrorList();
 	Property<Button_Device_Driver*, Module_Driver> Selected_Button_Device{ this, nullptr, &Module_Driver::Get_Selected_Button_Device };
 	Property<Distance_Device_Driver*, Module_Driver> Selected_Distance_Device{ this, nullptr, &Module_Driver::Get_Selected_Distance_Device };
 	Property<Led_Device_Driver*, Module_Driver> Selected_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Led_Device };

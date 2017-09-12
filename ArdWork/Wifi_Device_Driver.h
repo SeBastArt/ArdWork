@@ -35,7 +35,7 @@ protected:
 	String hostname;
 	virtual void UpdateComm(uint32_t deltaTime) = 0;
 	virtual void InitComm() = 0;
-private:
+protected:
 	void DoAfterInit();
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();

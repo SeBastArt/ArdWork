@@ -14,6 +14,12 @@ WebServer_Wifi_Device_Driver::WebServer_Wifi_Device_Driver(Module_Driver * modul
 	server = new WiFiServer(80);
 }
 
+void WebServer_Wifi_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "WebServer";
+	__descriptor->descr = "door to the world";
+}
+
+
 void WebServer_Wifi_Device_Driver::UpdateControls()
 {
 }
@@ -46,7 +52,7 @@ void WebServer_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 	sResponse += "<h1>Demo f&uumlr ESP8266 Steuerung</h1>";
 	sResponse += "<FONT size=+1>";
 
-	sResponse += GenerateControlElemnts();
+	//sResponse += GenerateControlElemnts();
 
 	sResponse += "<FONT SIZE=-2>";
 	sResponse += "<BR>Aufrufz&auml;hler=";
@@ -127,20 +133,20 @@ String WebServer_Wifi_Device_Driver::GenerateJavaScript() {
 	String sScript;
 
 	sScript += "<script>";
-	if (!__pub_list->Empty()) {
-		for (int I = 0; I < __pub_list->Size(); I++) {
-			for (int j = 0; j < (*__pub_list)[I]->elem_count; j++) {
+	if (!__descriptor_list->Empty()) {
+		for (int I = 0; I < __descriptor_list->Size(); I++)
+			for (int j = 0; j < (*__descriptor_list)[I]->ctrl_count; j++) {
 				/*if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Button_Publisher")) {
 					sScript += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
 				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Value_Publisher")) {
 					sScript += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}*/
-				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Switch_Publisher")) {
+				/*if ((*__descriptor_list)[I]->GetElemByIndex(j)->GetClassName().equals("Switch_Publisher")) {
 					sScript += GenerateSwitchJS((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}
+				}*/
 			}
-		}
+
 	}
 	sScript += "</script>";
 	return sScript;
@@ -170,7 +176,7 @@ String WebServer_Wifi_Device_Driver::GenerateCSS() {
 void WebServer_Wifi_Device_Driver::SendResponse(WiFiClient _client, String _header, String _response)
 {
 	_client.print(_header);
-	_client.print(_response); 
+	_client.print(_response);
 
 	// and stop the client
 	_client.stop();
@@ -181,150 +187,27 @@ void WebServer_Wifi_Device_Driver::SendResponse(WiFiClient _client, String _head
 
 String WebServer_Wifi_Device_Driver::GenerateControlElemnts() {
 	String sResponse;
-	if (!__pub_list->Empty()) {
-		for (int I = 0; I < __pub_list->Size(); I++) {
-			for (int j = 0; j < (*__pub_list)[I]->elem_count; j++) {
-				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Button_Publisher")) {
-					sResponse += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+	if (!__descriptor_list->Empty()) {
+		for (int I = 0; I < __descriptor_list->Size(); I++)
+			for (int j = 0; j < (*__descriptor_list)[I]->ctrl_count; j++) {
+				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == button) {
+					//sResponse += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
-				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Value_Publisher")) {
-					sResponse += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == value) {
+					//sResponse += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
-				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Switch_Publisher")) {
-					sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == select) {
+					//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+				}
+				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == text) {
+					//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+				}
+				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == pass) {
+					//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 				}
 			}
-		}
 	}
 	return sResponse;
-}
-
-String WebServer_Wifi_Device_Driver::GenerateValue(int _driverId, Value_Publisher* _pub_elem)
-{
-	String response;
-	response = "";
-	response += "<p>";
-	response += "ID: " + String(_driverId);
-	response += "&nbsp;";
-	response += " Wert = " + String(_pub_elem->ValueToString());
-	response += "&nbsp;";
-	response += "<FONT SIZE=-1>";
-	response += _pub_elem->descr;
-	response += "<FONT SIZE=+1>";
-	response += "<BR>";
-	return response;
-}
-
-String WebServer_Wifi_Device_Driver::GenerateSwitchJS(int _driverId, Switch_Publisher * _pub_elem) {
-	String sScript;
-
-	//sScript += "function LEDswitch(){";
-	sScript += "function ";
-	sScript += "Func";
-	sScript += _pub_elem->lable;
-	sScript += "(){";
-	//sScript += "var LEDswitchCheck = document.getElementById('myonoffswitch').checked;";
-	sScript += "var SwitchCheck = document.getElementById('";
-	sScript += _pub_elem->lable + "switch').checked; ";
-	sScript += "if(SwitchCheck){";
-	sScript += "window.location.href = \"?";
-	sScript += StrDeviceId;
-	sScript += "=";
-	sScript += _driverId;
-	sScript += "&";
-	sScript += StrCmdId;
-	sScript += "=";
-	sScript += _pub_elem->cmdOnId;
-	sScript += "\"";
-	sScript += "}";
-	sScript += "else {";
-	sScript += "window.location.href = \"?";
-	sScript += StrDeviceId;
-	sScript += "=";
-	sScript += _driverId;
-	sScript += "&";
-	sScript += StrCmdId;
-	sScript += "=";
-	sScript += _pub_elem->cmdOffId;
-	sScript += "\"";
-	sScript += "}";
-	sScript += "}";
-	return sScript;
-}
-
-String WebServer_Wifi_Device_Driver::GenerateSwitchHtml(int _driverId, Switch_Publisher * _pub_elem)
-{
-	String sSwitch;
-	sSwitch += "<p>";
-	sSwitch += "ID: " + String(_driverId);
-	sSwitch += "&nbsp;";
-	sSwitch += "Lable: " + _pub_elem->lable;
-	sSwitch += "&nbsp;";
-	sSwitch += "<div class='onoffswitch'>";
-
-	if (*(_pub_elem->status) == true)
-	{
-		//sSwitch += "<input type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='myonoffswitch' checked='checked' onclick='LEDswitch()'>";
-		sSwitch += "<input type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='";
-		sSwitch += _pub_elem->lable + "switch' ";
-		sSwitch += "checked = 'checked' onclick = '";
-		sSwitch += "Func";
-		sSwitch += _pub_elem->lable;
-		sSwitch += "()'>";
-	} //end if
-	else if (*(_pub_elem->status) == false)
-	{
-		//sSwitch += "<input type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='myonoffswitch' onclick='LEDswitch()'>";
-		sSwitch += "<input type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='";
-		sSwitch += _pub_elem->lable + "switch' ";
-		sSwitch += " onclick='";
-		sSwitch += "Func";
-		sSwitch += _pub_elem->lable;
-		sSwitch += "()'>";
-	} //end else
-
-	//sSwitch += "<label class='onoffswitch-label' for='myonoffswitch'>";
-	sSwitch += "<label class='onoffswitch-label' for='";
-	sSwitch += _pub_elem->lable + "switch'>";
-	sSwitch += "<span class='onoffswitch-inner'></span>";
-	sSwitch += "<span class='onoffswitch-switch'></span>";
-	sSwitch += "</label>";
-	sSwitch += "</div>";
-	sSwitch += "&nbsp;";
-	sSwitch += "<FONT SIZE=-1>";
-	sSwitch += _pub_elem->descr;
-	sSwitch += "<FONT SIZE=+1>";
-	return sSwitch;
-}
-
-String WebServer_Wifi_Device_Driver::GenerateButton(int _driverId, Button_Publisher * _pub_elem)
-{
-	String response;
-	response = "";
-	response += "<p>";
-	response += "ID: " + String(_driverId);
-	response += "&nbsp;";
-	response += "Lable: " + _pub_elem->lable;
-	response += "&nbsp;";
-	response += _pub_elem->lable;
-	response += "&nbsp;";
-	response += "<a href=\"?";
-	response += StrDeviceId;
-	response += "=";
-	response += _driverId;
-	response += "&";
-	response += StrCmdId;
-	response += "=";
-	response += _pub_elem->cmdId;
-	response += "\">";
-	response += "<button>" + String(_pub_elem->lable) + "</button>";
-	response += "</a>";
-	response += "&nbsp;";
-	response += "<FONT SIZE=-1>";
-	response += _pub_elem->descr;
-	response += "<FONT SIZE=+1>";
-	response += "<BR>";
-	return response;
 }
 
 

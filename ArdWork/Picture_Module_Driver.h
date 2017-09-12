@@ -26,7 +26,7 @@ protected:
 	void DoAfterInit();
 	void DoModuleMessage(Int_Thread_Msg message);
 	void DoThreadMessage(ThreadMessage *message);
-
+	void Build_Descriptor();
 public:
 	void Exec_Pattern_Next();
 	void Exec_Pattern_Prev();

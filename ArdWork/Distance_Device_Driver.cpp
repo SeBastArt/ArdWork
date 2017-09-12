@@ -11,13 +11,21 @@ Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pi
 {
 	driver_name = "Distance_Device_Driver";
 	_distance = 0.0;
-	publisher->name = "SuperSonic Distance";
-	publisher->descr = "Distance to target";
-	Value_Publisher_Impl<float> *elem = new Value_Publisher_Impl<float>("Distance", "Distance to Target");
-	elem->unit = "cm";
-	elem->value = &_distance;
-	publisher->Add_Publisher_Element(elem);
-	publisher->published = true;
+}
+
+void Distance_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "SuperSonic Distance";
+	__descriptor->descr = "Distance to target";
+	__descriptor->published = true;
+
+	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(0, "Distance", value, "measure the distance to a target via supersonic");
+	ctrl_elem->published = true;
+
+	Atomic<float> *atomic_distance = new Atomic<float>(0, &_distance, "cm");
+
+	ctrl_elem->AddAtomic(atomic_distance);
+
+	__descriptor->Add_Descriptor_Element(ctrl_elem);
 }
 
 

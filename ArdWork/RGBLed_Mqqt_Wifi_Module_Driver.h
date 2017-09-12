@@ -28,6 +28,10 @@ private:
 
 	void DoMQTTMessage(String message);
 	int Find_text(String needle, String haystack);
+
+protected:
+	void Build_Descriptor();
+
 public:
 	RGBLed_Mqqt_Wifi_Module_Driver(String _hostname, String _ssid, String _password, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	void AddComponent(Led_Device_Driver *led);

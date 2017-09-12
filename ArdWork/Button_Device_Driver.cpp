@@ -6,12 +6,17 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 	hasPullUp(_hasPullUp)
 {
 	driver_name = "Button_Device_Driver";
-	publisher->name = "Button";
-	publisher->descr = "Push Me";
-	Button_Publisher *elem = new Button_Publisher("Push", "Push the Button");
-	elem->cmdId = BUTTON_DEVICE_DRIVER_PUSH_BUTTON;
-	publisher->Add_Publisher_Element(elem);
-	publisher->published = true;
+}
+
+void Button_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "Button";
+	__descriptor->descr = "a simple button";
+	__descriptor->published = true;
+
+	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, "Pres Me", button, "Press the button");
+	ctrl_elem->published = true;
+
+	__descriptor->Add_Descriptor_Element(ctrl_elem);
 }
 
 void Button_Device_Driver::DoAfterInit()

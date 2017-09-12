@@ -33,6 +33,12 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	strip->Begin();
 };
 
+void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "RGB-LED";
+	__descriptor->descr = "controls the RGB-LED-Stripe";
+}
+
+
 void Uart_GRBW_Led_Device_Driver::DoAfterInit()
 {
 	//moveEase = NeoEase::Linear;

@@ -26,6 +26,7 @@ private:
 	void DoDeviceMessage(Int_Thread_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void DoExecuteCommand(String _command);
+	void Build_Descriptor();
 
 private:
 	IO_Pin* pin;

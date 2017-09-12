@@ -38,7 +38,7 @@ private:
 	void DoDeviceMessage(Int_Thread_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void DoExecuteCommand(String _command);
-	
+	void Build_Descriptor();
 	void Do_Push_Button();
 public:
 	Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp = false, uint8_t priority = THREAD_PRIORITY_NORMAL);

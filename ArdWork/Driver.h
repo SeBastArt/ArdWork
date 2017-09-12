@@ -24,7 +24,7 @@ private:
 		return __DriverId;
 	}
 protected:
-	Publisher *publisher;
+	Descriptor *__descriptor;
 	String driver_name;
 	static int driver_count;
 	int error_Code;
@@ -41,6 +41,7 @@ protected:
 	virtual void DoMessage(Int_Thread_Msg message) = 0;
 	virtual void DoUpdate(uint32_t deltaTime) = 0;
 	virtual void DoInit() = 0;
+	virtual void Build_Descriptor() = 0;
 	virtual void DoShutdown() = 0;
 	virtual void DoSuspend() = 0;
 public:
@@ -57,7 +58,7 @@ public:
 	bool isBusy() const;
 	bool isInactive() const;
 
-	Publisher *GetPublisher();
+	Descriptor *GetDescriptor();
 	String GetDriverName();
 	void Exec_Command(int _cmdId, String _command);
 };

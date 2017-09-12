@@ -368,9 +368,6 @@
     <ClCompile Include="Module_Driver.cpp">
       <Filter>Source Files\Driver\Module_Driver</Filter>
     </ClCompile>
-    <ClCompile Include="Led_Button_Module_Driver.cpp">
-      <Filter>Source Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
-    </ClCompile>
     <ClCompile Include="Button_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
     </ClCompile>
@@ -448,9 +445,6 @@
     </ClCompile>
     <ClCompile Include="Thread\ThreadManager.cpp">
       <Filter>Header Files\Helper\Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="Publisher.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WebSocket_Wifi_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebSocket_Wifi_Device_Driver</Filter>

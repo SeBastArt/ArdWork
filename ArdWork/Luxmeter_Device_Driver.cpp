@@ -8,16 +8,27 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 	Device_Driver(module, priority)
 {
 	driver_name = "Luxmeter_Device_Driver";
-
-	publisher->name = "Luxmeter";
-	publisher->descr = "messeaure brightness";
-	Value_Publisher_Impl<float> *elem = new Value_Publisher_Impl<float>("Luxmeter", "actual brightness");
-	elem->unit = "lux";
-	elem->type = "number";
-	elem->value = &lastLux;
-	publisher->Add_Publisher_Element(elem);
-	publisher->published = true;
 	tsl = new Adafruit_TSL2561_Unified(adress, 1);
+}
+
+
+void Luxmeter_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "Luxmeter";
+	__descriptor->descr = "messeaure brightness";
+	__descriptor->published = true;
+
+	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Integrationtime", select, "Beschreibung");
+	ctrl_elem->published = true;
+
+	Atomic<int> *atomic_13ms = new Atomic<int>(0, &__integrationTime, "ms");
+	Atomic<int> *atomic_101ms = new Atomic<int>(1, &__integrationTime, "ms");
+	Atomic<int> *atomic_402ms = new Atomic<int>(2, &__integrationTime, "ms");
+
+	ctrl_elem->AddAtomic(atomic_13ms);
+	ctrl_elem->AddAtomic(atomic_101ms);
+	ctrl_elem->AddAtomic(atomic_402ms);
+
+	__descriptor->Add_Descriptor_Element(ctrl_elem);
 }
 
 void Luxmeter_Device_Driver::DoAfterInit()
@@ -37,12 +48,8 @@ void Luxmeter_Device_Driver::DoAfterInit()
 		// tsl.setGain(TSL2561_GAIN_16X);     /* 16x gain ... use in low light to boost sensitivity */
 		tsl->enableAutoRange(true);            /* Auto-gain ... switches automatically between 1x and 16x */
 
-											  /* Changing the integration time gives you better sensor resolution (402ms = 16-bit data) */
-		tsl->setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);      /* fast but low resolution */
-		// tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_101MS);  /* medium resolution and speed   */
-		// tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_402MS);  /* 16-bit data but slowest conversions */
-
-																   /* Update these values depending on what you've set above! */
+		Set_Integration_Time(TSL2561_INTEGRATIONTIME_101MS);
+		/* Update these values depending on what you've set above! */
 		Serial.println("------------------------------------");
 		Serial.print("Gain:         "); Serial.println("Auto");
 		Serial.print("Timing:       "); Serial.println("13 ms");
@@ -148,7 +155,23 @@ void Luxmeter_Device_Driver::Set_Accuracy_Delay(uint16 _milliseconds) {
 }
 
 void Luxmeter_Device_Driver::Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime) {
+	switch (_integrationTime)
+	{
+	TSL2561_INTEGRATIONTIME_13MS:
+		__integrationTime = 13;
+	TSL2561_INTEGRATIONTIME_101MS:
+		__integrationTime = 101;
+	TSL2561_INTEGRATIONTIME_402MS:
+		__integrationTime = 402;
+	default:
+		break;
+	}
+
 	tsl->setIntegrationTime(_integrationTime);
+	/* Changing the integration time gives you better sensor resolution (402ms = 16-bit data) */
+	// tsl->setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);      /* fast but low resolution */
+	// tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_101MS);  /* medium resolution and speed   */
+	// tsl.setIntegrationTime(TSL2561_INTEGRATIONTIME_402MS);  /* 16-bit data but slowest conversions */
 }
 
 void Luxmeter_Device_Driver::Set_Set_Gain(tsl2561Gain_t _gain) {

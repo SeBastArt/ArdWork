@@ -13,6 +13,9 @@ Dash_Mqqt_Wifi_Module_Driver::Dash_Mqqt_Wifi_Module_Driver(String _hostname, Str
 	resident_Led = NULL;
 }
 
+void Dash_Mqqt_Wifi_Module_Driver::Build_Descriptor() {
+}
+
 void Dash_Mqqt_Wifi_Module_Driver::UpdateHardware(uint32_t deltaTime)
 {
 	if ((resident_button != NULL) && (resident_Led != NULL)) {

@@ -15,8 +15,6 @@
 #include "Index_html.h"
 
 
-
-
 class WebServer_Wifi_Device_Driver : public Wifi_Device_Driver
 {
 public:
@@ -28,10 +26,6 @@ private:
 	WiFiServer *server;
 	String GenerateHeader(String _response, bool _found);
 	String GenerateJavaScript();
-	String GenerateValue(int _driverId, Value_Publisher * _pub_elem);
-	String GenerateSwitchJS(int _driverId, Switch_Publisher * _pub_elem);
-	String GenerateSwitchHtml(int _driverId, Switch_Publisher * _pub_elem);
-	String GenerateButton(int _driverId, Button_Publisher * _pub_elem);
 	String GetKey(String requestpart);
 	String GetValue(String requestpart);
 protected:
@@ -43,7 +37,7 @@ protected:
 	void SendResponse(WiFiClient _client, String _header, String _response);
 	void CheckComm(WiFiClient _client);
 	void InitComm();
-
+	void Build_Descriptor();
 	
 };
 

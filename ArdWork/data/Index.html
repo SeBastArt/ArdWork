@@ -6,18 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- SCRIPT -->
-    <script src="dist/js/jquery.min.js"></script>
-    <script src="dist/js/kube.min.js"></script>
-    <script src="dist/js/jscolor.min.js"></script>
-    <script src="dist/js/chartist.min.js"></script>
-
-    <!--  CSS -->
-    <link rel="stylesheet" href="dist/css/chartist.min.css">
-    <link rel="stylesheet" href="dist/css/kube.min.css">
-    <link rel="stylesheet" href="dist/css/bttn.min.css">
-
-
+   
     <script>
         function update() {
             var data = {
@@ -31,6 +20,49 @@
             new Chartist.Bar('.chart2', data);
             new Chartist.Line('.chart3', data);
         }
+		
+		 var connection = new WebSocket('ws://' + location.hostname + ':81/', ['arduino']);
+
+        connection.onopen = function () {
+            connection.send('Connect ' + new Date());
+        };
+
+        connection.onerror = function (error) {
+            console.log('WebSocket Error ', error);
+        };
+
+        connection.onmessage = function (e) {
+            if (e.data.indexOf('subProtocol') == -1)
+                document.getElementById('response').innerHTML = e.data + '<br/>';
+        };
+
+        function sendMessage(msg) {
+            connection.send(msg);
+        }
+
+		function SendSSID() {
+			var SSID = '#' + parseInt(document.getElementById('SSID').value).toString;
+			connection.send(SSID);
+		}
+		
+		function SendPassword() {
+			var Password = '#' + parseInt(document.getElementById('Password').value).toString;
+			connection.send(Password);
+		}
+		
+        function sendRGB() {
+            var r = parseInt(document.getElementById('r').value).toString(16);
+            var g = parseInt(document.getElementById('g').value).toString(16);
+            var b = parseInt(document.getElementById('b').value).toString(16);
+            if (r.length < 2) { r = '0' + r; }
+            if (g.length < 2) { g = '0' + g; }
+            if (b.length < 2) { b = '0' + b; }
+
+            var rgb = '#' + r + g + b;
+            console.log('RGB: ' + rgb);
+            connection.send(rgb);
+		}
+		
     </script>
     <style>
         body {
@@ -214,27 +246,27 @@
             <div class="head-line small">Steuerung</div>
             <br>
             <p id="my_p">
-                <form method="post" action="" class="form">
+            
                     <div class="form-item">
                         <div class="append w45 w100-sm small">
-                            <input type="text" name="Wifi-SSID" class="small" placeholder="SSID">
-                            <button class="button small">Set</button>
+                            <input type="text" id="SSID" class="small" placeholder="SSID">
+                            <button class="button small" onclick='SendSSID();'>Set</button>
                         </div>
                         <div class="desc">Set SSID</div>
                     </div>
-                </form>
+                         
 
-                <form method="post" action="" class="form">
+        
                     <div class="form-item">
                         <div class="append w45 w100-sm small">
-                            <input type="password" name="Wifi-Password" class="small" placeholder="Password">
-                            <button class="button small">Set</button>
+                            <input type="password" id="Password" class="small" placeholder="Password">
+                            <button class="button small" onclick='SendPassword();>Set</button>
                         </div>
                         <div class="desc">Set Password</div>
                     </div>
-                </form>
+            
 
-                <form method="post" action="" class="form">
+         
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">
@@ -247,13 +279,10 @@
                         </div>
                         <div class="desc">Set Wifi-Mode</div>
                     </div>
-                </form>
-
-                <form method="post" action="" class="form">
+     
                     <div class="form-item">
                         <button class="button small">Reconnect</button>
                     </div>
-                </form>
             </p>
             <br>
         </div>
@@ -279,7 +308,6 @@
             <div class="head-line small">Steuerung</div>
             <br>
             <p>
-                <form method="post" action="" class="form">
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">
@@ -290,7 +318,6 @@
                         </div>
                         <div class="desc">Set Debug-Mode</div>
                     </div>
-                </form>
 
             </p>
         </div>
@@ -315,7 +342,6 @@
             <div class="head-line small">Steuerung</div>
             <br>
             <p>
-                <form method="post" action="" class="form">
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">
@@ -328,9 +354,7 @@
                         </div>
                         <div class="desc">Pick a pattern</div>
                     </div>
-                </form>
 
-                <form method="post" action="" class="form">
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <input value="e3e3e3" class="small jscolor {mode:'HSV',width:243, height:150, position:'right',
@@ -339,9 +363,7 @@
                         </div>
                         <div class="desc">Pick a color</div>
                     </div>
-                </form>
 
-                <form method="post" action="" class="form">
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">
@@ -352,7 +374,6 @@
                         </div>
                         <div class="desc">Set on/off</div>
                     </div>
-                </form>
             </p>
         </div>
 
@@ -378,8 +399,6 @@
             <div class="head-line small">Steuerung</div>
             <br>
             <p>
-
-                <form method="post" action="" class="form">
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">
@@ -390,9 +409,7 @@
                         </div>
                         <div class="desc">Pick a format</div>
                     </div>
-                </form>
 
-                <form method="post" action="" class="form">
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">
@@ -404,9 +421,7 @@
                         </div>
                         <div class="desc">Pick a integration time</div>
                     </div>
-                </form>
 
-                <form method="post" action="" class="form">
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">
@@ -418,7 +433,7 @@
                         </div>
                         <div class="desc">Pick a Gain</div>
                     </div>
-                </form>
+
                 <br>
                 <center><strong>Helligkeitswerte der letzten 24h<strong></center>
                 <br>
@@ -428,15 +443,11 @@
             </p>
         </div>
 
-
-
-
-        <form method="post" action="" class="form">
+		<div id="response"></div>
             <div class="form-item">
                 <div><button style="width:100%; margin-bottom: 2px;" class="button small">Save Config</button></div>
 
             </div>
-        </form>
 
     </div>
 </body>

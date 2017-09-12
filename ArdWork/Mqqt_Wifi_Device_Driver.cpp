@@ -24,6 +24,11 @@ Mqqt_Wifi_Device_Driver::Mqqt_Wifi_Device_Driver(Module_Driver * module, String 
 	client->setCallback(EventMsgIn);
 }
 
+void Mqqt_Wifi_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "Luxmeter";
+	__descriptor->descr = "messeaure brightness";
+}
+
 
 void Mqqt_Wifi_Device_Driver::EventMsgIn(char* topic, uint8_t* payload, unsigned int length) {
 	Serial.print("Message arrived [");

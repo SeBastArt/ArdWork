@@ -16,23 +16,13 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	Module_Driver(priority)
 {
 	driver_name = "Picture_Module_Driver";
-	publisher->name = "Picture";
-	publisher->descr = "nice looking picture background";
-
-	Button_Publisher *next_elem = new Button_Publisher("Next", "switch to the next led-pattern");
-	next_elem->cmdId = PICTURE_MODULE_DRIVER_PATTERN_NEXT;
-	Button_Publisher *prev_elem = new Button_Publisher("Prev", "switch to the previous led-pattern");
-	prev_elem->cmdId = PICTURE_MODULE_DRIVER_PATTERN_PREV;
-	Button_Publisher *off_elem = new Button_Publisher("Off", "turn background off");
-	off_elem->cmdId = PICTURE_MODULE_DRIVER_PATTERN_OFF;
-
-	publisher->Add_Publisher_Element(next_elem);
-	publisher->Add_Publisher_Element(prev_elem);
-	publisher->Add_Publisher_Element(off_elem);
-
-	publisher->published = true;
 }
 
+void Picture_Module_Driver::Build_Descriptor() {
+	__descriptor->name = "Picture Module";
+	__descriptor->descr = "control the picture";
+	__descriptor->published = true;
+}
 
 
 void Picture_Module_Driver::DoBeforeSuspend()

@@ -11,7 +11,7 @@ Driver::Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) :
 	Thread(MsToThreadTime(priority))
 {
 	driver_count++;
-	publisher = new Publisher(driver_count);
+	__descriptor = new Descriptor(driver_count);
 	__DriverId = driver_count;
 }
 
@@ -46,6 +46,7 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 				//Serial.print("Driver::OnUpdate::DRIVER_INIT with ");
 				//Serial.println(GetDriverName());
 				DoInit();
+				Build_Descriptor();
 				break;
 			}
 			case DRIVER_SHUTDOWN:
@@ -91,12 +92,10 @@ void Driver::ExecSuspend() {
 	PostMessage(&message);
 }
 
-Publisher *Driver::GetPublisher()
+Descriptor *Driver::GetDescriptor()
 {
-	return publisher;
+	return __descriptor;
 }
-
-
 
 int Driver::GetError() {
 	return error_Code;
