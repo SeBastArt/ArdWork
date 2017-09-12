@@ -60,11 +60,11 @@ void Mqqt_Wifi_Module_Driver::SetupComm() {
 			// ... and resubscribe
 			client->subscribe(&inTopic[0]);
 			isCommConnected = true;
-			wifi_status_Led->Exec_Set_IO_Pin_Low();
+			wifi_status_Led->Exec_Set_Led_Off();
 			connRetry = 0;
 		}
 		else {
-			wifi_status_Led->Exec_Set_IO_Pin_High();
+			wifi_status_Led->Exec_Set_Led_On();
 			Serial.print("failed, rc=");
 			Serial.print(client->state());
 			Serial.println(" try again in 5 seconds");
@@ -90,7 +90,7 @@ void Mqqt_Wifi_Module_Driver::UpdateComm(uint32_t deltaTime) {
 
 void Mqqt_Wifi_Module_Driver::CheckComm(uint32_t deltaTime) {
 	if (!isCommConnected) {
-		wifi_status_Led->Exec_Set_IO_Pin_High();
+		wifi_status_Led->Exec_Set_Led_On();
 	}
 	if (!client->connected()) {
 		if (connRetry < 3) {

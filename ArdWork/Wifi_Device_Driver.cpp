@@ -24,20 +24,16 @@ void Wifi_Device_Driver::DoAfterInit()
 	const char* _ssid = &Ssid[0];
 	const char* _password = &Password[0];
 
-	WiFi.mode(WIFI_AP);
-	WiFi.softAP(_ssid, _password);
-	WiFi.begin();
-
-	//if (WiFi.status() != WL_CONNECTED) {
+	if (WiFi.status() != WL_CONNECTED) {
 		Serial.println("WiFi_Module_Driver initialized!");
-		//WiFi.begin(_ssid, _password);
+		WiFi.begin(_ssid, _password);
 		Serial.print("Try to Connect to [");
 		Serial.print(Ssid);
 		Serial.print("] with Passwort [");
 		Serial.print(Password);
 		Serial.println("]");
 		InitComm();
-	//}	
+	}
 	Serial.println("Wifi_Device_Driver::DoAfterInit() Done");
 }
 
@@ -55,7 +51,7 @@ void Wifi_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 
 void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
 {
-	/*if (WiFi.status() != WL_CONNECTED) {
+	if (WiFi.status() != WL_CONNECTED) {
 		if (isConnected == true) {
 			Serial.println("Connection lost...");
 			Serial.println("Try to reconnect...");
@@ -64,12 +60,12 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
 		conn_delta += deltaTime;
 		if (conn_delta > conn_delay) {
 			if (statusLED != NULL)
-				statusLED->Exec_Set_IO_Pin_Blink(200);
+				statusLED->Exec_Set_Led_Blink(200);
 			conn_delta = 0;
 			Serial.print(".");
 		}
 	}
-	else { */
+	else {
 		if (!isConnected) {
 			Serial.println("WiFi connected");
 			Serial.print("IP address: ");
@@ -77,10 +73,10 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
 			localhost = WiFi.localIP();
 			isConnected = true;
 			if (statusLED != NULL)
-				statusLED->Exec_Set_IO_Pin_Low();
+				statusLED->Exec_Set_Led_Off();
 		}
 		UpdateComm(deltaTime);
-	//}
+	}
 }
 
 void Wifi_Device_Driver::SetWiFiStatusLed(Led_Device_Driver *led) {

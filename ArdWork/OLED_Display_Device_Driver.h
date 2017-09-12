@@ -27,13 +27,12 @@ private:
 	void DoBeforeSuspend();
 	void DoCustomDisplayMessage(Int_Thread_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void DoExecuteCommand(String _command);
 	void Build_Descriptor();
 
 //OLED_Diplay_device_Driver
 private:
-	Adafruit_SSD1306 *display;
-	uint8_t reset_pin;
+	Adafruit_SSD1306 *__display;
+	uint8_t __reset_pin;
 
 protected:
 	void DoClear();

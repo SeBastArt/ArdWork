@@ -19,46 +19,45 @@ public:
 	Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp = false, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	void SetPullUp(bool _hasPullUp);
  private:
-	 bool isOn;
-	 bool hasPullUp;
+	 bool __ledStatus;
+	 bool __hasPullUp;
 	 //Led control
-	 IO_Pin* pin;
+	 IO_Pin* __pin;
 
 	 //Blink
-	 bool blink_flag;
-	 uint16_t blink_delta;
-	 uint16_t blink_delay;
-	 bool blink_On_Off;
+	 bool __blink_flag;
+	 uint16_t __blink_delta;
+	 uint16_t __blink_delay;
 
 	 //Pulse
-	 bool pulse_flag;
-	 uint16_t pulse_delta;
-	 uint16_t pulse_delay;
-	 bool pulse_On_Off;
-	 uint8_t pulse_counter;
-	 uint8_t pulse_count;
+	 bool __pulse_flag;
+	 uint16_t __pulse_delta;
+	 uint16_t __pulse_delay;
+	 uint8_t __pulse_counter;
+	 uint8_t __pulse_count;
 
 	 void DoAfterInit();
 	 void DoBeforeShutdown();
 	 void DoBeforeSuspend();
 	 void DoDeviceMessage(Int_Thread_Msg message);
 	 void DoUpdate(uint32_t deltaTime);
-	 void DoExecuteCommand(String _command);
 	 void Build_Descriptor();
 
+	 void Set_IO_Pin_High();
+	 void Set_IO_Pin_Low();
 	 void Blink(uint32_t deltaTime);
 	 void Pulse(uint32_t deltaTime);
 
 protected:
-	void Set_IO_Pin_High();
-	void Set_IO_Pin_Low();
-	void Set_IO_Pin_Blink(uint16_t delay);
-	void Set_IO_Pin_Pulse(uint16_t count, uint16_t delay);
+	void Set_Led_On();
+	void Set_Led_Off();
+	void Set_Led_Blink(uint16_t delay);
+	void Set_Led_Pulse(uint16_t count, uint16_t delay);
 public:
-	void Exec_Set_IO_Pin_High();
-	void Exec_Set_IO_Pin_Low();
-	void Exec_Set_IO_Pin_Blink(uint16_t delay);
-	void Exec_Set_IO_Pin_Pulse(uint16_t count, uint16_t delay);
+	void Exec_Set_Led_On();
+	void Exec_Set_Led_Off();
+	void Exec_Set_Led_Blink(uint16_t delay);
+	void Exec_Set_Led_Pulse(uint16_t count, uint16_t delay);
 	int GetPinNumber();
 };
 

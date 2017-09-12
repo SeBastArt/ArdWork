@@ -18,26 +18,25 @@
 class Button_Device_Driver : public Device_Driver
 {
 private:
-	IO_Pin* pin ;
-	static const uint16_t _next_msg = 200; // (30-100) are good values
-	static const uint16_t _debouceMs = 50; // (30-100) are good values
-	static const uint16_t _repeatDelayMs = 1600; // (400 - 1200) are reasonable values
-	static const uint16_t _repeatRateMs = 50; // (40-1000) are reasonable
-	uint16_t _timer;
+	IO_Pin* __pin ;
+	static const uint16_t __next_msg = 200; // (30-100) are good values
+	static const uint16_t __debouceMs = 50; // (30-100) are good values
+	static const uint16_t __repeatDelayMs = 1600; // (400 - 1200) are reasonable values
+	static const uint16_t __repeatRateMs = 50; // (40-1000) are reasonable
+	uint16_t __timer;
 
-	Button_State sys_state;
-	Button_State last_state;
-	uint32 last_tick;
+	Button_State __sys_state;
+	Button_State __last_state;
+	uint32 __last_tick;
 
-	bool hasPullUp;
-	unsigned int lastMessage;
+	bool __hasPullUp;
+	unsigned int __lastMessage;
 private:
 	void DoAfterInit();
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
 	void DoDeviceMessage(Int_Thread_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void DoExecuteCommand(String _command);
 	void Build_Descriptor();
 	void Do_Push_Button();
 public:

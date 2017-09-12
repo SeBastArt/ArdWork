@@ -32,8 +32,6 @@ private:
 
 	static String mqtt_message;
 	static void EventMsgIn(char* topic, uint8_t* payload, unsigned int length);
-
-	void DoExecuteCommand(String _command);
 protected:
 	Vector <String*> msg_list;
 	void UpdateComm(uint32_t deltaTime);

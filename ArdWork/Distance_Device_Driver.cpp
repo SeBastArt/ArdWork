@@ -6,11 +6,11 @@
 
 Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pin_trig, uint8_t pin_echo, uint8_t priority) :
 	Device_Driver(module, priority),
-	pin_t(pin_trig),
-	pin_e(pin_echo)
+	__pin_t(pin_trig),
+	__pin_e(pin_echo)
 {
 	driver_name = "Distance_Device_Driver";
-	_distance = 0.0;
+	__distance = 0.0;
 }
 
 void Distance_Device_Driver::Build_Descriptor() {
@@ -21,7 +21,7 @@ void Distance_Device_Driver::Build_Descriptor() {
 	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(0, "Distance", value, "measure the distance to a target via supersonic");
 	ctrl_elem->published = true;
 
-	Atomic<float> *atomic_distance = new Atomic<float>(0, &_distance, "cm");
+	Atomic<float> *atomic_distance = new Atomic<float>(0, &__distance, "cm");
 
 	ctrl_elem->AddAtomic(atomic_distance);
 
@@ -51,8 +51,4 @@ void Distance_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
 
 void Distance_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
-}
-
-void Distance_Device_Driver::DoExecuteCommand(String _command)
-{
 }

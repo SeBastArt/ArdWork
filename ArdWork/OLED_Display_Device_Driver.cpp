@@ -8,8 +8,8 @@
 
 OLED_Display_Device_Driver::OLED_Display_Device_Driver(Module_Driver* module, uint8_t _reset_pin, uint8_t priority) : Display_Device_Driver(module, priority) {
 	driver_name = "OLED_Display_Device_Driver";
-	reset_pin = _reset_pin;
-	display = new Adafruit_SSD1306(reset_pin);
+	__reset_pin = _reset_pin;
+	__display = new Adafruit_SSD1306(__reset_pin);
 };
 
 void OLED_Display_Device_Driver::Build_Descriptor() {
@@ -19,7 +19,7 @@ void OLED_Display_Device_Driver::Build_Descriptor() {
 
 void OLED_Display_Device_Driver::DoAfterInit()
 {
-	display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
+	__display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
 	DoClear();
 	Serial.println("OLED-Driver initialized!");
 }
@@ -36,10 +36,6 @@ void OLED_Display_Device_Driver::DoBeforeSuspend()
 
 void OLED_Display_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
-}
-
-void OLED_Display_Device_Driver::DoExecuteCommand(String _command)
-{
 }
 
 
@@ -192,125 +188,125 @@ void OLED_Display_Device_Driver::DoCustomDisplayMessage(Int_Thread_Msg message)
 
 
 void OLED_Display_Device_Driver::DoClear() {
-	display->clearDisplay();
-	display->display();
+	__display->clearDisplay();
+	__display->display();
 }
 
 void OLED_Display_Device_Driver::DoFlush() {
-	display->display();
+	__display->display();
 }
 
 void OLED_Display_Device_Driver::DoInvert(uint8_t i)
 {
-	display->invertDisplay(i);
+	__display->invertDisplay(i);
 }
 
 void OLED_Display_Device_Driver::DoDrawPixel(uint16_t x_pos, uint16_t y_pos, uint16_t color) {
-	display->drawPixel(x_pos, y_pos, color);
+	__display->drawPixel(x_pos, y_pos, color);
 }
 
 void OLED_Display_Device_Driver::DoDrawCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color)
 {
-	display->drawCircle(x0, y0, r, color);
+	__display->drawCircle(x0, y0, r, color);
 }
 
 void OLED_Display_Device_Driver::DoDrawFilledCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color)
 {
-	display->fillCircle(x0, y0, r, color);
+	__display->fillCircle(x0, y0, r, color);
 }
 
 void OLED_Display_Device_Driver::DoDrawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color)
 {
-	display->drawTriangle(x0, y0, x1, y1, x2, y2, color);
+	__display->drawTriangle(x0, y0, x1, y1, x2, y2, color);
 }
 
 void OLED_Display_Device_Driver::DoDrawFilledTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color)
 {
-	display->fillTriangle(x0, y0, x1, y1, x2, y2, color);
+	__display->fillTriangle(x0, y0, x1, y1, x2, y2, color);
 }
 
 void OLED_Display_Device_Driver::DoDrawRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h, int16_t radius, uint16_t color)
 {
-	display->drawRoundRect(x0, y0, w, h, radius, color);
+	__display->drawRoundRect(x0, y0, w, h, radius, color);
 }
 
 void OLED_Display_Device_Driver::DoDrawFilledRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h, int16_t radius, uint16_t color)
 {
-	display->fillRoundRect(x0, y0, w, h, radius, color);
+	__display->fillRoundRect(x0, y0, w, h, radius, color);
 }
 
 void OLED_Display_Device_Driver::DoDrawBitmap(int16_t x, int16_t y, uint8_t * bitmap, int16_t w, int16_t h, uint16_t color)
 {
-	display->drawBitmap(x, y, bitmap, w, h, color);
+	__display->drawBitmap(x, y, bitmap, w, h, color);
 }
 
 
 void OLED_Display_Device_Driver::DoSetCursor(int16_t x, int16_t y)
 {
-	display->setCursor(x, y);
+	__display->setCursor(x, y);
 }
 
 void OLED_Display_Device_Driver::DoSetTextColor(uint16_t color)
 {
-	display->setTextColor(color);
+	__display->setTextColor(color);
 }
 
 void OLED_Display_Device_Driver::DoSetTextSize(uint8_t size)
 {
-	display->setTextSize(size);
+	__display->setTextSize(size);
 }
 
 void OLED_Display_Device_Driver::DoSetTextWrap(boolean wrap)
 {
-	display->setTextWrap(wrap);
+	__display->setTextWrap(wrap);
 }
 
 void OLED_Display_Device_Driver::DoSetRotation(uint8_t rotaion)
 {
-	display->setRotation(rotaion);
+	__display->setRotation(rotaion);
 }
 
 void OLED_Display_Device_Driver::DoSetFont(const GFXfont* font)
 {
-	display->setFont(font);
+	__display->setFont(font);
 }
 
 void OLED_Display_Device_Driver::DoDrawChar(unsigned char c)
 {
-	display->write(c);
+	__display->write(c);
 }
 
 
 void OLED_Display_Device_Driver::DoDrawChar(int16_t x, int16_t y, unsigned char c, uint16_t color, uint16_t bg, uint8_t size)
 {
-	display->drawChar(x, y, c, color, bg, size);
+	__display->drawChar(x, y, c, color, bg, size);
 }
 
 void OLED_Display_Device_Driver::DoDrawString(String text) {
-	display->print(text);
+	__display->print(text);
 }
 
 void OLED_Display_Device_Driver::DoStartScrollRight(uint8_t start, uint8_t stop) {
-	display->startscrollright(start, stop);
+	__display->startscrollright(start, stop);
 }
 
 void OLED_Display_Device_Driver::DoStartScrollLeft(uint8_t start, uint8_t stop) {
-	display->startscrollleft(start, stop);
+	__display->startscrollleft(start, stop);
 }
 
 void OLED_Display_Device_Driver::DoStartScrollDiagRight(uint8_t start, uint8_t stop)
 {
-	display->startscrolldiagright(start, stop);
+	__display->startscrolldiagright(start, stop);
 }
 
 void OLED_Display_Device_Driver::DoStartScrollDiagLeft(uint8_t start, uint8_t stop)
 {
-	display->startscrolldiagleft(start, stop);
+	__display->startscrolldiagleft(start, stop);
 }
 
 void OLED_Display_Device_Driver::DoStopScroll()
 {
-	display->stopscroll();
+	__display->stopscroll();
 }
 
 

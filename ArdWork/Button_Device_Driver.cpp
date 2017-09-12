@@ -2,8 +2,8 @@
 
 Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp, uint8_t priority) :
 	Device_Driver(module, priority),
-	pin(_pin),
-	hasPullUp(_hasPullUp)
+	__pin(_pin),
+	__hasPullUp(_hasPullUp)
 {
 	driver_name = "Button_Device_Driver";
 }
@@ -13,7 +13,7 @@ void Button_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = "a simple button";
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, "Pres Me", button, "Press the button");
+	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, "Press Me", button, "Press the button");
 	ctrl_elem->published = true;
 
 	__descriptor->Add_Descriptor_Element(ctrl_elem);
@@ -21,12 +21,12 @@ void Button_Device_Driver::Build_Descriptor() {
 
 void Button_Device_Driver::DoAfterInit()
 {
-	pin->IsActive = true;
-	pin->SetPinMode(INPUT);
-	Button_State sys_state = buttonstate_released;
-	Button_State last_state = buttonstate_released;
-	lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
-	last_tick = 0;
+	__pin->IsActive = true;
+	__pin->SetPinMode(INPUT);
+	__sys_state = buttonstate_released;
+	__last_state = buttonstate_released;
+	__lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
+	__last_tick = 0;
 	Serial.println("Button-Driver initialized!");
 }
 
@@ -42,18 +42,14 @@ void Button_Device_Driver::DoBeforeSuspend()
 
 }
 
-void Button_Device_Driver::DoExecuteCommand(String _command) {
-
-}
-
 void Button_Device_Driver::Do_Push_Button()
 {
-	ButtonMessage* message = new ButtonMessage(pin->GetID(), THREAD_MSG_BUTTONSTATE_PRESSED);
+	ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_PRESSED);
 	if (!parentModule->SendAsyncThreadMessage(message))
 	{
 		Serial.println(">> message buffer overflow <<");
 	}
-	lastMessage = THREAD_MSG_BUTTONSTATE_PRESSED;
+	__lastMessage = THREAD_MSG_BUTTONSTATE_PRESSED;
 }
 
 
@@ -72,7 +68,7 @@ void Button_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 }
 
 uint8_t Button_Device_Driver::GetButtonPinID() {
-	return pin->GetID();
+	return __pin->GetID();
 }
 
 void Button_Device_Driver::Exec_Push_Button()
@@ -83,119 +79,119 @@ void Button_Device_Driver::Exec_Push_Button()
 
 void Button_Device_Driver::SetPullUp(bool _hasPullUp)
 {
-	hasPullUp = _hasPullUp;
+	__hasPullUp = _hasPullUp;
 }
 
 void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	uint16_t deltaTimeMs = ThreadTimeToMs(deltaTime);
 	Button_State new_State;
-	if (hasPullUp == true) {
-		new_State = (pin->PinState() == HIGH) ? buttonstate_released : buttonstate_pressed;
+	if (__hasPullUp == true) {
+		new_State = (__pin->PinState() == HIGH) ? buttonstate_released : buttonstate_pressed;
 	}
 	else
 	{
-		new_State = (pin->PinState() == HIGH) ? buttonstate_pressed : buttonstate_released;
+		new_State = (__pin->PinState() == HIGH) ? buttonstate_pressed : buttonstate_released;
 	}
-	if (new_State != last_state) {
+	if (new_State != __last_state) {
 		if (new_State == buttonstate_pressed) {
 			// just read button down and start timer
-			_timer = _debouceMs;
-			sys_state = buttonstate_tracking;
-			last_state = buttonstate_pressed;
+			__timer = __debouceMs;
+			__sys_state = buttonstate_tracking;
+			__last_state = buttonstate_pressed;
 		}
 		else {
-			sys_state = buttonstate_released;
-			last_state = buttonstate_released;
-			if (lastMessage != THREAD_MSG_BUTTONSTATE_RELEASED) {
-				ButtonMessage* message = new ButtonMessage(pin->GetID(), THREAD_MSG_BUTTONSTATE_RELEASED);
+			__sys_state = buttonstate_released;
+			__last_state = buttonstate_released;
+			if (__lastMessage != THREAD_MSG_BUTTONSTATE_RELEASED) {
+				ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_RELEASED);
 				if (!parentModule->SendAsyncThreadMessage(message))
 				{
 					Serial.println(">> message buffer overflow <<");
 				}
-				lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
+				__lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
 			}
 		}
 	}
 	else {
-		switch (sys_state)
+		switch (__sys_state)
 		{
 		case buttonstate_tracking:
-			if (deltaTimeMs >= _timer)
+			if (deltaTimeMs >= __timer)
 			{
 				// press debounced 
-				last_state = buttonstate_pressed;
-				sys_state = buttonstate_pressed;
-				_timer = _repeatDelayMs;
-				if (lastMessage != THREAD_MSG_BUTTONSTATE_PRESSED) {
-					ButtonMessage* message = new ButtonMessage(pin->GetID(), THREAD_MSG_BUTTONSTATE_PRESSED);
+				__last_state = buttonstate_pressed;
+				__sys_state = buttonstate_pressed;
+				__timer = __repeatDelayMs;
+				if (__lastMessage != THREAD_MSG_BUTTONSTATE_PRESSED) {
+					ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_PRESSED);
 					if (!parentModule->SendAsyncThreadMessage(message))
 					{
 						Serial.println(">> message buffer overflow <<");
 					}
-					lastMessage = THREAD_MSG_BUTTONSTATE_PRESSED;
+					__lastMessage = THREAD_MSG_BUTTONSTATE_PRESSED;
 				}
 			}
 			else
 			{
-				_timer -= deltaTimeMs;
+				__timer -= deltaTimeMs;
 			}
 			break;
 
 		case buttonstate_pressed:
-			if (deltaTimeMs >= _timer)
+			if (deltaTimeMs >= __timer)
 			{
 				// auto repeat started
-				sys_state = buttonstate_autorepeat;
-				last_state = buttonstate_pressed;
-				_timer = _repeatRateMs;
-				if (lastMessage != THREAD_MSG_BUTTONSTATE_AUTOREPEAT) {
-					ButtonMessage* message = new ButtonMessage(pin->GetID(), THREAD_MSG_BUTTONSTATE_AUTOREPEAT);
+				__sys_state = buttonstate_autorepeat;
+				__last_state = buttonstate_pressed;
+				__timer = __repeatRateMs;
+				if (__lastMessage != THREAD_MSG_BUTTONSTATE_AUTOREPEAT) {
+					ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_AUTOREPEAT);
 					if (!parentModule->SendAsyncThreadMessage(message))
 					{
 						Serial.println(">> message buffer overflow <<");
 					}
-					lastMessage = THREAD_MSG_BUTTONSTATE_AUTOREPEAT;
+					__lastMessage = THREAD_MSG_BUTTONSTATE_AUTOREPEAT;
 				}
 			}
 			else
 			{
-				_timer -= deltaTimeMs;
+				__timer -= deltaTimeMs;
 			}
 			break;
 
 		case buttonstate_autorepeat:
-			if (deltaTimeMs >= _timer)
+			if (deltaTimeMs >= __timer)
 			{
-				sys_state = buttonstate_autorepeat;
-				_timer += _repeatRateMs;
+				__sys_state = buttonstate_autorepeat;
+				__timer += __repeatRateMs;
 
 				if (new_State == buttonstate_pressed) {
-					last_state = buttonstate_pressed;
-					if (lastMessage != THREAD_MSG_BUTTONSTATE_AUTOREPEAT) {
-						ButtonMessage* message = new ButtonMessage(pin->GetID(), THREAD_MSG_BUTTONSTATE_AUTOREPEAT);
+					__last_state = buttonstate_pressed;
+					if (__lastMessage != THREAD_MSG_BUTTONSTATE_AUTOREPEAT) {
+						ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_AUTOREPEAT);
 						if (!parentModule->SendAsyncThreadMessage(message))
 						{
 							Serial.println(">> message buffer overflow <<");
 						}
-						lastMessage = THREAD_MSG_BUTTONSTATE_AUTOREPEAT;
+						__lastMessage = THREAD_MSG_BUTTONSTATE_AUTOREPEAT;
 					}
 				}
 				else if (new_State == buttonstate_released) {
-					last_state = buttonstate_released;
-					if (lastMessage != THREAD_MSG_BUTTONSTATE_RELEASED) {
-						ButtonMessage* message = new ButtonMessage(pin->GetID(), THREAD_MSG_BUTTONSTATE_RELEASED);
+					__last_state = buttonstate_released;
+					if (__lastMessage != THREAD_MSG_BUTTONSTATE_RELEASED) {
+						ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_RELEASED);
 						parentModule->SendAsyncThreadMessage(message);
 						if (!parentModule->SendAsyncThreadMessage(message))
 						{
 							Serial.println(">> message buffer overflow <<");
 						}
-						lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
+						__lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
 					}
 				}
 			}
 			else
 			{
-				_timer -= deltaTimeMs;
+				__timer -= deltaTimeMs;
 			}
 			break;
 		}

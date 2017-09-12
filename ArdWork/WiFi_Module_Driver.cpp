@@ -29,7 +29,7 @@ void WiFi_Module_Driver::DoUpdate(uint32_t deltaTime)
 		}
 		conn_delta += deltaTime;
 		if (conn_delta > conn_delay) {
-			wifi_status_Led->Exec_Set_IO_Pin_Blink(200);
+			wifi_status_Led->Exec_Set_Led_Blink(200);
 			conn_delta = 0;
 			Serial.print(".");
 		}
@@ -41,7 +41,7 @@ void WiFi_Module_Driver::DoUpdate(uint32_t deltaTime)
 			Serial.println(WiFi.localIP());
 			localhost = WiFi.localIP();
 			isConnected = true;
-			wifi_status_Led->Exec_Set_IO_Pin_Low();
+			wifi_status_Led->Exec_Set_Led_Off();
 		}
 		CheckComm(deltaTime);
 		UpdateComm(deltaTime);

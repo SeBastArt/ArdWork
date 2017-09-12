@@ -2,8 +2,8 @@
 
 Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp, uint8_t priority) :
 	Device_Driver(module, priority),
-	pin(_pin),
-	hasPullUp(_hasPullUp)
+	__pin(_pin),
+	__hasPullUp(_hasPullUp)
 {
 	driver_name = "Led_Device_Driver";
 };
@@ -15,64 +15,59 @@ void Led_Device_Driver::Build_Descriptor() {
 
 void Led_Device_Driver::SetPullUp(bool _hasPullUp)
 {
-	hasPullUp = _hasPullUp;
+	__hasPullUp = _hasPullUp;
 }
 
 
 void Led_Device_Driver::DoAfterInit()
 {
-	pin->IsActive = true;
-	(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
-	//pin->SetPinState(LOW);
-	blink_flag = false;
-	blink_delay = 500;
-	blink_delta = 0;
+	__pin->IsActive = true;
+	Set_IO_Pin_Low();
+	__blink_flag = false;
+	__blink_delay = 500;
+	__blink_delta = 0;
 
-	pulse_flag = false;
-	pulse_delay = 500;
-	pulse_delta = 0;
-	pulse_counter = 0;
-	pulse_count = 0;
+	__pulse_flag = false;
+	__pulse_delay = 500;
+	__pulse_delta = 0;
+	__pulse_counter = 0;
+	__pulse_count = 0;
 
 	Serial.println("Led-Driver initialized!");
 }
 
 void Led_Device_Driver::DoBeforeShutdown()
 {
-	pin->SetPinMode(OUTPUT);
-	(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
-	//pin->SetPinState(LOW);
+	__pin->SetPinMode(OUTPUT);
+	(__hasPullUp) ? __pin->SetPinState(HIGH) : __pin->SetPinState(LOW);
 }
 
 void Led_Device_Driver::DoBeforeSuspend()
 {
-	pin->SetPinMode(OUTPUT);
-	(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
-	//pin->SetPinState(LOW);
+	__pin->SetPinMode(OUTPUT);
+	(__hasPullUp) ? __pin->SetPinState(HIGH) : __pin->SetPinState(LOW);
 }
 
 
-void Led_Device_Driver::Exec_Set_IO_Pin_High() {
-	Serial.println("Led_Device_Driver::Exec_Set_IO_Pin_High()");
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_PIN_HIGH);
+void Led_Device_Driver::Exec_Set_Led_On() {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_ON);
 	PostMessage(&message);
 }
 
 
-void Led_Device_Driver::Exec_Set_IO_Pin_Low() {
-	Serial.println("Led_Device_Driver::Exec_Set_IO_Pin_Low()");
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_PIN_LOW);
+void Led_Device_Driver::Exec_Set_Led_Off() {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_OFF);
 	PostMessage(&message);
 }
 
-void Led_Device_Driver::Exec_Set_IO_Pin_Blink(uint16_t delay) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_PIN_BLINK);
+void Led_Device_Driver::Exec_Set_Led_Blink(uint16_t delay) {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_BLINK);
 	message->AddParam(delay);
 	PostMessage(&message);
 }
 
-void Led_Device_Driver::Exec_Set_IO_Pin_Pulse(uint16_t count, uint16_t delay) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_PIN_PULSE);
+void Led_Device_Driver::Exec_Set_Led_Pulse(uint16_t count, uint16_t delay) {
+	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_PULSE);
 	message->AddParam(count);
 	message->AddParam(delay);
 	PostMessage(&message);
@@ -80,7 +75,7 @@ void Led_Device_Driver::Exec_Set_IO_Pin_Pulse(uint16_t count, uint16_t delay) {
 
 int Led_Device_Driver::GetPinNumber()
 {
-	return pin->PinNumber();
+	return __pin->PinNumber();
 }
 
 
@@ -89,144 +84,122 @@ void Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	int messageID = message.GetID();
 	switch (messageID)
 	{
-	case LED_DEVICE_DRIVER_PIN_HIGH:
+	case LED_DEVICE_DRIVER_LED_ON:
 	{
-		Set_IO_Pin_High();
+		Set_Led_On();
 	}
 	break;
-	case LED_DEVICE_DRIVER_PIN_LOW:
+	case LED_DEVICE_DRIVER_LED_OFF:
 	{
-		Set_IO_Pin_Low();
+		Set_Led_Off();
 	}
 	break;
-	case LED_DEVICE_DRIVER_PIN_BLINK:
+	case LED_DEVICE_DRIVER_LED_BLINK:
 	{
-		int _blink_delay = message.GetIntParamByIndex(1);
-		Set_IO_Pin_Blink(_blink_delay);
+		int blink_delay = message.GetIntParamByIndex(1);
+		Set_Led_Blink(blink_delay);
 	}
 	break;
-	case LED_DEVICE_DRIVER_PIN_PULSE:
+	case LED_DEVICE_DRIVER_LED_PULSE:
 	{
-		int _pulse_count = message.GetIntParamByIndex(1);
-		int _pulse_delay = message.GetIntParamByIndex(2);
-		Set_IO_Pin_Pulse(_pulse_count, _pulse_delay);
+		int pulse_count = message.GetIntParamByIndex(1);
+		int pulse_delay = message.GetIntParamByIndex(2);
+		Set_Led_Pulse(pulse_count, pulse_delay);
 	}
 	break;
 	}
 }
 
 void Led_Device_Driver::Pulse(uint32_t deltaTime) {
-	pulse_delta += deltaTime;
-	if (pulse_delta > pulse_delay) {
-		pulse_delta = 0;
-		if (pulse_counter < pulse_count) {
-			if (pulse_On_Off == true) {
-				pulse_On_Off = false;
-				(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
-				//pin->SetPinState(LOW);
+	__pulse_delta += deltaTime;
+	if (__pulse_delta > __pulse_delay) {
+		__pulse_delta = 0;
+		if (__pulse_counter < __pulse_count) {
+			if (__ledStatus == true) {
+				Set_Led_Off();
 			}
 			else {
-				pulse_counter++;
-				pulse_On_Off = true;
-				(hasPullUp) ? pin->SetPinState(LOW) : pin->SetPinState(HIGH);
-				//pin->SetPinState(HIGH);
+				__pulse_counter++;
+				Set_Led_On();
 			}
 		}
 		else
 		{
-			pulse_flag = false;
-			pulse_counter = 0;
-			pulse_count = 0;
-			(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
-			//pin->SetPinState(LOW);
+			__pulse_flag = false;
+			__pulse_counter = 0;
+			__pulse_count = 0;
+			Set_IO_Pin_Low();
 		}
 	}
 }
 
 
 void Led_Device_Driver::Blink(uint32_t deltaTime) {
-	blink_delta += deltaTime;
-	if (blink_delta > blink_delay) {
-		blink_delta = 0;
-		if (blink_On_Off == true) {
-			blink_On_Off = false;
-			(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
-			//pin->SetPinState(LOW);
+	__blink_delta += deltaTime;
+	if (__blink_delta > __blink_delay) {
+		__blink_delta = 0;
+		if (__ledStatus == true) {
+			Set_Led_Off();
 		}
 		else {
-			blink_On_Off = true;
-			(hasPullUp) ? pin->SetPinState(LOW) : pin->SetPinState(HIGH);
-			//pin->SetPinState(HIGH);
+			Set_Led_Off();
 		}
 	}
 }
 
 void Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
-	if (pulse_flag == true) {
+	if (__pulse_flag == true) {
 		Pulse(deltaTime);
 	}
 
-	if (blink_flag == true) {
+	if (__blink_flag == true) {
 		Blink(deltaTime);
 	}
 }
 
-void Led_Device_Driver::DoExecuteCommand(String _command)
+void Led_Device_Driver::Set_Led_On()
 {
-	if (_command.equals("SwitchOn")) {
-		Set_IO_Pin_High();
-	}
-	else if (_command.equals("SwitchOff")) {
-		Set_IO_Pin_Low();
-	}
+	Set_IO_Pin_High();
+	__blink_flag = false;
+	__pulse_flag = false;
 }
 
 void Led_Device_Driver::Set_IO_Pin_High()
 {
-	Serial.println("Led_Device_Driver::Set_IO_Pin_High()");
-	isOn = true;
-	(hasPullUp) ? pin->SetPinState(LOW) : pin->SetPinState(HIGH);
-	//pin->SetPinState(HIGH);
-	blink_flag = false;
+	__ledStatus = true;
+	(__hasPullUp) ? __pin->SetPinState(LOW) : __pin->SetPinState(HIGH);
+}
+
+void Led_Device_Driver::Set_Led_Off() {
+	Set_IO_Pin_Low();
+	__blink_flag = false;
+	__pulse_flag = false;
 }
 
 void Led_Device_Driver::Set_IO_Pin_Low()
 {
-	Serial.println("Led_Device_Driver::Set_IO_Pin_Low()");
-	isOn = false;
-	(hasPullUp) ? pin->SetPinState(HIGH) : pin->SetPinState(LOW);
-	//pin->SetPinState(LOW);
-	blink_flag = false;
+	__ledStatus = false;
+	(__hasPullUp) ? __pin->SetPinState(HIGH) : __pin->SetPinState(LOW);
 }
 
-void Led_Device_Driver::Set_IO_Pin_Pulse(uint16_t count, uint16_t delay)
+void Led_Device_Driver::Set_Led_Pulse(uint16_t count, uint16_t delay)
 {
-	if (!pulse_flag) {
-		pulse_delay = delay;
-		pulse_count = count;
-		pulse_counter = 0;
-
-		//Serial.print("Pulse- delay: ");
-		//Serial.print(pulse_delay);
-		//Serial.print(" counter: ");
-		//Serial.println(pulse_count);
-
-		pulse_flag = true;
-		pulse_delta = 0;
-		pulse_On_Off = true;
-		(hasPullUp) ? pin->SetPinState(LOW) : pin->SetPinState(HIGH);
-		//pin->SetPinState(HIGH);
+	if (!__pulse_flag) {
+		__pulse_delay = delay;
+		__pulse_count = count;
+		__pulse_counter = 0;
+		__pulse_flag = true;
+		__pulse_delta = 0;
+		Set_Led_On();
 	}
 }
 
-void Led_Device_Driver::Set_IO_Pin_Blink(uint16_t delay)
+void Led_Device_Driver::Set_Led_Blink(uint16_t delay)
 {
-	blink_delay = delay;
-	if (blink_flag == false) {
-		blink_flag = true;
-		blink_delta = 0;
-		blink_On_Off = true;
-		(hasPullUp) ? pin->SetPinState(LOW) : pin->SetPinState(HIGH);
-		//pin->SetPinState(HIGH);
+	__blink_delay = delay;
+	if (__blink_flag == false) {
+		__blink_flag = true;
+		__blink_delta = 0;
+		Set_Led_On();
 	}
 }

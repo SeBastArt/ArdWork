@@ -42,10 +42,6 @@ void Mqqt_Wifi_Device_Driver::EventMsgIn(char* topic, uint8_t* payload, unsigned
 	Serial.println(mqtt_message);
 }
 
-void Mqqt_Wifi_Device_Driver::DoExecuteCommand(String _command)
-{
-}
-
 void Mqqt_Wifi_Device_Driver::SetMQQTBroker(String adress) {
 	Serial.print("Set MQQT-Broker to: ");
 	Serial.println(adress);
@@ -89,11 +85,11 @@ void Mqqt_Wifi_Device_Driver::InitComm() {
 		// ... and resubscribe
 		client->subscribe(&inTopic[0]);
 		isCommConnected = true;
-		statusLED->Exec_Set_IO_Pin_Low();
+		statusLED->Exec_Set_Led_Off();
 		connRetry = 0;
 	}
 	else {
-		statusLED->Exec_Set_IO_Pin_High();
+		statusLED->Exec_Set_Led_On();
 		Serial.print("failed, rc=");
 		Serial.print(client->state());
 		Serial.println(" try again in 5 seconds");
@@ -123,7 +119,7 @@ void Mqqt_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 
 void Mqqt_Wifi_Device_Driver::CheckComm(uint32_t deltaTime) {
 	if (!isCommConnected) {
-		statusLED->Exec_Set_IO_Pin_High();
+		statusLED->Exec_Set_Led_On();
 	}
 	if (!client->connected()) {
 		if (connRetry < 3) {

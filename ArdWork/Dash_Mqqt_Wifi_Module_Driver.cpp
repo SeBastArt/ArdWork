@@ -28,7 +28,7 @@ void Dash_Mqqt_Wifi_Module_Driver::UpdateHardware(uint32_t deltaTime)
 				if (pButton->State == THREAD_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 				{
 					if (pButton->Id == resident_button->GetButtonPinID()) {
-						resident_Led->Exec_Set_IO_Pin_High();
+						resident_Led->Exec_Set_Led_On();
 						String *msg = new String("1");
 						msg_list.PushBack(msg);
 					}
@@ -36,7 +36,7 @@ void Dash_Mqqt_Wifi_Module_Driver::UpdateHardware(uint32_t deltaTime)
 				else if (pButton->State == THREAD_MSG_BUTTONSTATE_RELEASED)
 				{
 					if (pButton->Id == resident_button->GetButtonPinID()) {
-						resident_Led->Exec_Set_IO_Pin_Low();
+						resident_Led->Exec_Set_Led_Off();
 					}
 					String *msg = new String("0");
 					msg_list.PushBack(msg);
@@ -56,13 +56,13 @@ void Dash_Mqqt_Wifi_Module_Driver::UpdateHardware(uint32_t deltaTime)
 
 void Dash_Mqqt_Wifi_Module_Driver::DoMQTTMessage(String _message) {
 	if (_message.equals("2")) {
-		resident_Led->Exec_Set_IO_Pin_Pulse(7, 100);
+		resident_Led->Exec_Set_Led_Pulse(7, 100);
 	}
 	if (_message.equals("1")) {
-		resident_Led->Exec_Set_IO_Pin_High();
+		resident_Led->Exec_Set_Led_On();
 	}
 	if (_message.equals("0")) {
-		resident_Led->Exec_Set_IO_Pin_Low();
+		resident_Led->Exec_Set_Led_Off();
 	}
 }
 

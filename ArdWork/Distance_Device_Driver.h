@@ -16,9 +16,9 @@ class Module_Driver;
 class Distance_Device_Driver : public Device_Driver
 {
 private:
-	uint8_t pin_t;
-	uint8_t pin_e;
-	float _distance;
+	uint8_t __pin_t;
+	uint8_t __pin_e;
+	float __distance;
 
 private:
 	void DoAfterInit();
@@ -26,7 +26,6 @@ private:
 	void DoBeforeSuspend();
 	void DoDeviceMessage(Int_Thread_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void DoExecuteCommand(String _command);
 	void Build_Descriptor();
 
  public:
