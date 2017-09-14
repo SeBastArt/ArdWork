@@ -11,7 +11,7 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 void Button_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "Button";
 	__descriptor->descr = "a simple button";
-	__descriptor->published = true;
+	__descriptor->published = false;
 
 	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, "Press Me", button, "Press the button");
 	ctrl_elem->published = true;

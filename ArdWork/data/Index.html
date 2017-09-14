@@ -6,6 +6,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+	
+	 <!-- SCRIPT -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="dist/js/kube.min.js"></script>
+    <script src="dist/js/jscolor.min.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/gionkunz/chartist-js/master/dist/chartist.js"></script>
+
+    <!--  CSS -->
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/gionkunz/chartist-js/master/dist/chartist.min.css">
+    <link rel="stylesheet" href="dist/css/kube.min.css">
+    <link rel="stylesheet" href="dist/css/bttn.min.css">
+
    
     <script>
         function update() {
@@ -211,9 +223,8 @@
 
     <div class="container">
         <h2 class="head-line">Bilderrahmen Steuerung <span class="arrow"></span> </h2>
-        <div data-component="sticky">
             <nav class="tabs" data-component="tabs">
-                <ul onclick="update()">
+                <ul onclick="update();">
                     <li><h3><strong>ArdWork</strong></h3></li>
                     <li class="active"><a href="#tabWifi">Wifi</a></li>
                     <li><a href="#tabStripe">RGB-Stripe</a></li>
@@ -221,7 +232,6 @@
                     <li><a href="#tabDebug">Debug</a></li>
                 </ul>
             </nav>
-        </div>
 
 
         <div class="content" id="tabWifi">
@@ -245,12 +255,14 @@
             </div>
             <div class="head-line small">Steuerung</div>
             <br>
-            <p id="my_p">
-            
+            <p>		
+			
                     <div class="form-item">
                         <div class="append w45 w100-sm small">
                             <input type="text" id="SSID" class="small" placeholder="SSID">
-                            <button class="button small" onclick='SendSSID();'>Set</button>
+                             <input type="text" id="SSID" class="small" placeholder="SSID">
+                           
+							<button class="button small" onclick='SendSSID();'>Set</button>
                         </div>
                         <div class="desc">Set SSID</div>
                     </div>
@@ -260,7 +272,7 @@
                     <div class="form-item">
                         <div class="append w45 w100-sm small">
                             <input type="password" id="Password" class="small" placeholder="Password">
-                            <button class="button small" onclick='SendPassword();>Set</button>
+                            <button class="button small" onclick='SendPassword();'>Set</button>
                         </div>
                         <div class="desc">Set Password</div>
                     </div>
@@ -282,7 +294,9 @@
      
                     <div class="form-item">
                         <button class="button small">Reconnect</button>
+						 <div class="desc">Reconnect to Wifi</div>
                     </div>
+					
             </p>
             <br>
         </div>
@@ -355,14 +369,16 @@
                         <div class="desc">Pick a pattern</div>
                     </div>
 
+					
                     <div class="form-item">
                         <div class="append w45 w100-sm">
-                            <input value="e3e3e3" class="small jscolor {mode:'HSV',width:243, height:150, position:'right',
-						borderColor:'#e3e3e3', insetColor:'#666', backgroundColor:'#666'}">
+							<input value="e3e3e3" class="small jscolor {mode:'HSV',width:243, height:150, position:'right',
+							borderColor:'#e3e3e3', insetColor:'#666', backgroundColor:'#666'}">
                             <button class="button small">Set</button>
                         </div>
                         <div class="desc">Pick a color</div>
                     </div>
+				
 
                     <div class="form-item">
                         <div class="append w45 w100-sm">
@@ -386,7 +402,7 @@
                         und stellt Live-Werte sowie Diagramme bereit
                     </strong>
                 </p>
-                <div class="head-line small">Lux Features</div>
+                <div class="head-line small">Features</div>
                 <p>
                     <ul>
                         <li>Fahrenheit/Celcius</li>
@@ -422,6 +438,19 @@
                         <div class="desc">Pick a integration time</div>
                     </div>
 
+					<div class = "form-item">
+						<div class = "append w45 w100-sm">
+							<select class="small" id="1006_112004005">
+								<option value="0">13ms</option>
+								<option value="1">101ms</option>
+								<option value="2">402ms</option>
+							</select>
+							<button class="button small" onclick="Send(1006, 112004005);">Set</button>
+						</div>
+						<div class="desc">Pick a integration time</div>
+					</div>
+					
+					
                     <div class="form-item">
                         <div class="append w45 w100-sm">
                             <select class="small">

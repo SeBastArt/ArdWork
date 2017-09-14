@@ -10,6 +10,7 @@ enum func_type
 {
 	text,
 	pass,
+	color,
 	value,
 	select,
 	button
@@ -33,7 +34,7 @@ public:
 class Atomic_Impl : public Atomic_Base
 {
 public:
-	Atomic_Impl(int _id, String _unit) : Atomic_Base(id, _unit) {}
+	Atomic_Impl(int _id, String _unit) : Atomic_Base(_id, _unit) {}
 	virtual String ValueToString() const = 0;
 };
 
@@ -41,13 +42,14 @@ template <class T>
 class Atomic : public Atomic_Impl
 {
 private:
-	T *__value;
-	void SetValue(T * _value) { __value = _value; }
-	T* GetValue() const { return __value; }
+	T __value;
+	T GetValue() const { return __value;}
+	void SetValue(T _value) { __value = _value; };
 public:
-	Atomic(int _id, T* _value, String _unit) : Atomic_Impl(_id, _unit) { __value = _value; }
+	Atomic(int _id, T _value, String _unit = "") : Atomic_Impl(_id, _unit) { __value = _value; }
 	virtual  ~Atomic() {}
-	virtual String ValueToString() const { return String(*__value); }
+	virtual String ValueToString() const { return String(__value); }
+	Property<T, Atomic> value{ this,  &Atomic::SetValue, &Atomic::GetValue };
 };
 
 class Ctrl_Elem
@@ -97,7 +99,7 @@ public:
 		}
 	}
 
-	Property<int, Ctrl_Elem> id1{ this, nullptr, &Ctrl_Elem::GetId };
+	Property<int, Ctrl_Elem> id{ this, nullptr, &Ctrl_Elem::GetId };
 	Property<String, Ctrl_Elem> name{ this, nullptr, &Ctrl_Elem::GetName };
 	Property<func_type, Ctrl_Elem> type{ this, nullptr, &Ctrl_Elem::GetType };
 	Property<String, Ctrl_Elem> descr{ this, nullptr, &Ctrl_Elem::GetDescr };
@@ -116,7 +118,7 @@ private:
 	bool __published;
 	int __ctrl_elem_count;
 
-	int GetCtrlElemCount() const { return __id; }
+	int GetCtrlElemCount() const { return __ctrl_elem_count; }
 	int GetId() const { return __id; }
 	bool GetPublished() const { return __published; }
 	void SetPublished(bool _published) { __published = _published; }

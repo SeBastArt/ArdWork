@@ -21,7 +21,7 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 void Picture_Module_Driver::Build_Descriptor() {
 	__descriptor->name = "Picture Module";
 	__descriptor->descr = "control the picture";
-	__descriptor->published = true;
+	__descriptor->published = false;
 }
 
 

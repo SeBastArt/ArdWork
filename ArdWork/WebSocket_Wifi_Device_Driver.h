@@ -31,6 +31,16 @@ private:
 protected:
 	void UpdateComm(uint32_t deltaTime);
 	void InitComm();
+	String GenerateNav(Vector<Descriptor*>* _descriptor_list);
+	String GenerateTab(Descriptor * _descriptor);
+	String GenerateDecending(Ctrl_Elem* _ctrl_elem);
+	String GenerateColor(int _deviceId, Ctrl_Elem * _ctrl_elem);
+	String GenerateForm(int _deviceId, Ctrl_Elem * _ctrl_elem);
+	String GenerateSelect(int _deviceId, Ctrl_Elem * _ctrl_elem);
+	String GenerateInput(int _deviceId, Ctrl_Elem * _ctrl_elem);
+	String GenerateButton(int _deviceId, Ctrl_Elem * _ctrl_elem);
+	String GenerateSetButton(int _deviceId, int _cmdId);
+	String GenerateOption(Ctrl_Elem * _ctrl_elem);
 	void Build_Descriptor();
 };
 

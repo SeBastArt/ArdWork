@@ -14,21 +14,52 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 
 void Luxmeter_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "Luxmeter";
-	__descriptor->descr = "messeaure brightness";
+	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit \nes erlaubt die Kontrolle über die Ausleseparameter \nund stellt Live - Werte sowie Diagramme bereit";
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Integrationtime", select, "Beschreibung");
-	ctrl_elem->published = true;
+	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Integrationtime", select, "the integration time is the integrationtime");
+	ctrl_elem_integr->published = true;
 
-	Atomic<int> *atomic_13ms = new Atomic<int>(0, &__integrationTime, "ms");
-	Atomic<int> *atomic_101ms = new Atomic<int>(1, &__integrationTime, "ms");
-	Atomic<int> *atomic_402ms = new Atomic<int>(2, &__integrationTime, "ms");
+	Atomic<String> *atomic_13ms = new Atomic<String>(0, "13", "ms");
+	Atomic<String> *atomic_101ms = new Atomic<String>(1, "101", "ms");
+	Atomic<String> *atomic_402ms = new Atomic<String>(2, "402", "ms");
 
-	ctrl_elem->AddAtomic(atomic_13ms);
-	ctrl_elem->AddAtomic(atomic_101ms);
-	ctrl_elem->AddAtomic(atomic_402ms);
+	ctrl_elem_integr->AddAtomic(atomic_13ms);
+	ctrl_elem_integr->AddAtomic(atomic_101ms);
+	ctrl_elem_integr->AddAtomic(atomic_402ms);
 
-	__descriptor->Add_Descriptor_Element(ctrl_elem);
+	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "SSID", text, "Beschreibender SSID Text");
+	ctrl_elem_SSID->published = true;
+
+	Atomic<String> *atomic_SSID = new Atomic<String>(0, "SSID");
+	ctrl_elem_SSID->AddAtomic(atomic_SSID);
+
+	Ctrl_Elem *ctrl_elem_pass = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Passwort", pass, "Beschreibender Passwort Text");
+	ctrl_elem_pass->published = true;
+
+	Atomic<String> *atomic_pass = new Atomic<String>(0, "Passwort");
+	ctrl_elem_pass->AddAtomic(atomic_pass);
+
+	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Color", color, "Beschreibender RGB-Color Text");
+	ctrl_elem_color->published = true;
+
+	Atomic<int> *atomic_color_r = new Atomic<int>(0, 227, "Dec");
+	Atomic<int> *atomic_color_g = new Atomic<int>(1, 227, "Dec");
+	Atomic<int> *atomic_color_b = new Atomic<int>(2, 227, "Dec");
+	
+	ctrl_elem_color->AddAtomic(atomic_color_r);
+	ctrl_elem_color->AddAtomic(atomic_color_g);
+	ctrl_elem_color->AddAtomic(atomic_color_b);
+
+	Ctrl_Elem *ctrl_elem_reconnect = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Reconnect", button, "Reconnect to Wifi");
+	ctrl_elem_reconnect->published = true;
+
+	__descriptor->Add_Descriptor_Element(ctrl_elem_SSID);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_pass);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_integr);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_color);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_reconnect);
+
 }
 
 void Luxmeter_Device_Driver::DoAfterInit()
@@ -152,18 +183,6 @@ void Luxmeter_Device_Driver::Set_Accuracy_Delay(uint16 _milliseconds) {
 }
 
 void Luxmeter_Device_Driver::Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime) {
-	switch (_integrationTime)
-	{
-	TSL2561_INTEGRATIONTIME_13MS:
-		__integrationTime = 13;
-	TSL2561_INTEGRATIONTIME_101MS:
-		__integrationTime = 101;
-	TSL2561_INTEGRATIONTIME_402MS:
-		__integrationTime = 402;
-	default:
-		break;
-	}
-
 	tsl->setIntegrationTime(_integrationTime);
 	/* Changing the integration time gives you better sensor resolution (402ms = 16-bit data) */
 	// tsl->setIntegrationTime(TSL2561_INTEGRATIONTIME_13MS);      /* fast but low resolution */
