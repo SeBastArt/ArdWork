@@ -51,8 +51,40 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 
 
 void WebSocket_Wifi_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Websocket";
-	__descriptor->descr = "door to the world";
+	__descriptor->name = "Wifi";
+	__descriptor->descr = "Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit";
+	__descriptor->published = true;
+
+	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE, "Wifi-Mode", select, "Mode ändern");
+	
+	Atomic<String> *atomic_mode_sta = new Atomic<String>(0, "STA", "");
+	Atomic<String> *atomic_mode_ap = new Atomic<String>(1, "AP", "");
+	Atomic<String> *atomic_mode_staap = new Atomic<String>(2, "STA/AP", "");
+
+	ctrl_elem_mode->AddAtomic(atomic_mode_sta);
+	ctrl_elem_mode->AddAtomic(atomic_mode_ap);
+	ctrl_elem_mode->AddAtomic(atomic_mode_staap);
+	ctrl_elem_mode->published = true;
+
+	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE, "SSID", text, "SSID ändern");
+	
+	Atomic<String> *atomic_SSID = new Atomic<String>(0, "SSID");
+	ctrl_elem_SSID->AddAtomic(atomic_SSID);
+	ctrl_elem_SSID->published = true;
+
+	Ctrl_Elem *ctrl_elem_pass = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE, "Passwort", pass, "Passwort ändern");
+	
+	Atomic<String> *atomic_pass = new Atomic<String>(0, "Passwort");
+	ctrl_elem_pass->AddAtomic(atomic_pass);
+	ctrl_elem_pass->published = true;
+
+	Ctrl_Elem *ctrl_elem_reconnect = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE, "Reconnect", button, "Reconnect to Wifi");
+	ctrl_elem_reconnect->published = true;
+
+	__descriptor->Add_Descriptor_Element(ctrl_elem_SSID);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_pass);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_mode);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_reconnect);
 }
 
 
@@ -91,24 +123,23 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 		server->sendContent(head);
 		server->sendContent(header);
 
-		String text = "";
 		if (!__descriptor_list->Empty()) {
+			String text = "";
 			text += "<body onload=\"update();\">\n";
 			text += "<div class=\"container\">\n";
 			text += "<h2 class=\"head-line\">Bilderrahmen Steuerung <span class=\"arrow\"></span></h2>\n";
 			text += GenerateNav(__descriptor_list);
 			for (int I = 0; I < __descriptor_list->Size(); I++)
-				if ((*__descriptor_list)[I]->published) {
+				if ((*__descriptor_list)[I]->published) {	
 					text += GenerateTab((*__descriptor_list)[I]);
 				}
 			text += "</div>\n";
 			text += "</body>\n";
 			text += "</html>\n";
+			server->sendContent(text);
 		}
-		server->sendContent(text.c_str());
 		server->client().stop();
 	});
-
 	server->begin();
 
 	// Add service to MDNS
@@ -332,31 +363,3 @@ String WebSocket_Wifi_Device_Driver::GenerateSetButton(int _deviceId, int _cmdId
 	button += ");\">Set</button>\n";
 	return button;
 }
-
-//Property<int, Atomic_Base> id{ this, nullptr, &Atomic_Base::GetId };
-//Property<String, Atomic_Base> unit{ this, nullptr, &Atomic_Base::GetUnit };
-//virtual String ValueToString() const { return String(*__value); }
-
-
-//Atomic_Base *GetAtomicByIndex(int _index)
-//
-//Property<int, Ctrl_Elem> id{ this, nullptr, &Ctrl_Elem::GetId };
-//Property<String, Ctrl_Elem> name{ this, nullptr, &Ctrl_Elem::GetName };
-//Property<func_type, Ctrl_Elem> type{ this, nullptr, &Ctrl_Elem::GetType };
-//Property<String, Ctrl_Elem> descr{ this, nullptr, &Ctrl_Elem::GetDescr };
-//Property<int, Ctrl_Elem> atomic_count{ this, nullptr, &Ctrl_Elem::GetAtomicCount };
-//Property<bool, Ctrl_Elem> published{ this, &Ctrl_Elem::SetPublished, &Ctrl_Elem::GetPublished };
-
-
-//<div class = "form-item">
-//	<div class = "append w45 w100-sm">
-//		<select class = "small">
-//			<option value = "0">Cyclon< / option>
-//			<option value = "1">Random< / option>
-//			<option value = "2">Fire< / option>
-//			<option value = "3">Shine< / option>
-//		</select>
-//		<button class = "button small">Set< / button>
-//	</div>
-//	<div class = "desc">Pick a pattern< / div>
-//</div>

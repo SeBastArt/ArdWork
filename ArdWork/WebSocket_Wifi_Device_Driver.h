@@ -21,16 +21,7 @@
 
 class WebSocket_Wifi_Device_Driver : public Wifi_Device_Driver
 {
-public:
-	WebSocket_Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = NULL, uint8_t priority = THREAD_PRIORITY_NORMAL);
-	void UpdateControls();
 private:
-	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
-	static ESP8266WebServer *server;
-	static WebSocketsServer *webSocket;
-protected:
-	void UpdateComm(uint32_t deltaTime);
-	void InitComm();
 	String GenerateNav(Vector<Descriptor*>* _descriptor_list);
 	String GenerateTab(Descriptor * _descriptor);
 	String GenerateDecending(Ctrl_Elem* _ctrl_elem);
@@ -41,6 +32,17 @@ protected:
 	String GenerateButton(int _deviceId, Ctrl_Elem * _ctrl_elem);
 	String GenerateSetButton(int _deviceId, int _cmdId);
 	String GenerateOption(Ctrl_Elem * _ctrl_elem);
+public:
+	WebSocket_Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = NULL, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	void UpdateControls();
+private:
+	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
+	static ESP8266WebServer *server;
+	static WebSocketsServer *webSocket;
+protected:
+	void UpdateComm(uint32_t deltaTime);
+	void InitComm();
+
 	void Build_Descriptor();
 };
 

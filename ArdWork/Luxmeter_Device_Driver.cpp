@@ -17,7 +17,20 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit \nes erlaubt die Kontrolle über die Ausleseparameter \nund stellt Live - Werte sowie Diagramme bereit";
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Integrationtime", select, "the integration time is the integrationtime");
+	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE, "update rate", select, "select rate you want the value be updated");
+	ctrl_elem_rate->published = true;
+
+	Atomic<int> *atomic_1000 = new Atomic<int>(0, 1000, "ms");
+	Atomic<int> *atomic_2000 = new Atomic<int>(1, 2000, "ms");
+	Atomic<int> *atomic_5000 = new Atomic<int>(1, 5000, "ms");
+	Atomic<int> *atomic_10000 = new Atomic<int>(1, 10000, "ms");
+
+	ctrl_elem_rate->AddAtomic(atomic_1000);
+	ctrl_elem_rate->AddAtomic(atomic_2000);
+	ctrl_elem_rate->AddAtomic(atomic_5000);
+	ctrl_elem_rate->AddAtomic(atomic_10000);
+
+	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE, "Integrationtime", select, "set the time the sensor collect light");
 	ctrl_elem_integr->published = true;
 
 	Atomic<String> *atomic_13ms = new Atomic<String>(0, "13", "ms");
@@ -28,38 +41,20 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	ctrl_elem_integr->AddAtomic(atomic_101ms);
 	ctrl_elem_integr->AddAtomic(atomic_402ms);
 
-	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "SSID", text, "Beschreibender SSID Text");
-	ctrl_elem_SSID->published = true;
+	Ctrl_Elem *ctrl_elem_gain = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE, "Gain", select, "select the Gain for make values better fit");
+	ctrl_elem_gain->published = true;
 
-	Atomic<String> *atomic_SSID = new Atomic<String>(0, "SSID");
-	ctrl_elem_SSID->AddAtomic(atomic_SSID);
+	Atomic<String> *atomic_auto = new Atomic<String>(0, "Auto");
+	Atomic<String> *atomic_1x = new Atomic<String>(1, "1X");
+	Atomic<String> *atomic_16x = new Atomic<String>(1, "16X");
 
-	Ctrl_Elem *ctrl_elem_pass = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Passwort", pass, "Beschreibender Passwort Text");
-	ctrl_elem_pass->published = true;
+	ctrl_elem_gain->AddAtomic(atomic_auto);
+	ctrl_elem_gain->AddAtomic(atomic_1x);
+	ctrl_elem_gain->AddAtomic(atomic_16x);
 
-	Atomic<String> *atomic_pass = new Atomic<String>(0, "Passwort");
-	ctrl_elem_pass->AddAtomic(atomic_pass);
-
-	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Color", color, "Beschreibender RGB-Color Text");
-	ctrl_elem_color->published = true;
-
-	Atomic<int> *atomic_color_r = new Atomic<int>(0, 227, "Dec");
-	Atomic<int> *atomic_color_g = new Atomic<int>(1, 227, "Dec");
-	Atomic<int> *atomic_color_b = new Atomic<int>(2, 227, "Dec");
-	
-	ctrl_elem_color->AddAtomic(atomic_color_r);
-	ctrl_elem_color->AddAtomic(atomic_color_g);
-	ctrl_elem_color->AddAtomic(atomic_color_b);
-
-	Ctrl_Elem *ctrl_elem_reconnect = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Reconnect", button, "Reconnect to Wifi");
-	ctrl_elem_reconnect->published = true;
-
-	__descriptor->Add_Descriptor_Element(ctrl_elem_SSID);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_pass);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_rate);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_integr);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_color);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_reconnect);
-
+	__descriptor->Add_Descriptor_Element(ctrl_elem_gain);
 }
 
 void Luxmeter_Device_Driver::DoAfterInit()
