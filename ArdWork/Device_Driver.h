@@ -16,7 +16,7 @@
 class Device_Driver : public Driver
 {
 public:
-	Device_Driver(Module_Driver* module, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Device_Driver(Module_Driver* _module, uint8_t _priority = THREAD_PRIORITY_NORMAL);
 protected:
 	Module_Driver* parentModule;
 protected:

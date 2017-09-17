@@ -43,7 +43,7 @@ class Atomic : public Atomic_Impl
 {
 private:
 	T __value;
-	T GetValue() const { return __value;}
+	T GetValue() const { return __value; }
 	void SetValue(T _value) { __value = _value; };
 public:
 	Atomic(int _id, T _value, String _unit = "") : Atomic_Impl(_id, _unit) { __value = _value; }
@@ -155,6 +155,38 @@ public:
 	Property<bool, Descriptor> published{ this, &Descriptor::SetPublished, &Descriptor::GetPublished };
 };
 
+class Descriptor_List
+{
+private:
+	int __elem_count;
+	Vector<Descriptor*> *__vec_descriptor_elem;
+	int GetElemCount() const { return __elem_count; }
+public:
+	Descriptor_List() {
+		__vec_descriptor_elem = new Vector<Descriptor*>;
+		__elem_count = 0;
+	}
+	virtual ~Descriptor_List() { delete  __vec_descriptor_elem; }
+
+	void Add_Descriptor(Descriptor *_new_elem) {
+		__vec_descriptor_elem->PushBack(_new_elem);
+		__elem_count++;
+	}
+
+	void Clear() {
+		__vec_descriptor_elem->Clear();
+		__elem_count = 0;
+	}
+
+	Descriptor *GetElemByIndex(int _index) {
+		if ((index >= 0) && (_index < __elem_count))
+			return (*__vec_descriptor_elem)[_index];
+		else
+			return nullptr;
+	}
+
+	Property<int, Descriptor_List> count{ this, nullptr, &Descriptor_List::GetElemCount };
+};
 
 //-----------------------------------------------------
 // Observer Class			
@@ -163,7 +195,7 @@ class Observer
 {
 public:
 	virtual ~Observer() {};		// Destructor
-	virtual void Notify(Vector <Descriptor*> *driver_descr_list) = 0;
+	virtual void Notify(Descriptor_List *_descriptor_list) = 0;
 protected:
 	//constructor is protected because this class is abstract, it’s only meant to be inherited!
 	Observer() {};
@@ -198,9 +230,9 @@ public:
 			return false;
 		}
 	};
-	bool NotifyObservers(Vector <Descriptor*> *driver_descr_list) {
+	bool NotifyObservers(Descriptor_List *_descriptor_list) {
 		for (int i = 0; i < m_ObserverVec->Size(); i++) {
-			(*m_ObserverVec)[i]->Notify(driver_descr_list);
+			(*m_ObserverVec)[i]->Notify(_descriptor_list);
 		}
 	};
 protected:

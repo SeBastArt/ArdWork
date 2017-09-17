@@ -131,23 +131,20 @@ String WebServer_Wifi_Device_Driver::GenerateHeader(String _response, bool _foun
 
 String WebServer_Wifi_Device_Driver::GenerateJavaScript() {
 	String sScript;
-
 	sScript += "<script>";
-	if (!__descriptor_list->Empty()) {
-		for (int I = 0; I < __descriptor_list->Size(); I++)
-			for (int j = 0; j < (*__descriptor_list)[I]->ctrl_count; j++) {
-				/*if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Button_Publisher")) {
-					sScript += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}
-				if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Value_Publisher")) {
-					sScript += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}*/
-				/*if ((*__descriptor_list)[I]->GetElemByIndex(j)->GetClassName().equals("Switch_Publisher")) {
-					sScript += GenerateSwitchJS((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}*/
+	for (int I = 0; I < __descriptor_list->count; I++)
+		for (int j = 0; j < __descriptor_list->GetElemByIndex(I)->ctrl_count; j++) {
+			/*if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Button_Publisher")) {
+				sScript += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 			}
+			if ((*__pub_list)[I]->GetElemByIndex(j)->GetClassName().equals("Value_Publisher")) {
+				sScript += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+			}*/
+			/*if (__descriptor_list->GetElemByIndex(I)->GetElemByIndex(j)->GetClassName().equals("Switch_Publisher")) {
+				sScript += GenerateSwitchJS((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+			}*/
+		}
 
-	}
 	sScript += "</script>";
 	return sScript;
 }
@@ -187,26 +184,24 @@ void WebServer_Wifi_Device_Driver::SendResponse(WiFiClient _client, String _head
 
 String WebServer_Wifi_Device_Driver::GenerateControlElemnts() {
 	String sResponse;
-	if (!__descriptor_list->Empty()) {
-		for (int I = 0; I < __descriptor_list->Size(); I++)
-			for (int j = 0; j < (*__descriptor_list)[I]->ctrl_count; j++) {
-				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == button) {
-					//sResponse += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}
-				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == value) {
-					//sResponse += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}
-				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == select) {
-					//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}
-				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == text) {
-					//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}
-				if ((*__descriptor_list)[I]->GetCtrlElemByIndex(j)->type == pass) {
-					//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
-				}
+	for (int I = 0; I < __descriptor_list->count; I++)
+		for (int j = 0; j < __descriptor_list->GetElemByIndex(I)->ctrl_count; j++) {
+			if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(j)->type == button) {
+				//sResponse += GenerateButton((*__pub_list)[I]->driverId, (Button_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
 			}
-	}
+			if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(j)->type == value) {
+				//sResponse += GenerateValue((*__pub_list)[I]->driverId, (Value_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+			}
+			if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(j)->type == select) {
+				//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+			}
+			if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(j)->type == text) {
+				//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+			}
+			if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(j)->type == pass) {
+				//sResponse += GenerateSwitchHtml((*__pub_list)[I]->driverId, (Switch_Publisher*)(*__pub_list)[I]->GetElemByIndex(j));
+			}
+		}
 	return sResponse;
 }
 
@@ -281,12 +276,6 @@ void WebServer_Wifi_Device_Driver::ParseRequest(String _request) {
 				Values += GetValue(dataPart);
 			}
 
-			Serial.print("deviceId: ");
-			Serial.print(deviceId);
-			Serial.print(", cmdId: ");
-			Serial.print(cmdId);
-			Serial.print(", Values: ");
-			Serial.println(Values);
 			CommunicationMessage* message = new CommunicationMessage(deviceId, cmdId, Values);
 			if (!parentModule->SendAsyncThreadMessage(message))
 			{

@@ -28,10 +28,10 @@ String Driver::GetDriverName()
 	return driver_name;
 }
 
-void Driver::Exec_Command(int _cmdId, String _command)
+void Driver::Exec_Command(int _cmdId, String _value)
 {
 	Int_Thread_Msg *message = new Int_Thread_Msg(_cmdId);
-	message->AddParam(_command);
+	message->AddParam(_value);
 	PostMessage(&message);
 }
 

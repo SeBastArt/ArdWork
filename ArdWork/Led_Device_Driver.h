@@ -24,22 +24,27 @@ public:
 	 //Led control
 	 IO_Pin* __pin;
 
+	 //Both
+	 int __delay;
+
 	 //Blink
 	 bool __blink_flag;
-	 uint16_t __blink_delta;
-	 uint16_t __blink_delay;
-
+	 int __blink_delta;
+	
 	 //Pulse
 	 bool __pulse_flag;
-	 uint16_t __pulse_delta;
-	 uint16_t __pulse_delay;
-	 uint8_t __pulse_counter;
-	 uint8_t __pulse_count;
+	 int __pulse_delta;
+	
+	 int __pulse_counter;
+	 int __pulse_count;
 
 	 void DoAfterInit();
 	 void DoBeforeShutdown();
 	 void DoBeforeSuspend();
 	 void DoDeviceMessage(Int_Thread_Msg message);
+	 void Set_Led_Delay(int _delay);
+	 void Set_Led_Pulse_Count(int _pulse_count);
+	 void Set_Led_Mode(uint8_t _mode);
 	 void DoUpdate(uint32_t deltaTime);
 	 void Build_Descriptor();
 
@@ -51,13 +56,13 @@ public:
 protected:
 	void Set_Led_On();
 	void Set_Led_Off();
-	void Set_Led_Blink(uint16_t delay);
-	void Set_Led_Pulse(uint16_t count, uint16_t delay);
+	void Set_Led_Pulse(int count, int delay);
+	void Set_Led_Blink(int delay);
 public:
 	void Exec_Set_Led_On();
 	void Exec_Set_Led_Off();
-	void Exec_Set_Led_Blink(uint16_t delay);
-	void Exec_Set_Led_Pulse(uint16_t count, uint16_t delay);
+	void Exec_Set_Led_Blink(int delay);
+	void Exec_Set_Led_Pulse(int count, int delay);
 	int GetPinNumber();
 };
 

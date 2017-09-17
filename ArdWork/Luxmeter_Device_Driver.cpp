@@ -17,20 +17,20 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit \nes erlaubt die Kontrolle über die Ausleseparameter \nund stellt Live - Werte sowie Diagramme bereit";
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE, "update rate", select, "select rate you want the value be updated");
+	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 1, "update rate", select, "select rate you want the value be updated");
 	ctrl_elem_rate->published = true;
 
 	Atomic<int> *atomic_1000 = new Atomic<int>(0, 1000, "ms");
 	Atomic<int> *atomic_2000 = new Atomic<int>(1, 2000, "ms");
-	Atomic<int> *atomic_5000 = new Atomic<int>(1, 5000, "ms");
-	Atomic<int> *atomic_10000 = new Atomic<int>(1, 10000, "ms");
+	Atomic<int> *atomic_5000 = new Atomic<int>(2, 5000, "ms");
+	Atomic<int> *atomic_10000 = new Atomic<int>(3, 10000, "ms");
 
 	ctrl_elem_rate->AddAtomic(atomic_1000);
 	ctrl_elem_rate->AddAtomic(atomic_2000);
 	ctrl_elem_rate->AddAtomic(atomic_5000);
 	ctrl_elem_rate->AddAtomic(atomic_10000);
 
-	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE, "Integrationtime", select, "set the time the sensor collect light");
+	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 2, "Integrationtime", select, "set the time the sensor collect light");
 	ctrl_elem_integr->published = true;
 
 	Atomic<String> *atomic_13ms = new Atomic<String>(0, "13", "ms");
@@ -41,12 +41,12 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	ctrl_elem_integr->AddAtomic(atomic_101ms);
 	ctrl_elem_integr->AddAtomic(atomic_402ms);
 
-	Ctrl_Elem *ctrl_elem_gain = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE, "Gain", select, "select the Gain for make values better fit");
+	Ctrl_Elem *ctrl_elem_gain = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 3, "Gain", select, "select the Gain for make values better fit");
 	ctrl_elem_gain->published = true;
 
 	Atomic<String> *atomic_auto = new Atomic<String>(0, "Auto");
 	Atomic<String> *atomic_1x = new Atomic<String>(1, "1X");
-	Atomic<String> *atomic_16x = new Atomic<String>(1, "16X");
+	Atomic<String> *atomic_16x = new Atomic<String>(2, "16X");
 
 	ctrl_elem_gain->AddAtomic(atomic_auto);
 	ctrl_elem_gain->AddAtomic(atomic_1x);
@@ -74,16 +74,16 @@ void Luxmeter_Device_Driver::DoAfterInit()
 		// tsl.setGain(TSL2561_GAIN_16X);     /* 16x gain ... use in low light to boost sensitivity */
 		tsl->enableAutoRange(true);            /* Auto-gain ... switches automatically between 1x and 16x */
 
-		Set_Integration_Time(TSL2561_INTEGRATIONTIME_101MS);
+		Set_Integration_Time(TSL2561_INTEGRATIONTIME_402MS);
 		/* Update these values depending on what you've set above! */
 		Serial.println("------------------------------------");
 		Serial.print("Gain:         "); Serial.println("Auto");
-		Serial.print("Timing:       "); Serial.println("13 ms");
+		Serial.print("Timing:       "); Serial.println("402 ms");
 		Serial.println("------------------------------------");
 		Serial.println("");
 
 	}
-	accuracy_delay = 2000;
+	accuracy_delay = 1000;
 	accuracy_delta = 0;
 	lastLux = 0.0;
 }

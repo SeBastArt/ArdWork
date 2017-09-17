@@ -42,32 +42,12 @@ void Button_Device_Driver::DoBeforeSuspend()
 
 }
 
-void Button_Device_Driver::Do_Push_Button()
-{
-	ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_PRESSED);
-	if (!parentModule->SendAsyncThreadMessage(message))
-	{
-		Serial.println(">> message buffer overflow <<");
-	}
-	__lastMessage = THREAD_MSG_BUTTONSTATE_PRESSED;
-}
-
-
-
 void Button_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 {
-	int messageID = message.GetID();
-	switch (messageID)
-	{
-		case BUTTON_DEVICE_DRIVER_PUSH_BUTTON:
-		{
-			Do_Push_Button();
-		}
-		break;
-	}
+
 }
 
-uint8_t Button_Device_Driver::GetButtonPinID() {
+int Button_Device_Driver::GetButtonPinID() {
 	return __pin->GetID();
 }
 
@@ -180,7 +160,6 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 					__last_state = buttonstate_released;
 					if (__lastMessage != THREAD_MSG_BUTTONSTATE_RELEASED) {
 						ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_RELEASED);
-						parentModule->SendAsyncThreadMessage(message);
 						if (!parentModule->SendAsyncThreadMessage(message))
 						{
 							Serial.println(">> message buffer overflow <<");

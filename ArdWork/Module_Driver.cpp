@@ -35,9 +35,10 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	webserver_wifi_index = -1;
 	websocket_wifi_index = -1;
 
-	descriptor_List = new Vector<Descriptor*>;
+	__descriptor_list = new Descriptor_List;
+	Serial.println("Erstellt");
 	device_list = new Vector <Driver*>;
-
+	
 	button_list = new Vector <Button_Device_Driver*>;
 	distance_list = new Vector <Distance_Device_Driver*>;
 	led_list = new Vector <Led_Device_Driver*>;
@@ -52,7 +53,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 
 Module_Driver::~Module_Driver()
 {
-	descriptor_List->Clear();
+	__descriptor_list->Clear();
 	device_list->Clear();
 	queue.Clear();
 }
@@ -198,11 +199,10 @@ void Module_Driver::DoSuspend() {
 		(*device_list)[i]->ExecSuspend();
 	}
 }
-
-Vector<Descriptor*>* Module_Driver::GetDescriptrorList()
+Descriptor_List* Module_Driver::GetDescriptrorList()
 {
 	UpdateControls();
-	return descriptor_List;
+	return __descriptor_list;
 }
 
 
@@ -218,9 +218,9 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 		{
 			CommunicationMessage* pCommunication = (CommunicationMessage*)(pMessage);
 			Driver* device = nullptr;
-			device = GetDeviceById(pCommunication->Id);
+			device = GetDeviceById(pCommunication->__Id);
 			if (device != nullptr) {
-				device->Exec_Command(pCommunication->CmdId, pCommunication->Values);
+				device->Exec_Command(pCommunication->__CmdId, pCommunication->__Value);
 			}
 			break;
 		}
@@ -254,13 +254,13 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 
 void Module_Driver::UpdateControls()
 {
-	descriptor_List->Clear();
+	__descriptor_list->Clear();
 	if (isdebug) {
 		for (int i = 0; i < device_list->Size(); i++) {
-			descriptor_List->PushBack((*device_list)[i]->GetDescriptor());
+			__descriptor_list->Add_Descriptor((*device_list)[i]->GetDescriptor());
 		}
 	}
-	descriptor_List->PushBack(GetDescriptor());
+	__descriptor_list->Add_Descriptor(GetDescriptor());
 }
 
 Button_Device_Driver *Module_Driver::Get_Selected_Button_Device() const

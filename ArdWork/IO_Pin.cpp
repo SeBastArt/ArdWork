@@ -5,7 +5,7 @@
 #include "IO_Pin.h"
 #include "Base_Controller.h"
 
-IO_Pin::IO_Pin(uint32_t ID, uint8_t number, String name){
+IO_Pin::IO_Pin(int ID, uint8_t number, String name){
 	pin_ID = ID;
 	pin_number = number;
 	pin_name = name;
@@ -21,7 +21,7 @@ bool IO_Pin::PinMode() {
 	return pin_mode;
 }
 
-uint32_t IO_Pin::GetID() {
+int IO_Pin::GetID() {
 	return pin_ID;
 }
 

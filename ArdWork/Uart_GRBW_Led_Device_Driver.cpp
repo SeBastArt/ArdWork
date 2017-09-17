@@ -37,7 +37,7 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = "RGB-Stripe stellt die Steuerung der RGB-LEDs bereit es erlaubt die Kontrolle über die Muster und Farben";
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE, "Pattern", select, "Choose a pattern for the ambient light");
+	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE + 1, "Pattern", select, "Choose a pattern for the ambient light");
 	Atomic<String> *atomic_pattern_cyclon = new Atomic<String>(0, "Cyclon");
 	Atomic<String> *atomic_pattern_random = new Atomic<String>(1, "Random");
 	Atomic<String> *atomic_pattern_fire = new Atomic<String>(2, "Fire");
@@ -49,7 +49,7 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_shine);
 	ctrl_elem_pattern->published = true;
 
-	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE, "Color", color, "The main color for the ambient light pattern");
+	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE + 2, "Color", color, "The main color for the ambient light pattern");
 	Atomic<int> *atomic_color_r = new Atomic<int>(0, 227, "Dec");
 	Atomic<int> *atomic_color_g = new Atomic<int>(1, 227, "Dec");
 	Atomic<int> *atomic_color_b = new Atomic<int>(2, 227, "Dec");
@@ -59,7 +59,7 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_color->AddAtomic(atomic_color_b);
 	ctrl_elem_color->published = true;
 
-	Ctrl_Elem *ctrl_elem_on_off = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE, "On/Off", select, "Turn the ambient light on or off");
+	Ctrl_Elem *ctrl_elem_on_off = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE + 3, "On/Off", select, "Turn the ambient light on or off");
 	Atomic<String> *atomic_color_on = new Atomic<String>(0, "On");
 	Atomic<String> *atomic_color_off = new Atomic<String>(1, "Off");
 

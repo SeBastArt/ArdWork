@@ -15,16 +15,16 @@ class IO_Pin
 	 bool pin_mode;
 	 bool pin_state;
 	 bool is_active;
-	 uint32_t pin_ID;
+	 int pin_ID;
 	 uint8_t pin_number;
 	 String pin_name;
 
  public:
-	 IO_Pin(uint32_t ID, uint8_t number, String name);
+	 IO_Pin(int ID, uint8_t number, String name);
 	 
 	 bool PinMode();
 	 bool PinState();
-	 uint32_t GetID();
+	 int GetID();
 
 	 uint8_t PinNumber();
 	 String PinName();

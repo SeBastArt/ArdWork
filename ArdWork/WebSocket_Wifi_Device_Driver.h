@@ -19,10 +19,19 @@
 #include "Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver_Consts.h"
 
+
+struct event_msg
+{
+	bool _filled;
+	int _deviceId; 
+	int _cmdId;
+	String _value;
+};
+
 class WebSocket_Wifi_Device_Driver : public Wifi_Device_Driver
 {
 private:
-	String GenerateNav(Vector<Descriptor*>* _descriptor_list);
+	String GenerateNav(Descriptor_List * _descriptor_list);
 	String GenerateTab(Descriptor * _descriptor);
 	String GenerateDecending(Ctrl_Elem* _ctrl_elem);
 	String GenerateColor(int _deviceId, Ctrl_Elem * _ctrl_elem);
@@ -40,8 +49,11 @@ private:
 	static ESP8266WebServer *server;
 	static WebSocketsServer *webSocket;
 protected:
+	static event_msg __event_msg;
 	void UpdateComm(uint32_t deltaTime);
 	void InitComm();
+
+	static String Json_GetvalueFromKey(String Text, String key);
 
 	void Build_Descriptor();
 };

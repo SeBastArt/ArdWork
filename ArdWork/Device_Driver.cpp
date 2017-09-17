@@ -1,10 +1,9 @@
 #include "Device_Driver.h"
 
-Device_Driver::Device_Driver(Module_Driver* module, uint8_t priority) :
-	Driver(priority),
-	parentModule(module)
+Device_Driver::Device_Driver(Module_Driver* _module, uint8_t _priority) :
+	Driver(_priority)
 {
-	//
+	parentModule = _module;
 }
 
 void Device_Driver::DoMessage(Int_Thread_Msg message) {

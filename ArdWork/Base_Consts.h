@@ -126,16 +126,16 @@ struct FloatMessage : ThreadMessage
 
 struct CommunicationMessage : ThreadMessage
 {
-	CommunicationMessage(int _Id, int _CmdId, String _Values) :
+	CommunicationMessage(int _Id, int _CmdId, String _Value) :
 		ThreadMessage(MessageClass_Communication, sizeof(CommunicationMessage))
 	{
-		Id = _Id;
-		CmdId = _CmdId;
-		Values = _Values;
+		__Id = _Id;
+		__CmdId = _CmdId;
+		__Value = _Value;
 	};
-	int Id;
-	int CmdId;
-	String Values;
+	int __Id;
+	int __CmdId;
+	String __Value;
 };
 
 struct MqqtMessage : ThreadMessage
