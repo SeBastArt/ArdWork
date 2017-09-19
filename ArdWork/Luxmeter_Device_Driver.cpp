@@ -15,7 +15,7 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 void Luxmeter_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "Luxmeter";
 	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit \nes erlaubt die Kontrolle über die Ausleseparameter \nund stellt Live - Werte sowie Diagramme bereit";
-	__descriptor->published = true;
+	__descriptor->published = false;
 
 	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 1, "update rate", select, "select rate you want the value be updated");
 	ctrl_elem_rate->published = true;

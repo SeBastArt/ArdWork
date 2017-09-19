@@ -21,7 +21,6 @@ static void SendHeader(WiFiClient *_client) {
 	_client->println("    <!--  CSS -->");
 	_client->println("    <link rel=\"stylesheet\" href=\"https://rawgit.com/gionkunz/chartist-js/master/dist/chartist.min.css\">");
 	_client->println("    <link rel=\"stylesheet\" href=\"dist/css/kube.min.css\">");
-	_client->println("    <link rel=\"stylesheet\" href=\"dist/css/bttn.min.css\">");
 	_client->println("    <script>");
 	_client->println("        function update() {");
 	_client->println("            var data = {");
@@ -39,7 +38,7 @@ static void SendHeader(WiFiClient *_client) {
 	_client->println("		connection.onerror=function (error){console.log(\"WebSocket Error \", error);}; ");
 	_client->println("		connection.onmessage=function (e){");
 	_client->println("			if (e.data.indexOf(\"subProtocol\")==-1) ");
-	_client->println("				document.getElementById(\"response\").innerHTML=e.data + \"<br/>\";");
+	_client->println("				document.getElementById(\"runtime\").innerHTML=e.data + \"<br/>\";");
 	_client->println("		};");
 	_client->println("		");
 	_client->println("		");

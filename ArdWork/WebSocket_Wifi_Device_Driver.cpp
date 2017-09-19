@@ -59,14 +59,15 @@ void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, ui
 			Serial.println(cmdId);
 			Serial.print("value: ");
 			Serial.println(value);
-
+			
 			if (__event_msg._filled == false) {
 				__event_msg._deviceId = deviceId;
 				__event_msg._cmdId = cmdId;
 				__event_msg._value = value;
 				__event_msg._filled = true;
 			}
-			webSocket->sendTXT(num, (const char *)&payload[0]);
+			String json = "{\"test\":\"Test ultima\"}";
+			webSocket->sendTXT(num, json.c_str());
 		
 			delay(10);
 			//analogWrite(LED_RED, ((rgb >> 16) & 0xFF));
@@ -162,7 +163,7 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 	server->serveStatic("/dist/css/kube.min.css", SPIFFS, "/dist/css/kube.min.css");
 	server->serveStatic("/dist/css/bttn.min.css", SPIFFS, "/dist/css/bttn.min.css");
 	//server->serveStatic("/", SPIFFS, "/Index.html");
-	
+
 	server->on("/", [&]() {
 		WiFiClient client = server->client();
 		//static const char header[] = "<meta charset=\"utf-8\"> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js\"></script> <script src=\"dist/js/kube.min.js\"></script> <script src=\"dist/js/jscolor.min.js\"></script> <script type=\"text/javascript\" src=\"https://rawgit.com/gionkunz/chartist-js/master/dist/chartist.js\"></script> <link rel=\"stylesheet\" type=\"text/css\" href=\"https://rawgit.com/gionkunz/chartist-js/master/dist/chartist.min.css\"> <link rel=\"stylesheet\" href=\"dist/css/kube.min.css\"> <link rel=\"stylesheet\" href=\"dist/css/bttn.min.css\"> <script>function update(){var data={labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], series: [ [5, 2, 4, 2, 0]]}; new Chartist.Line('.chart1', data); new Chartist.Bar('.chart2', data); new Chartist.Line('.chart3', data);}var connection=new WebSocket('ws://' + location.hostname + ':81/', ['arduino']); connection.onopen=function (){connection.send('Connect ' + new Date());}; connection.onerror=function (error){console.log('WebSocket Error ', error);}; connection.onmessage=function (e){if (e.data.indexOf('subProtocol')==-1) document.getElementById('response').innerHTML=e.data + '<br/>';}; function SendMessage(_deviceId, _cmdId) {var search_id = _deviceId.toString() + '_' + _cmdId.toString();var obj = new Object();obj.deviceId = _deviceId;obj.cmdId  = _cmdId;obj.value = document.getElementById(search_id).value;var jsonString= JSON.stringify(obj);connection.send(jsonString);}function sendRGB(){var r=parseInt(document.getElementById('r').value).toString(16); var g=parseInt(document.getElementById('g').value).toString(16); var b=parseInt(document.getElementById('b').value).toString(16); if (r.length < 2){r='0' + r;}if (g.length < 2){g='0' + g;}if (b.length < 2){b='0' + b;}var rgb='#' + r + g + b; console.log('RGB: ' + rgb); connection.send(rgb);}</script> <style>body{font-family: Tahoma, Verdana, Segoe, sans-serif; margin-left: 10%; margin-right: 10%; background-color: #DFFFDF; min-width: 400px;}.content{padding-left: 10px; padding-right: 10px;}.simple-text{color: #e3e3e3; text-shadow: 1px 1px 0px black;}a{text-align: center; text-decoration: none; display: inline-block;}a.hover{text-decoration: none;}.tabs{background: #e3e3e3; background: -moz-linear-gradient(top, #e3e3e3, #c8c8c8); background: -webkit-gradient(linear, left top, left bottom, from(#e3e3e3), to(#c8c8c8));}.tabs a{width: 100%; background: transparent; padding: 10px 25px; position: center;}.tabs a:hover{background: white; text-decoration: none;}.tabs a:visited{background: white;}.tabs h3{font-family: \"Century Gothic\", CenturyGothic, Geneva, AppleGothic, sans-serif; font-size: 1.3em; line-height: 1.5em; margin: 0.3em 0.7em 0.3em 0.7em; letter-spacing: -0.1em; color: #454545; text-align: center;}.tabs li{font-size: 1.2em;}.container{background: #666; margin: auto; padding-top: 30px; font-family: helvetica, arial, sans-serif;}.head-line{background: #e3e3e3; position: relative; background: -moz-linear-gradient(top, #e3e3e3, #c8c8c8); background: -webkit-gradient(linear, left top, left bottom, from(#e3e3e3), to(#c8c8c8)); padding: 10px 20px; margin-left: -20px; margin-top: 0; width: 70%; max-width: 550px; min-width: 400px; font-family: Georgia, 'Times New Roman', serif; -moz-box-shadow: 1px 1px 3px #292929; -webkit-box-shadow: 1px 1px 3px #292929; color: #454545; text-shadow: 0 1px 0 white;}.head-line.small{width: 30%; min-width: 200px; max-width: 250px; font-size: 1.3em; line-height: 0.8em; font-family: Tahoma, Verdana, Segoe, sans-serif;}.arrow{position: absolute; width: 0; height: 0; line-height: 0; border-left: 20px solid transparent; border-top: 10px solid #c8c8c8; top: 104%; left: 0;}.button{font-size: 18px; font-weight: bold; text-decoration: none; background: #e3e3e3; position: relative; background: -moz-linear-gradient(top, #e3e3e3, #c8c8c8); background: -webkit-gradient(linear, left top, left bottom, from(#e3e3e3), to(#c8c8c8)); font-family: Georgia, 'Times New Roman', serif; -moz-box-shadow: 1px 1px 3px #292929; -webkit-box-shadow: 1px 1px 3px #292929; color: #454545; text-shadow: 0 1px 0 white; align: left;}.button:hover{background-color: #454545; color: #454545; box-shadow: 0 1px 5px #313131, 0 3px 3px #393939, 0 3px 10px rgba(0, 0, 0, 0.1), 0 2px 15px rgba(200, 200, 200, 0.4) inset, 0 -2px 9px rgba(0, 0, 0, 0.2) inset;}.button:active{box-shadow: 0 2px 0 #393939, 0 4px 4px rgba(0, 0, 0, 0.4), 0 2px 5px rgba(0, 0, 0, 0.2) inset; top: 2px;}.desc{color: #454545;}</style></head>";	
@@ -196,12 +197,14 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 				delay(10);
 			}
 			text += "</div>\n";
+			text += "Runtime = <A id=\"runtime\"></A>\n";
 			text += "</body>\n";
 			text += "</html>\n";
 			//server->sendContent(text);
 			client.println(text);
 		}
-		server->client().stop();
+		client.stop();
+		client.~WiFiClient();
 	});
 	server->begin();
 

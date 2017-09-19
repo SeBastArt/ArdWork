@@ -270,8 +270,9 @@ void Led_Device_Driver::Set_Led_Pulse(int count, int delay)
 		__pulse_count = count;
 		__pulse_counter = 0;
 		__pulse_flag = true;
+		__blink_flag = false;
 		__pulse_delta = 0;
-		Set_IO_Pin_High();
+		Set_IO_Pin_Low();
 	}
 }
 
@@ -280,7 +281,8 @@ void Led_Device_Driver::Set_Led_Blink(int delay)
 	__delay = delay;
 	if (__blink_flag == false) {
 		__blink_flag = true;
+		__pulse_flag = false;
 		__blink_delta = 0;
-		Set_IO_Pin_High();
+		Set_IO_Pin_Low();
 	}
 }
