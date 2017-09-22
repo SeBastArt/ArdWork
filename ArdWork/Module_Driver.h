@@ -28,7 +28,6 @@ class Module_Driver : public Driver, public Observee
 {
 private:
 	bool isdebug;
-	Descriptor_List *__descriptor_list;
 	Vector<ThreadMessage*> queue;
 
 	int8_t button_index;

@@ -35,7 +35,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	webserver_wifi_index = -1;
 	websocket_wifi_index = -1;
 
-	__descriptor_list = new Descriptor_List;
+	//__descriptor_list = new Descriptor_List;
 	Serial.println("Erstellt");
 	device_list = new Vector <Driver*>;
 	

@@ -21,4 +21,10 @@ static unsigned int const ANIMATION_FIRE = ANIMATION_FIRST + 2;
 static unsigned int const ANIMATION_SHINE = ANIMATION_FIRST + 3;
 static unsigned int const ANIMATION_LAST = ANIMATION_SHINE;
 static unsigned int const ANIMATION_COUNT = ANIMATION_LAST + 1;
+static unsigned int const ANIMATION_OFF = ANIMATION_FIRST + 100;
+
+//Extern Communication
+static unsigned int const UART_RGB_LED_SET_PATTERN_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 100;
+static unsigned int const UART_RGB_LED_SET_COLOR_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 101;
+
 #endif

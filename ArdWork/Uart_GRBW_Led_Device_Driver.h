@@ -26,7 +26,7 @@ class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
 private:
 	static int pixelCount;
-	uint8_t actAnimation;
+	int actAnimation;
 	static RgbColor mainColor;
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
@@ -62,6 +62,7 @@ protected:
 	void Animation_Cyclon();
 	void Animation_Fire();
 	void Animation_Next();
+	void Animation_Choose(int _animation_number);
 	void Animation_Prev();
 	void Animation_Color(int R, int G, int B);
 

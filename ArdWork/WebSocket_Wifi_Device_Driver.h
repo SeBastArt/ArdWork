@@ -31,16 +31,18 @@ struct event_msg
 class WebSocket_Wifi_Device_Driver : public Wifi_Device_Driver
 {
 private:
-	String GenerateNav(Descriptor_List * _descriptor_list);
-	String GenerateTab(Descriptor * _descriptor);
-	String GenerateDecending(Ctrl_Elem* _ctrl_elem);
-	String GenerateColor(int _deviceId, Ctrl_Elem * _ctrl_elem);
-	String GenerateForm(int _deviceId, Ctrl_Elem * _ctrl_elem);
-	String GenerateSelect(int _deviceId, Ctrl_Elem * _ctrl_elem);
-	String GenerateInput(int _deviceId, Ctrl_Elem * _ctrl_elem);
-	String GenerateButton(int _deviceId, Ctrl_Elem * _ctrl_elem);
-	String GenerateSetButton(int _deviceId, int _cmdId);
-	String GenerateOption(Ctrl_Elem * _ctrl_elem);
+	int accuracy_delta;
+	int accuracy_delay;
+	void GenerateNav(WiFiClient * client, Descriptor_List * _descriptor_list);
+	void GenerateTab(WiFiClient * client, Descriptor * _descriptor);
+	void GenerateForm(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
+	void GenerateDecending(WiFiClient * client, Ctrl_Elem * _ctrl_elem);
+	void GenerateColor(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
+	void GenerateSelect(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
+	void GenerateOption(WiFiClient * client, Ctrl_Elem * _ctrl_elem);
+	void GenerateInput(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
+	void GenerateButton(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
+	void GenerateSetButton(WiFiClient * client, int _deviceId, int _cmdId);
 public:
 	WebSocket_Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = NULL, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	void UpdateControls();
@@ -56,6 +58,7 @@ protected:
 	static String Json_GetvalueFromKey(String Text, String key);
 
 	void Build_Descriptor();
+
 };
 
 #endif

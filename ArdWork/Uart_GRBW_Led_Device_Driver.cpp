@@ -9,7 +9,7 @@ int Uart_GRBW_Led_Device_Driver::pixelCount;
 uint16_t Uart_GRBW_Led_Device_Driver::lastPixel = 0;
 int8_t Uart_GRBW_Led_Device_Driver::moveDir = 1;
 Vector <MyAnimationState*> Uart_GRBW_Led_Device_Driver::animationState_list;
-RgbColor Uart_GRBW_Led_Device_Driver::mainColor = RgbColor(64, 0, 64);
+RgbColor Uart_GRBW_Led_Device_Driver::mainColor = RgbColor(150, 0, 0);
 
 NeoGamma<NeoGammaTableMethod>* Uart_GRBW_Led_Device_Driver::colorGamma;
 NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* Uart_GRBW_Led_Device_Driver::strip;
@@ -35,21 +35,23 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "RGB-Stripe";
 	__descriptor->descr = "RGB-Stripe stellt die Steuerung der RGB-LEDs bereit es erlaubt die Kontrolle über die Muster und Farben";
-	__descriptor->published = false;
+	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE + 1, "Pattern", select, "Choose a pattern for the ambient light");
-	Atomic<String> *atomic_pattern_cyclon = new Atomic<String>(0, "Cyclon");
-	Atomic<String> *atomic_pattern_random = new Atomic<String>(1, "Random");
-	Atomic<String> *atomic_pattern_fire = new Atomic<String>(2, "Fire");
-	Atomic<String> *atomic_pattern_shine = new Atomic<String>(3, "Shine");
+	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_RGB_LED_SET_PATTERN_EXTERN, "Pattern", select, "Choose a pattern for the ambient light");
+	Atomic<String> *atomic_pattern_cyclon = new Atomic<String>(ANIMATION_CYLON, "Cyclon");
+	Atomic<String> *atomic_pattern_random = new Atomic<String>(ANIMATION_RANDOM, "Random");
+	Atomic<String> *atomic_pattern_fire = new Atomic<String>(ANIMATION_FIRE, "Fire");
+	Atomic<String> *atomic_pattern_shine = new Atomic<String>(ANIMATION_SHINE, "Shine");
+	Atomic<String> *atomic_pattern_off = new Atomic<String>(ANIMATION_OFF, "Off");
 
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_cyclon);
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_random);
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_fire);
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_shine);
+	ctrl_elem_pattern->AddAtomic(atomic_pattern_off);
 	ctrl_elem_pattern->published = true;
 
-	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE + 2, "Color", color, "The main color for the ambient light pattern");
+	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_RGB_LED_SET_COLOR_EXTERN, "Color", color, "The main color for the ambient light pattern");
 	Atomic<int> *atomic_color_r = new Atomic<int>(0, 227, "Dec");
 	Atomic<int> *atomic_color_g = new Atomic<int>(1, 227, "Dec");
 	Atomic<int> *atomic_color_b = new Atomic<int>(2, 227, "Dec");
@@ -59,17 +61,8 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_color->AddAtomic(atomic_color_b);
 	ctrl_elem_color->published = true;
 
-	Ctrl_Elem *ctrl_elem_on_off = new Ctrl_Elem(UART_RGB_LED_DEVICE_FIRST_MESSAGE + 3, "On/Off", select, "Turn the ambient light on or off");
-	Atomic<String> *atomic_color_on = new Atomic<String>(0, "On");
-	Atomic<String> *atomic_color_off = new Atomic<String>(1, "Off");
-
-	ctrl_elem_on_off->AddAtomic(atomic_color_on);
-	ctrl_elem_on_off->AddAtomic(atomic_color_off);
-	ctrl_elem_on_off->published = true;
-
 	__descriptor->Add_Descriptor_Element(ctrl_elem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_color);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_on_off);
 }
 
 
@@ -146,6 +139,29 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		int G = message.GetIntParamByIndex(2);
 		int B = message.GetIntParamByIndex(3);
 		Animation_Color(R, G, B);
+	}
+	break;
+	case UART_RGB_LED_SET_PATTERN_EXTERN:
+	{
+		int animation_number = message.GetIntParamByIndex(1);
+		Animation_Choose(animation_number);
+	}
+	break;
+	case UART_RGB_LED_SET_COLOR_EXTERN:
+	{
+		//uint32_t rgb = (uint32_t)strtol((const char *)&payload[1], NULL, 16);
+		//analogWrite(LED_RED, ((rgb >> 16) & 0xFF));
+		//analogWrite(LED_GREEN, ((rgb >> 8) & 0xFF));
+		//analogWrite(LED_BLUE, ((rgb >> 0) & 0xFF));
+
+		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(1).c_str(), NULL, 16);
+		Serial.print("R: ");
+		Serial.print(((rgb >> 16) & 0xFF));
+		Serial.print(", G: ");
+		Serial.print(((rgb >> 8) & 0xFF));
+		Serial.print(", B: ");
+		Serial.println(((rgb >> 0) & 0xFF));
+		Animation_Color((rgb >> 16), (rgb >> 8), (rgb >> 0));
 	}
 	break;
 	}
@@ -367,6 +383,27 @@ void Uart_GRBW_Led_Device_Driver::Animation_Fire() {
 
 void Uart_GRBW_Led_Device_Driver::Animation_Next() {
 	actAnimation = (actAnimation + 1) % (ANIMATION_COUNT);
+	switch (actAnimation)
+	{
+	case 0:
+		Animation_Cyclon();
+		break;
+	case 1:
+		Animation_Random();
+		break;
+	case 2:
+		Animation_Fire();
+		break;
+	case 3:
+		Animation_Shine();
+		break;
+	default:
+		Animation_Off();
+	}
+}
+
+void Uart_GRBW_Led_Device_Driver::Animation_Choose(int _animation_number) {
+	actAnimation = _animation_number;
 	switch (actAnimation)
 	{
 	case 0:

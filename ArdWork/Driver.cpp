@@ -36,6 +36,7 @@ void Driver::Exec_Command(int _cmdId, String _value)
 }
 
 void Driver::OnUpdate(uint32_t deltaTime) {
+	unsigned long  start = micros();
 	if (!message_queue.Empty()) {	
 		for (unsigned i = 0; i < message_queue.Size(); i++) {
 			int messageID = message_queue[i]->GetID();
@@ -69,7 +70,12 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 		message_queue.Clear();
 	}
 	DoUpdate(deltaTime);
-	yield;
+	/*unsigned long  end = micros(); 
+	Serial.print("Driver: ");
+	Serial.print(this->driver_name);
+	Serial.print(" took ");
+	Serial.print(end - start);
+	Serial.println("ms");*/
 }
 
 

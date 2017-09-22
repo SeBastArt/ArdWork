@@ -6,6 +6,8 @@
 #include "m_Vector.h"
 #include "Base_Consts.h"
 
+
+
 enum func_type
 {
 	text,
@@ -43,12 +45,24 @@ class Atomic : public Atomic_Impl
 {
 private:
 	T __value;
+	T *__reference;
+	bool hasRef;
 	T GetValue() const { return __value; }
 	void SetValue(T _value) { __value = _value; };
 public:
-	Atomic(int _id, T _value, String _unit = "") : Atomic_Impl(_id, _unit) { __value = _value; }
+	Atomic(int _id, T _value, String _unit = "") : Atomic_Impl(_id, _unit) { __value = _value;  hasRef = false;	}
+	Atomic(int _id, T *_reference, String _unit = "") : Atomic_Impl(_id, _unit) { __reference = _reference; hasRef = true; }
 	virtual  ~Atomic() {}
-	virtual String ValueToString() const { return String(__value); }
+	virtual String ValueToString() const { 
+		String return_value;
+		if (hasRef) {
+			return_value = String(*__reference);
+		}
+		else {
+			return_value = __value;
+		}
+		return return_value; 
+	}
 	Property<T, Atomic> value{ this,  &Atomic::SetValue, &Atomic::GetValue };
 };
 
@@ -187,6 +201,8 @@ public:
 
 	Property<int, Descriptor_List> count{ this, nullptr, &Descriptor_List::GetElemCount };
 };
+
+static Descriptor_List *__descriptor_list = new Descriptor_List;
 
 //-----------------------------------------------------
 // Observer Class			

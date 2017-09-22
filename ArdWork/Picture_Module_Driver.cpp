@@ -41,7 +41,7 @@ void Picture_Module_Driver::DoAfterInit()
 void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 {
 	switch ((message)->Class) {
-	case MessageClass_Float:
+	/*case MessageClass_Float:
 	{
 		FloatMessage* pFMessage = (FloatMessage*)(message);
 		Serial.print("ID: ");
@@ -49,7 +49,7 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 		Serial.print("; Lux: ");
 		Serial.println(pFMessage->Value);
 		break;
-	}
+	}*/
 
 	case MessageClass_Button:
 	{
@@ -88,7 +88,6 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 
 void Picture_Module_Driver::DoModuleMessage(Int_Thread_Msg message)
 {
-	Serial.println("rennt");
 	int messageID = message.GetID();
 	switch (messageID)
 	{

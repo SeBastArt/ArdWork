@@ -108,20 +108,20 @@ void WebServer_Wifi_Device_Driver::CheckComm(WiFiClient _client) {
 String WebServer_Wifi_Device_Driver::GenerateHeader(String _response, bool _found)
 {
 	String sHeader;
-	sHeader = (_found == true) ? "HTTP/1.1 200 OK\r\n" : "HTTP/1.1 404 Not found\r\n";
+	sHeader = (_found == true) ? "HTTP/1.1 200 OK\r" : "HTTP/1.1 404 Not found\r";
 	sHeader += "Content-Length: ";
 	sHeader += _response.length();
 	sHeader += "Content-Type: text/html";
 	sHeader += "Connection: close";  // the connection will be closed after completion of the response
 	//sHeader += "Refresh: 5";  // refresh the page automatically every 5 sec
-	sHeader += "\r\n";
+	sHeader += "\r";
 	sHeader += "<!DOCTYPE HTML>";
 	sHeader += "<html>";
 	sHeader += "<head>";
 	sHeader += "<title>Adafruit HUZZAH ESP8266</title>";
 
-	sHeader += "\r\n";
-	sHeader += "\r\n";
+	sHeader += "\r";
+	sHeader += "\r";
 
 	sHeader += GenerateCSS();
 	sHeader += GenerateJavaScript();

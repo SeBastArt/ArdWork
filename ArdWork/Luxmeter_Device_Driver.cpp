@@ -14,8 +14,8 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 
 void Luxmeter_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "Luxmeter";
-	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit \nes erlaubt die Kontrolle über die Ausleseparameter \nund stellt Live - Werte sowie Diagramme bereit";
-	__descriptor->published = false;
+	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit es erlaubt die Kontrolle über die Ausleseparameter und stellt Live - Werte sowie Diagramme bereit";
+	__descriptor->published = true;
 
 	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 1, "update rate", select, "select rate you want the value be updated");
 	ctrl_elem_rate->published = true;
@@ -52,9 +52,17 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	ctrl_elem_gain->AddAtomic(atomic_1x);
 	ctrl_elem_gain->AddAtomic(atomic_16x);
 
+	Ctrl_Elem *ctrl_elem_lux = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 4, "Meassured Lux-Value", value, "the value of the ambient light");
+	ctrl_elem_lux->published = true;
+
+	Atomic<float> *atomic_lux = new Atomic<float>(0, &lastLux, "Lux");
+
+	ctrl_elem_lux->AddAtomic(atomic_lux);
+
 	__descriptor->Add_Descriptor_Element(ctrl_elem_rate);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_integr);
+	//__descriptor->Add_Descriptor_Element(ctrl_elem_integr);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_gain);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_lux);
 }
 
 void Luxmeter_Device_Driver::DoAfterInit()
@@ -74,7 +82,7 @@ void Luxmeter_Device_Driver::DoAfterInit()
 		// tsl.setGain(TSL2561_GAIN_16X);     /* 16x gain ... use in low light to boost sensitivity */
 		tsl->enableAutoRange(true);            /* Auto-gain ... switches automatically between 1x and 16x */
 
-		Set_Integration_Time(TSL2561_INTEGRATIONTIME_402MS);
+		Set_Integration_Time(TSL2561_INTEGRATIONTIME_13MS);
 		/* Update these values depending on what you've set above! */
 		Serial.println("------------------------------------");
 		Serial.print("Gain:         "); Serial.println("Auto");
@@ -130,6 +138,7 @@ void Luxmeter_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
 void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	accuracy_delta += deltaTime;
 	if (accuracy_delta > accuracy_delay) {
+		//Serial.printf("index heap size: %u", ESP.getFreeHeap());
 		accuracy_delta = 0;
 		sensor_t sensor;
 		tsl->getSensor(&sensor);

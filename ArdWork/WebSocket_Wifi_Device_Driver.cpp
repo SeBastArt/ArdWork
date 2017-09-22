@@ -30,36 +30,29 @@ String WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey(String _text, String _
 void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 	switch (type) {
 	case WStype_DISCONNECTED:
-		Serial.printf("[%u] Disconnected!\n", num);
+		Serial.printf("[%u] Disconnected!", num);
 		break;
 	case WStype_CONNECTED: {
 		IPAddress ip = webSocket->remoteIP(num);
-		Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+		Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s", num, ip[0], ip[1], ip[2], ip[3], payload);
 
 		// send message to client
 		webSocket->sendTXT(num, "Connected");
 	}
 						   break;
 	case WStype_TEXT:
-		Serial.printf("[%u] get Text: %s\n", num, payload);
+		Serial.printf("[%u] get Text: %s", num, payload);
 
 		if (payload[0] == '{') {
 			// we get RGB data
 
 			// decode rgb data
 			//uint32_t rgb = (uint32_t)strtol((const char *)&payload[1], NULL, 16);
-			String test =String((const char *)&payload[0]);
+			String test = String((const char *)&payload[0]);
 
 			int deviceId = atoi(Json_GetvalueFromKey(test, "deviceId").c_str());
 			int cmdId = atoi(Json_GetvalueFromKey(test, "cmdId").c_str());
 			String value = Json_GetvalueFromKey(test, "value");
-			Serial.print("deviceId: ");
-			Serial.println(deviceId);
-			Serial.print("cmdId: ");
-			Serial.println(cmdId);
-			Serial.print("value: ");
-			Serial.println(value);
-			
 			if (__event_msg._filled == false) {
 				__event_msg._deviceId = deviceId;
 				__event_msg._cmdId = cmdId;
@@ -68,8 +61,10 @@ void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, ui
 			}
 			String json = "{\"test\":\"Test ultima\"}";
 			webSocket->sendTXT(num, json.c_str());
-		
+
+
 			delay(10);
+
 			//analogWrite(LED_RED, ((rgb >> 16) & 0xFF));
 			//analogWrite(LED_GREEN, ((rgb >> 8) & 0xFF));
 			//analogWrite(LED_BLUE, ((rgb >> 0) & 0xFF));
@@ -88,6 +83,8 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 	server = new ESP8266WebServer(80);
 	webSocket = new WebSocketsServer(81);
 	__event_msg._filled = false;
+	accuracy_delay = 2000;
+	accuracy_delta = 0;
 }
 
 
@@ -97,7 +94,7 @@ void WebSocket_Wifi_Device_Driver::Build_Descriptor() {
 	__descriptor->published = true;
 
 	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE, "Wifi-Mode", select, "Mode aendern");
-	
+
 	Atomic<String> *atomic_mode_sta = new Atomic<String>(0, "STA", "");
 	Atomic<String> *atomic_mode_ap = new Atomic<String>(1, "AP", "");
 	Atomic<String> *atomic_mode_staap = new Atomic<String>(2, "STA/AP", "");
@@ -108,13 +105,13 @@ void WebSocket_Wifi_Device_Driver::Build_Descriptor() {
 	ctrl_elem_mode->published = true;
 
 	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE + 1, "SSID", text, "SSID aendern");
-	
+
 	Atomic<String> *atomic_SSID = new Atomic<String>(0, "SSID");
 	ctrl_elem_SSID->AddAtomic(atomic_SSID);
 	ctrl_elem_SSID->published = true;
 
 	Ctrl_Elem *ctrl_elem_pass = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE + 2, "Passwort", pass, "Passwort aendern");
-	
+
 	Atomic<String> *atomic_pass = new Atomic<String>(0, "Passwort");
 	ctrl_elem_pass->AddAtomic(atomic_pass);
 	ctrl_elem_pass->published = true;
@@ -135,6 +132,26 @@ void WebSocket_Wifi_Device_Driver::UpdateControls() {
 
 
 void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
+	accuracy_delta += deltaTime;
+	if (accuracy_delta > accuracy_delay) {
+		accuracy_delta = 0;
+		if (__descriptor_list->count > 0)
+			for (int I = 0; I < __descriptor_list->count; I++)
+				if (__descriptor_list->GetElemByIndex(I)->published)
+					for (int J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
+						if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) {
+							String json_str;
+							StaticJsonBuffer<200> jsonBuffer;
+							JsonObject& root = jsonBuffer.createObject();
+							root["_deviceId"] = String(__descriptor_list->GetElemByIndex(I)->id);
+							root["_cmdId"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->id);
+							root["_value"] = ((Atomic<String>*)__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->GetAtomicByIndex(0))->ValueToString();
+							root["_unit"] = String(((Atomic<String>*)__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->GetAtomicByIndex(0))->unit);
+							root.printTo(json_str);
+							webSocket->sendTXT(0, json_str.c_str());
+						}
+	}
+
 	webSocket->loop();
 	server->handleClient();
 
@@ -144,8 +161,10 @@ void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 		{
 			Serial.println(">> message buffer overflow <<");
 		}
+		__event_msg._filled = false;
 	}
-	__event_msg._filled = false;
+
+
 }
 
 void WebSocket_Wifi_Device_Driver::InitComm() {
@@ -159,6 +178,8 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 	// handle index
 	server->serveStatic("/dist/js/jscolor.min.js", SPIFFS, "/dist/js/jscolor.min.js");
 	server->serveStatic("/dist/js/kube.min.js", SPIFFS, "/dist/js/kube.min.js");
+	server->serveStatic("/dist/js/chartist.min.js", SPIFFS, "/dist/js/chartist.min.js");
+	server->serveStatic("/dist/js/jquery.min.js", SPIFFS, "/dist/js/jquery.min.js");
 
 	server->serveStatic("/dist/css/kube.min.css", SPIFFS, "/dist/css/kube.min.css");
 	server->serveStatic("/dist/css/bttn.min.css", SPIFFS, "/dist/css/bttn.min.css");
@@ -173,257 +194,244 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 
 		//static const char head[] = "<!DOCTYPE html><html><head> <title>Bilderrahme</title>";
 		//server->sendContent(head);
-		//client.println(head);
+		//client.print(head);
 		//server->sendContent(header);
-		//client.println(header);
+		//client.print(header);
 		SendHeader(&client);
 		if (__descriptor_list->count > 0) {
-			String text = "";
-			text += "<body onload=\"update();\">\n";
-			text += "<div class=\"container\">\n";
-			text += "<h2 class=\"head-line\">Bilderrahmen Steuerung <span class=\"arrow\"></span></h2>\n";
-			//server->sendContent(text);
-			client.println(text);
-			text = "";
+			client.println("<body onload=\"update();\">");
+			client.println("<div class=\"container\">");
+			client.println("<h2 class=\"head-line\">Bilderrahmen Steuerung <span class=\"arrow\"></span></h2>");
 			//server->sendContent(GenerateNav(__descriptor_list));
-			client.println(GenerateNav(__descriptor_list));
-			yield;
-			delay(10);
+			GenerateNav(&client, __descriptor_list);
+
+
 			for (int I = 0; I < __descriptor_list->count; I++) {
-				if (__descriptor_list->GetElemByIndex(I)->published)
+				if (__descriptor_list->GetElemByIndex(I)->published) {
 					//server->sendContent(GenerateTab(__descriptor_list->GetElemByIndex(I)));
-					client.println(GenerateTab(__descriptor_list->GetElemByIndex(I)));
-				yield;
-				delay(10);
+					GenerateTab(&client, __descriptor_list->GetElemByIndex(I));
+					yield();
+				}
 			}
-			text += "</div>\n";
-			text += "Runtime = <A id=\"runtime\"></A>\n";
-			text += "</body>\n";
-			text += "</html>\n";
-			//server->sendContent(text);
-			client.println(text);
+			client.println("</div>");
+			client.println("</body>");
+			client.println("</html>");
 		}
 		client.stop();
-		client.~WiFiClient();
 	});
-	server->begin();
+			server->begin();
 
-	// Add service to MDNS
-	MDNS.addService("http", "tcp", 80);
-	MDNS.addService("ws", "tcp", 81);
+			// Add service to MDNS
+			MDNS.addService("http", "tcp", 80);
+			MDNS.addService("ws", "tcp", 81);
 }
 
 
 
 
-String WebSocket_Wifi_Device_Driver::GenerateNav(Descriptor_List *_descriptor_list) {
-	String nav = "";
-	nav += "<nav class =\"tabs\" data-component =\"tabs\">\n";
-	nav += "<ul onclick =\"update();\">\n";
-	nav += "<li><h3><strong>ArdWork</strong></h3></li>\n";
+void WebSocket_Wifi_Device_Driver::GenerateNav(WiFiClient *client, Descriptor_List *_descriptor_list) {
+	client->println("<nav class =\"tabs\" data-component =\"tabs\">");
+	client->println("<ul onclick =\"update();\">");
+	client->println("<li><h3><strong>ArdWork</strong></h3></li>");
 	for (int I = 0; I < __descriptor_list->count; I++)
 		if (__descriptor_list->GetElemByIndex(I)->published) {
-			nav += "<li ";
+			client->print("<li ");
 			if (I == 0)
-				nav += "class = \"active\"";
-			nav += ">";
-			nav += "<a href=\"#tab" + String(__descriptor_list->GetElemByIndex(I)->name) + "\">" + String(__descriptor_list->GetElemByIndex(I)->name) + "</a>";
-			nav += "</li>\n";
+				client->print("class = \"active\"");
+			client->print(">");
+			client->print("<a href=\"#tab" + String(__descriptor_list->GetElemByIndex(I)->name) + "\">" + String(__descriptor_list->GetElemByIndex(I)->name) + "</a>");
+			client->println("</li>");
 		}
-	nav += "</ul>\n";
-	nav += "</nav>\n";
-	return nav;
+	client->println("</ul>");
+	client->println("</nav>");
 }
 
-String WebSocket_Wifi_Device_Driver::GenerateTab(Descriptor *_descriptor) {
-	String tab = "";
-	tab += " <div class=\"content\" id=\"tab" + String(_descriptor->name) + "\">\n";
-	tab += " \t<div class=\"simple-text\">\n";
-	tab += " \t\t<p>\n";
-	tab += " \t\t<strong>\n";
-	tab += " \t\t\t" + String(_descriptor->descr) + "\n";
-	tab += " \t\t</strong>\n";
-	tab += " \t\t</p>\n";
-	tab += " \t\t<div class=\"head-line small\">Features</div>\n";
-	tab += " \t\t<p>\n";
-	tab += " \t\t\t<ul>\n";
+void WebSocket_Wifi_Device_Driver::GenerateTab(WiFiClient *client, Descriptor *_descriptor) {
 
+	client->println(" <div class=\"content\" id=\"tab" + String(_descriptor->name) + "\">");
+	client->println(" \t<div class=\"simple-text\">");
+	client->println(" \t\t<p>");
+	client->print(" \t\t<strong>");
+	client->print(" \t\t\t" + String(_descriptor->descr) + "");
+	client->println(" \t\t</strong>");
+	client->println(" \t\t</p>");
+	client->println(" \t\t<div class=\"head-line small\">Features</div>");
+	client->println(" \t\t<p>");
+	client->println(" \t\t\t<ul>");
 	for (int J = 0; J < _descriptor->ctrl_count; J++)
-		tab += "<li>" + String(_descriptor->GetCtrlElemByIndex(J)->descr) + "</li>\n";
+		client->println("<li>" + String(_descriptor->GetCtrlElemByIndex(J)->descr) + "</li>");
 
-	tab += " \t\t\t</ul>\n";
-	tab += " \t\t</p>\n";
-	tab += " \t</div>\n";
-	tab += " \t<div class=\"head-line small\">Steuerung</div>\n";
-	tab += " \t<br>\n";
-	tab += " \t<p>\n";
-	for (int I = 0; I < _descriptor->ctrl_count; I++)
-		tab += GenerateForm(_descriptor->id, _descriptor->GetCtrlElemByIndex(I));
+	client->println(" \t\t\t</ul>");
+	client->println(" \t\t</p>");
+	client->println(" \t</div>");
+	client->println(" \t<div class=\"head-line small\">Steuerung</div>");
+	client->println(" \t<br>");
+	client->println(" \t<p>");
+	for (int I = 0; I < _descriptor->ctrl_count; I++) {
+		GenerateForm(client, _descriptor->id, _descriptor->GetCtrlElemByIndex(I));
+	}
 
-	tab += " \t</p>\n";
-	tab += " \t<br>\n";
-	tab += " </div>\n";
-	return tab;
+	client->println(" \t</p>");
+	client->println(" \t<br>");
+	client->println(" </div>");
 }
 
-String WebSocket_Wifi_Device_Driver::GenerateForm(int _deviceId, Ctrl_Elem* _ctrl_elem) {
-	String form = "";
-	form += "<div class = \"form-item\">\n";
-	form += "\t<div class = \"append w45 w100-sm\">\n";
+void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {
+
+	client->print("<div class = \"form-item\">");
+	if (_ctrl_elem->type == value)
+		client->print("\t<div class = \"append w35 w100-sm\">");
+	else
+		client->println("\t<div class = \"append w45 w100-sm\">");
 	switch (_ctrl_elem->type)
 	{
 	case text:
 	{
-		form += GenerateInput(_deviceId, _ctrl_elem);
-		form += GenerateSetButton(_deviceId, _ctrl_elem->id);
+		GenerateInput(client, _deviceId, _ctrl_elem);
+		GenerateSetButton(client, _deviceId, _ctrl_elem->id);
 		break;
 	}
 	case pass:
 	{
-		form += GenerateInput(_deviceId, _ctrl_elem);
-		form += GenerateSetButton(_deviceId, _ctrl_elem->id);
+		GenerateInput(client, _deviceId, _ctrl_elem);
+		GenerateSetButton(client, _deviceId, _ctrl_elem->id);
 		break;
 	}
 	case select:
 	{
-		form += GenerateSelect(_deviceId, _ctrl_elem);
-		form += GenerateSetButton(_deviceId, _ctrl_elem->id);
+		GenerateSelect(client, _deviceId, _ctrl_elem);
+		GenerateSetButton(client, _deviceId, _ctrl_elem->id);
 		break;
 	}
 	case color:
 	{
-		form += GenerateColor(_deviceId, _ctrl_elem);
-		form += GenerateSetButton(_deviceId, _ctrl_elem->id);
+		GenerateColor(client, _deviceId, _ctrl_elem);
+		GenerateSetButton(client, _deviceId, _ctrl_elem->id);
 		break;
 	}
 	case button:
 	{
-		form += GenerateButton(_deviceId, _ctrl_elem);
+		GenerateButton(client, _deviceId, _ctrl_elem);
+		break;
+	}
+	case value:
+	{
+		GenerateInput(client, _deviceId, _ctrl_elem);
 		break;
 	}
 	default:
 		break;
 	}
 
-	form += "\t</div>\n";
-	form += GenerateDecending(_ctrl_elem);
-	form += "</div>\n";
-	return form;
+	client->println("\t</div>");
+	GenerateDecending(client, _ctrl_elem);
+	client->println("</div>");
 }
 
-String WebSocket_Wifi_Device_Driver::GenerateDecending(Ctrl_Elem* _ctrl_elem) {
-	String decending = "";
-	decending += "\t<div class=\"desc\">";
+void WebSocket_Wifi_Device_Driver::GenerateDecending(WiFiClient *client, Ctrl_Elem* _ctrl_elem) {
+	client->println("\t<div class=\"desc\">");
 	switch (_ctrl_elem->type)
 	{
 	case text:
 	{
-		decending += "Set ";
+		client->print("Set ");
 		break;
 	}
 
 	case pass:
 	{
-		decending += "Set ";
+		client->print("Set ");
 		break;
 	}
 	case select:
 	{
-		decending += "Pick a ";
+		client->print("Pick a ");
 		break;
 	}
 	case color:
 	{
-		decending += "Pick a ";
+		client->print("Pick a ");
 		break;
 	}
 	case button:
 	{
-		decending += _ctrl_elem->descr;
+		client->print(_ctrl_elem->descr);
 		break;
 	}
 	}
-	decending += String(_ctrl_elem->name);
-	decending += "</div>\n";
-
-	return decending;
+	client->println(String(_ctrl_elem->name));
+	client->println("</div>");
 }
 
 
-String WebSocket_Wifi_Device_Driver::GenerateColor(int _deviceId, Ctrl_Elem* _ctrl_elem) {
-	String color = "";
-	color += "\t\t<input ";
-	color += "value=\"";
+void WebSocket_Wifi_Device_Driver::GenerateColor(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {
+	
+	client->print("\t\t<input ");
+	client->print("value=\"");
 
 	for (int I = 0; I < _ctrl_elem->atomic_count; I++) {
 		char buf[12];
-		color += String(itoa(((Atomic<int>*)_ctrl_elem->GetAtomicByIndex(I))->value, buf, 16));
+		client->print(String(itoa(((Atomic<int>*)_ctrl_elem->GetAtomicByIndex(I))->value, buf, 16)));
 	}
-	color += "\" class=\"small ";
-	color += "jscolor{ mode:\'HSV\',width:225, height:130, position:\'right\', borderColor :\'#e3e3e3\', insetColor : \'#666\', backgroundColor : \'#666\'}\" ";
-	color += "id=\"" + String(_deviceId) + "_" + String(_ctrl_elem->id) + "\">\n";
-	return color;
+	client->print("\" class=\"small ");
+	client->print("jscolor{ mode:\'HSV\',width:225, height:130, position:\'top\', borderColor :\'#e3e3e3\', insetColor : \'#666\', backgroundColor : \'#666\'} ");
+	client->println("id=\"" + String(_deviceId) + "_" + String(_ctrl_elem->id) + "\">");
 }
 
 
-String WebSocket_Wifi_Device_Driver::GenerateSelect(int _deviceId, Ctrl_Elem* _ctrl_elem) {
-	String select = "";
-	select += "\t\t<select class=\"small\" ";
-	select += "id=\"" + String(_deviceId) + "_" + String(_ctrl_elem->id) + "\">\n";
-	select += GenerateOption(_ctrl_elem);
-	select += "\t\t</select>\n";
-	return select;
+void WebSocket_Wifi_Device_Driver::GenerateSelect(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {	
+	client->print( "\t\t<select class=\"small\" ");
+	client->println( "id=\"" + String(_deviceId) + "_" + String(_ctrl_elem->id) + "\">");
+	GenerateOption(client, _ctrl_elem);
+	client->println( "\t\t</select>");
 }
 
-String WebSocket_Wifi_Device_Driver::GenerateOption(Ctrl_Elem* _ctrl_elem) {
-	String option = "";
+void WebSocket_Wifi_Device_Driver::GenerateOption(WiFiClient *client, Ctrl_Elem* _ctrl_elem) {
 	for (int I = 0; I < _ctrl_elem->atomic_count; I++) {
-		option += "\t\t\t<option value=\"";
-		option += String(((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->id);
-		option += "\">";
-		option += ((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->ValueToString();
-		option += String(((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->unit);
-		option += "</option>\n";
+		client->print( "\t\t\t<option value=\"");
+		client->print( String(((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->id));
+		client->print( "\">");
+		client->print( ((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->ValueToString());
+		client->print( String(((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->unit));
+		client->println( "</option>");
 	}
-	return option;
 }
 
 
-String WebSocket_Wifi_Device_Driver::GenerateInput(int _deviceId, Ctrl_Elem* _ctrl_elem) {
-	String input = "";
-
+void WebSocket_Wifi_Device_Driver::GenerateInput(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {
 	for (int I = 0; I < _ctrl_elem->atomic_count; I++) {
 		if (_ctrl_elem->type == pass)
-			input += "\t\t<input type=\"password\" class=\"small\" id=\"";
+			client->print("\t\t<input type=\"password\" class=\"small\" id=\"");
 		else
-			input += "\t\t<input type=\"text\" class=\"small\" id=\"";
-		input += String(_deviceId) + "_" + String(_ctrl_elem->id);
-		input += "\"  placeholder=\"";
-		input += ((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->ValueToString();
-		input += "\">\n";
+			client->print("\t\t<input type=\"text\" class=\"small\" id=\"");
+		client->print(String(_deviceId) + "_" + String(_ctrl_elem->id));
+		client->print("\"  placeholder=\"");
+		client->print(((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->ValueToString());
+		client->print(" " + ((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->unit);
+		if (_ctrl_elem->type == value) {
+			client->print("\" disabled>");
+		}
+		else {
+			client->println("\">");
+		}
 	}
-	return input;
 }
 
+void WebSocket_Wifi_Device_Driver::GenerateButton(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {
 
-String WebSocket_Wifi_Device_Driver::GenerateButton(int _deviceId, Ctrl_Elem* _ctrl_elem) {
-	String button = "";
-	button += "\t\t<button class=\"button small\" onclick=\"SendMessage(";
-	button += String(_deviceId);
-	button += ", ";
-	button += String(_ctrl_elem->id);
-	button += ");\">";
-	button += _ctrl_elem->name;
-	button += "</button>\n";
-	return button;
+	client->print("\t\t<button class=\"button small\" onclick=\"SendMessage(");
+	client->print(String(_deviceId));
+	client->print(", ");
+	client->print(String(_ctrl_elem->id));
+	client->print(");\">");
+	client->print(_ctrl_elem->name);
+	client->println("</button>");
 }
 
-String WebSocket_Wifi_Device_Driver::GenerateSetButton(int _deviceId, int _cmdId) {
-	String button = "";
-	button += "\t\t<button class=\"button small\" onclick=\"SendMessage(";
-	button += String(_deviceId);
-	button += ", ";
-	button += String(_cmdId);
-	button += ");\">Set</button>\n";
-	return button;
+void WebSocket_Wifi_Device_Driver::GenerateSetButton(WiFiClient *client, int _deviceId, int _cmdId) {
+	client->print("\t\t<button class=\"button small\" onclick=\"SendMessage(");
+	client->print(String(_deviceId));
+	client->print(", ");
+	client->print(String(_cmdId));
+	client->println(");\">Set</button>");
 }
