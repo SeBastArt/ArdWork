@@ -8,12 +8,16 @@
 #else
 	#include "WProgram.h"
 #endif
+#include <ESP8266WiFi.h>        
 
-#include <ESP8266WiFi.h>
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>    
 #include "Device_Driver.h"
 #include "Wifi_Device_Driver_Consts.h"
 #include "Led_Device_Driver.h"
 #include "Comm_Device_Driver.h"
+#include <ArduinoJson.h>       
 
 class Wifi_Device_Driver : public Device_Driver, public Comm_Device_Driver
 {
@@ -29,6 +33,7 @@ private:
 	bool isConnected;
 	uint32_t conn_delta;
 	uint32_t conn_delay;
+	WiFiManager wifiManager;
 
 protected:
 	static Led_Device_Driver *statusLED;

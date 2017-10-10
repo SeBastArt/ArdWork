@@ -6,6 +6,8 @@
 //#define SLEEP
 
 //#define COMPILE_TEST
+#include <DNSServer.h>
+#include <WiFiManager.h>
 #include "Filesystem.h"
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
@@ -167,10 +169,10 @@ void setup() {
 	//Button_Device_Driver *button = new Button_Device_Driver(rgb_mqqt_wifi_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	//Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(rgb_mqqt_wifi_module);
 
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 24, THREAD_PRIORITY_VERY_HIGH);
+	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28, THREAD_PRIORITY_VERY_HIGH);
 	Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(LED_BUILTIN), true);
-	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D7"), true);
+	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
 	//Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
 	//WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, WifiSsid, password, wifi_status_led);

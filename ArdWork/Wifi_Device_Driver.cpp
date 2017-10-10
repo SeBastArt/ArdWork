@@ -24,6 +24,15 @@ void Wifi_Device_Driver::DoAfterInit()
 	const char* _ssid = &Ssid[0];
 	const char* _password = &Password[0];
 
+	statusLED->Exec_Set_Led_Blink(200);
+	WiFi.hostname("Bild");
+	//if (!wifiManager.autoConnect("AutoConnectAP")) {
+	//	Serial.println("failed to connect and hit timeout");
+	//	delay(3000);
+	//}
+	//statusLED->Exec_Set_Led_Off();
+	//isConnected = true;
+	//InitComm();
 	if (WiFi.status() != WL_CONNECTED) {
 		Serial.println("WiFi_Module_Driver initialized!");
 		WiFi.begin(_ssid, _password);
@@ -32,7 +41,6 @@ void Wifi_Device_Driver::DoAfterInit()
 		Serial.print("] with Passwort [");
 		Serial.print(Password);
 		Serial.println("]");
-		InitComm();
 	}
 	Serial.println("Wifi_Device_Driver::DoAfterInit() Done");
 }
@@ -52,6 +60,7 @@ void Wifi_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
 {
 	if (WiFi.status() != WL_CONNECTED) {
+
 		if (isConnected == true) {
 			Serial.println("Connection lost...");
 			Serial.println("Try to reconnect...");
@@ -64,6 +73,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
 			conn_delta = 0;
 			Serial.print(".");
 		}
+
 	}
 	else {
 		if (!isConnected) {
@@ -71,12 +81,16 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
 			Serial.print("IP address: ");
 			Serial.println(WiFi.localIP());
 			localhost = WiFi.localIP();
+
 			isConnected = true;
+			InitComm();
 			if (statusLED != NULL)
 				statusLED->Exec_Set_Led_Off();
 		}
-		UpdateComm(deltaTime);
+		if (isConnected)
+			UpdateComm(deltaTime);
 	}
+	
 }
 
 void Wifi_Device_Driver::SetWiFiStatusLed(Led_Device_Driver *led) {

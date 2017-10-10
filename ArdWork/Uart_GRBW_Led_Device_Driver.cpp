@@ -34,7 +34,7 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 
 void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "RGB-Stripe";
-	__descriptor->descr = "RGB-Stripe stellt die Steuerung der RGB-LEDs bereit es erlaubt die Kontrolle über die Muster und Farben";
+	__descriptor->descr = "RGB-Stripe stellt die Steuerung der RGB-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben";
 	__descriptor->published = true;
 
 	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_RGB_LED_SET_PATTERN_EXTERN, "Pattern", select, "Choose a pattern for the ambient light");
