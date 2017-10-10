@@ -1,30 +1,30 @@
-#ifndef Uart_GRBW_Led_Device_Driver_CONSTS_h
-#define Uart_GRBW_Led_Device_Driver_CONSTS_h
+#ifndef UART_GRBW_LED_DEVICE_DRIVER_CONSTS_h
+#define UART_GRBW_LED_DEVICE_DRIVER_CONSTS_h
 
 #include "Device_Driver_Consts.h"
 																								   
-static unsigned int const UART_RGB_LED_DEVICE_FIRST_MESSAGE = DEVICE_DRIVER_LAST_MESSAGE + 1003000;
-static unsigned int const UART_RGB_LED_DEVICE_OFF = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 1;
-static unsigned int const UART_RGB_LED_DEVICE_CYCLON = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 2;
-static unsigned int const UART_RGB_LED_DEVICE_RANDOM = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 3;
-static unsigned int const UART_RGB_LED_DEVICE_FIRE = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 4;
-static unsigned int const UART_RGB_LED_DEVICE_SHINE = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 5;
-static unsigned int const UART_RGB_LED_DEVICE_NEXT = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 6;
-static unsigned int const UART_RGB_LED_DEVICE_PREV = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 7;
-static unsigned int const UART_RGB_LED_DEVICE_COLOR = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 8;
-static unsigned int const Uart_GRBW_Led_Device_Driver_LAST_MESSAGE = UART_RGB_LED_DEVICE_COLOR;
+static unsigned int const UART_GRBW_LED_DEVICE_FIRST_MESSAGE = DEVICE_DRIVER_LAST_MESSAGE + 1003100;
+static unsigned int const UART_GRBW_LED_DEVICE_OFF = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 1;
+static unsigned int const UART_GRBW_LED_DEVICE_CYCLON = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 2;
+static unsigned int const UART_GRBW_LED_DEVICE_RANDOM = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 3;
+static unsigned int const UART_GRBW_LED_DEVICE_FIRE = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 4;
+static unsigned int const UART_GRBW_LED_DEVICE_SHINE = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 5;
+static unsigned int const UART_GRBW_LED_DEVICE_NEXT = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 6;
+static unsigned int const UART_GRBW_LED_DEVICE_PREV = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 7;
+static unsigned int const UART_GRBW_LED_DEVICE_COLOR = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 8;
+static unsigned int const Uart_GRBW_Led_Device_Driver_LAST_MESSAGE = UART_GRBW_LED_DEVICE_COLOR;
 
-static unsigned int const ANIMATION_FIRST = 0;
-static unsigned int const ANIMATION_CYLON = ANIMATION_FIRST;
-static unsigned int const ANIMATION_RANDOM = ANIMATION_FIRST + 1;
-static unsigned int const ANIMATION_FIRE = ANIMATION_FIRST + 2;
-static unsigned int const ANIMATION_SHINE = ANIMATION_FIRST + 3;
-static unsigned int const ANIMATION_LAST = ANIMATION_SHINE;
-static unsigned int const ANIMATION_COUNT = ANIMATION_LAST + 1;
-static unsigned int const ANIMATION_OFF = ANIMATION_FIRST + 100;
+static unsigned int const GRBW_ANIMATION_FIRST = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 50;
+static unsigned int const GRBW_ANIMATION_CYLON = GRBW_ANIMATION_FIRST;
+static unsigned int const GRBW_ANIMATION_RANDOM = GRBW_ANIMATION_FIRST + 1;
+static unsigned int const GRBW_ANIMATION_FIRE = GRBW_ANIMATION_FIRST + 2;
+static unsigned int const GRBW_ANIMATION_SHINE = GRBW_ANIMATION_FIRST + 3;
+static unsigned int const GRBW_ANIMATION_LAST = GRBW_ANIMATION_SHINE;
+static unsigned int const GRBW_ANIMATION_COUNT = GRBW_ANIMATION_LAST - GRBW_ANIMATION_FIRST + 1;
+static unsigned int const GRBW_ANIMATION_OFF = GRBW_ANIMATION_FIRST + 70;
 
 //Extern Communication
-static unsigned int const UART_RGB_LED_SET_PATTERN_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 100;
-static unsigned int const UART_RGB_LED_SET_COLOR_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 101;
+static unsigned int const UART_GRBW_LED_SET_PATTERN_EXTERN = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 50;
+static unsigned int const UART_GRBW_LED_SET_COLOR_EXTERN = UART_GRBW_LED_DEVICE_FIRST_MESSAGE + 51;
 
 #endif

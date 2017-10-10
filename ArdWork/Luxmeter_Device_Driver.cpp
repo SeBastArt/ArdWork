@@ -91,7 +91,7 @@ void Luxmeter_Device_Driver::DoAfterInit()
 		Serial.println("");
 
 	}
-	accuracy_delay = 1000;
+	accuracy_delay = 200;
 	accuracy_delta = 0;
 	lastLux = 0.0;
 }

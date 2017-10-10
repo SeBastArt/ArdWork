@@ -6,6 +6,7 @@
 //#define SLEEP
 
 //#define COMPILE_TEST
+#include <ArduinoOTA.h>
 #include <DNSServer.h>
 #include <WiFiManager.h>
 #include "Filesystem.h"
@@ -26,7 +27,7 @@
 #include "IO_Pin.h"
 
 //Driver
-#include "Uart_GRBW_Led_Device_Driver.h"
+#include "Uart_RGB_Led_Device_Driver.h"
 #include "Distance_Device_Driver.h"
 #include "Button_Device_Driver.h"
 #include "Led_Device_Driver.h"
@@ -49,7 +50,7 @@
 //Controller
 #include "ESP8266_NodeMCU_Controller.h"
 #include "IO_Pin.h"
-#include "Uart_GRBW_Led_Device_Driver.h"
+#include "Uart_RGB_Led_Device_Driver.h"
 //Driver
 #include "Button_Device_Driver.h"
 #include "Led_Device_Driver.h"
@@ -61,6 +62,7 @@
 //Controller
 #include "ESP8266_NodeMCU_Controller.h"
 #include "IO_Pin.h"
+#include "Uart_RGB_Led_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
 //Driver
 #include "Button_Device_Driver.h"
@@ -120,6 +122,25 @@ void setup() {
 	WiFi.forceSleepWake(); // Wlan ON f�r neue Zyklus	
 	Serial.begin(115200);
 
+	ArduinoOTA.onStart([]() {
+		Serial.println("Start");
+	});
+	ArduinoOTA.onEnd([]() {
+		Serial.println("\nEnd");
+	});
+	ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+		Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+	});
+	ArduinoOTA.onError([](ota_error_t error) {
+		Serial.printf("Error[%u]: ", error);
+		if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+		else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+		else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+		else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+		else if (error == OTA_END_ERROR) Serial.println("End Failed");
+	});
+	ArduinoOTA.begin();
+
 	_filesystem.OpenFile("/config.json");
 		WifiSsid = _filesystem.Json_GetvalueFromKey("WifiSsid");
 		password = _filesystem.Json_GetvalueFromKey("password");
@@ -156,20 +177,20 @@ void setup() {
 #endif // SLEEP
 
 #ifdef PICTURE_NodeMCU_GBRW
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(rgb_mqqt_wifi_module, 28);
+	Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(rgb_mqqt_wifi_module, 28);
 	Led_Device_Driver *led = new Led_Device_Driver(rgb_mqqt_wifi_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	Led_Device_Driver *wifi_status_led = new Led_Device_Driver(rgb_mqqt_wifi_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	Button_Device_Driver *button = new Button_Device_Driver(rgb_mqqt_wifi_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 #endif // PICTURE_NodeMCU_GBRW
 
 #ifdef PICTURE_NodeMCU_GBR
-	//Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(rgb_mqqt_wifi_module, 28);
+	//Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(rgb_mqqt_wifi_module, 28);
 	//Led_Device_Driver *led = new Led_Device_Driver(rgb_mqqt_wifi_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	//Led_Device_Driver *wifi_status_led = new Led_Device_Driver(rgb_mqqt_wifi_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	//Button_Device_Driver *button = new Button_Device_Driver(rgb_mqqt_wifi_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	//Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(rgb_mqqt_wifi_module);
 
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28, THREAD_PRIORITY_VERY_HIGH);
+	Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 24, THREAD_PRIORITY_VERY_HIGH);
 	Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(LED_BUILTIN), true);
 	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D2"), true);
@@ -188,7 +209,7 @@ void setup() {
 	RGBLed_Mqqt_Wifi_Module_Driver *rgb_mqqt_wifi_module = new RGBLed_Mqqt_Wifi_Module_Driver("ESP8266", ssid, pass);
 	Dash_Mqqt_Wifi_Module_Driver *mqqt_wifi_module = new Dash_Mqqt_Wifi_Module_Driver("ESP8266", ssid, pass);
 
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28);
+	Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 28);
 	Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(BUILTIN_LED), true);
 	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(4), true);
 
@@ -250,7 +271,7 @@ void setup() {
 	Serial.println("Start ESP8266-NodeMCU-Controller");
 	threadManager.StartThread(esp8266_NodeMCU_controller);
 
-	/*Serial.println("Start Uart_GRBW_Led_Device_Driver");
+	/*Serial.println("Start Uart_RGB_Led_Device_Driver");
 	threadManager.StartThread(rgb_mqqt_wifi_module);*/
 
 	Serial.println("Start Picture_Module_Driver");
@@ -308,4 +329,5 @@ void loop() {
 	}
 #endif // SLEEP
 	threadManager.Loop();
+	ArduinoOTA.handle();
 }

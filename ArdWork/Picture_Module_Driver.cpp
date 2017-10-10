@@ -10,7 +10,7 @@
 #include "WebServer_Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
-#include "Uart_GRBW_Led_Device_Driver.h"
+#include "Uart_RGB_Led_Device_Driver.h"
 
 Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	Module_Driver(priority)
@@ -41,15 +41,12 @@ void Picture_Module_Driver::DoAfterInit()
 void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 {
 	switch ((message)->Class) {
-	/*case MessageClass_Float:
+	case MessageClass_Float:
 	{
 		FloatMessage* pFMessage = (FloatMessage*)(message);
-		Serial.print("ID: ");
-		Serial.print(pFMessage->Id);
-		Serial.print("; Lux: ");
-		Serial.println(pFMessage->Value);
+		((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Set_Brightness(round(pFMessage->Value));
 		break;
-	}*/
+	}
 
 	case MessageClass_Button:
 	{
@@ -57,27 +54,18 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 		if (pButton->State == THREAD_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
-			((Uart_GRBW_Led_Device_Driver *)Selected_Uart_GRBW_Led_Device)->Exec_Animation_Next();
-			//String *msg = new String("1");
-			//msg_list.push_back(msg);
-			//((Led_Device_Driver *)Selected_Led_Device)->Exec_Set_Led_On();
+			((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Next();
 			}
 		}
 		else if (pButton->State == THREAD_MSG_BUTTONSTATE_RELEASED)
 		{
 			if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
-				//String *msg = new String("0");
-				//msg_list.push_back(msg);
-			//((Led_Device_Driver *)Selected_Led_Device)->Exec_Set_Led_Off();
 			}
 		}
 		else if (pButton->State == THREAD_MSG_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
-				((Uart_GRBW_Led_Device_Driver *)Selected_Uart_GRBW_Led_Device)->Exec_Animation_Off();
-				//((Led_Device_Driver *)Selected_Led_Device)->Exec_Set_Led_Blink(500);
-				//String *msg = new String("2");
-				//msg_list.push_back(msg);
+				((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Off();
 			}
 		}
 		break;
@@ -129,16 +117,16 @@ void Picture_Module_Driver::Exec_Pattern_Off()
 
 void Picture_Module_Driver::Pattern_Next()
 {
-	((Uart_GRBW_Led_Device_Driver *)Selected_Uart_GRBW_Led_Device)->Exec_Animation_Next();
+	((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Next();
 }
 
 void Picture_Module_Driver::Pattern_Prev()
 {
-	((Uart_GRBW_Led_Device_Driver *)Selected_Uart_GRBW_Led_Device)->Exec_Animation_Prev();
+	((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Prev();
 }
 
 void Picture_Module_Driver::Pattern_Off()
 {
-	((Uart_GRBW_Led_Device_Driver *)Selected_Uart_GRBW_Led_Device)->Exec_Animation_Off();
+	((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Off();
 }
 

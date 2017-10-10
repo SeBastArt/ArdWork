@@ -15,6 +15,7 @@
 class Device_Driver;
 class Led_Device_Driver;
 class Button_Device_Driver;
+class Uart_RGB_Led_Device_Driver;
 class Uart_GRBW_Led_Device_Driver;
 class Luxmeter_Device_Driver;
 class Distance_Device_Driver;
@@ -38,6 +39,7 @@ private:
 	int8_t oled_display_index;
 	int8_t temperature_index;
 	int8_t Uart_GRBW_Led_index;
+	int8_t Uart_RGB_Led_index;
 	int8_t webserver_wifi_index;
 	int8_t websocket_wifi_index;
 
@@ -48,6 +50,7 @@ private:
 	Vector <Mqqt_Wifi_Device_Driver*> *mqqt_wifi_list;
 	Vector <OLED_Display_Device_Driver*> *oled_display_list;
 	Vector <Temperature_Device_Driver*> *temperature_list;
+	Vector <Uart_RGB_Led_Device_Driver*> *Uart_RGB_Led_list;
 	Vector <Uart_GRBW_Led_Device_Driver*> *Uart_GRBW_Led_list;
 	Vector <WebServer_Wifi_Device_Driver*> *webserver_wifi_list;
 	Vector <WebSocket_Wifi_Device_Driver*> *websocket_wifi_list;
@@ -59,6 +62,7 @@ private:
 	Mqqt_Wifi_Device_Driver* Get_Selected_Mqqt_Wifi_Device() const;
 	OLED_Display_Device_Driver* Get_Selected_OLED_Display_Device() const;
 	Temperature_Device_Driver* Get_Selected_Temperature_Device() const;
+	Uart_RGB_Led_Device_Driver* Get_Selected_Uart_RGB_Led_Device() const;
 	Uart_GRBW_Led_Device_Driver* Get_Selected_Uart_GRBW_Led_Device() const;
 	WebServer_Wifi_Device_Driver* Get_Selected_WebServer_Wifi_Device() const;
 	WebSocket_Wifi_Device_Driver* Get_Selected_WebSocket_Wifi_Device() const;
@@ -74,6 +78,7 @@ protected:
 	Property<Mqqt_Wifi_Device_Driver*, Module_Driver> Selected_Mqqt_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_Mqqt_Wifi_Device };
 	Property<OLED_Display_Device_Driver*, Module_Driver> Selected_OLED_Display_Device{ this, nullptr, &Module_Driver::Get_Selected_OLED_Display_Device };
 	Property<Temperature_Device_Driver*, Module_Driver> Selected_Temperature_Device{ this, nullptr, &Module_Driver::Get_Selected_Temperature_Device };
+	Property<Uart_RGB_Led_Device_Driver*, Module_Driver> Selected_Uart_RGB_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_RGB_Led_Device };
 	Property<Uart_GRBW_Led_Device_Driver*, Module_Driver> Selected_Uart_GRBW_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_GRBW_Led_Device };
 	Property<WebServer_Wifi_Device_Driver*, Module_Driver> Selected_WebServer_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_WebServer_Wifi_Device };
 	Property<WebSocket_Wifi_Device_Driver*, Module_Driver> Selected_WebSocket_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_WebSocket_Wifi_Device };

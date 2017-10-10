@@ -14,6 +14,7 @@ enum func_type
 	pass,
 	color,
 	value,
+	edtvalue,
 	select,
 	button
 };

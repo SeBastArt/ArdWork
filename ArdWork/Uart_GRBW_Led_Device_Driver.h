@@ -16,7 +16,7 @@
 #include <NeoPixelBus.h>
 #include <NeoPixelAnimator.h>
 
-struct MyAnimationState
+struct GRBWAnimationState
 {
 	RgbwColor StartingColor;
 	RgbwColor EndingColor;
@@ -24,6 +24,7 @@ struct MyAnimationState
 
 class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
+	
 private:
 	static int pixelCount;
 	int actAnimation;
@@ -43,8 +44,7 @@ private:
 	static uint16_t lastPixel; // track the eye position
 	static int8_t moveDir; // track the direction of movement
 	
-	static AnimEaseFunction moveEase;
-	static Vector <MyAnimationState*> animationState_list;
+	static Vector <GRBWAnimationState*> animationState_list;
 public:
 	Uart_GRBW_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority = THREAD_PRIORITY_NORMAL);
 private:
@@ -62,8 +62,9 @@ protected:
 	void Animation_Cyclon();
 	void Animation_Fire();
 	void Animation_Next();
-	void Animation_Choose(int _animation_number);
+	void Animation_Number(int _animation_number);
 	void Animation_Prev();
+	void Set_Animation();
 	void Animation_Color(int R, int G, int B);
 
 public:

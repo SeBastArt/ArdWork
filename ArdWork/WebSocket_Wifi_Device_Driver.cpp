@@ -134,7 +134,7 @@ void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 			for (int I = 0; I < __descriptor_list->count; I++)
 				if (__descriptor_list->GetElemByIndex(I)->published)
 					for (int J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
-						if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) {
+						if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value)  || (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == edtvalue)) {
 							String json_str;
 							StaticJsonBuffer<200> jsonBuffer;
 							JsonObject& root = jsonBuffer.createObject();
@@ -301,6 +301,11 @@ void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceI
 	{
 		GenerateInput(client, _deviceId, _ctrl_elem);
 		break;
+	}
+	case edtvalue:
+	{
+		GenerateInput(client, _deviceId, _ctrl_elem);
+		GenerateSetButton(client, _deviceId, _ctrl_elem->id);
 	}
 	default:
 		break;

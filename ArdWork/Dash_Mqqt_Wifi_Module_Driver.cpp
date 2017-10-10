@@ -5,7 +5,7 @@
 #include "Dash_Mqqt_Wifi_Module_Driver.h"
 #include "Led_Device_Driver.h"
 #include "Button_Device_Driver.h"
-#include "Uart_GRBW_Led_Device_Driver.h"
+#include "Uart_RGB_Led_Device_Driver.h"
 
 Dash_Mqqt_Wifi_Module_Driver::Dash_Mqqt_Wifi_Module_Driver(String _hostname, String _ssid, String _password, uint8_t priority) : Mqqt_Wifi_Module_Driver(_hostname, _ssid, _password, priority)
 {

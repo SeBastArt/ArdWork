@@ -1,0 +1,33 @@
+#ifndef Uart_RGB_Led_Device_Driver_CONSTS_h
+#define Uart_RGB_Led_Device_Driver_CONSTS_h
+
+#include "Device_Driver_Consts.h"
+
+static unsigned int const UART_RGB_LED_DEVICE_FIRST_MESSAGE = DEVICE_DRIVER_LAST_MESSAGE + 1003200;
+static unsigned int const UART_RGB_LED_DEVICE_OFF = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 1;
+static unsigned int const UART_RGB_LED_DEVICE_CYCLON = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 2;
+static unsigned int const UART_RGB_LED_DEVICE_RANDOM = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 3;
+static unsigned int const UART_RGB_LED_DEVICE_FIRE = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 4;
+static unsigned int const UART_RGB_LED_DEVICE_SHINE = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 5;
+static unsigned int const UART_RGB_LED_DEVICE_NEXT = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 6;
+static unsigned int const UART_RGB_LED_DEVICE_PREV = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 7;
+static unsigned int const UART_RGB_LED_DEVICE_COLOR = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 8;
+static unsigned int const UART_RGB_LED_DEVICE_BRIGHTNESS = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 9;
+static unsigned int const Uart_RGB_Led_Device_Driver_LAST_MESSAGE = UART_RGB_LED_DEVICE_BRIGHTNESS;
+
+static unsigned int const RGB_ANIMATION_FIRST = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 50;
+static unsigned int const RGB_ANIMATION_CYLON = RGB_ANIMATION_FIRST ;
+static unsigned int const RGB_ANIMATION_RANDOM = RGB_ANIMATION_FIRST + 1;
+static unsigned int const RGB_ANIMATION_FIRE = RGB_ANIMATION_FIRST + 2;
+static unsigned int const RGB_ANIMATION_SHINE = RGB_ANIMATION_FIRST + 3;
+static unsigned int const RGB_ANIMATION_LAST = RGB_ANIMATION_SHINE;
+static unsigned int const RGB_ANIMATION_COUNT = RGB_ANIMATION_LAST - RGB_ANIMATION_FIRST + 1;
+static unsigned int const RGB_ANIMATION_OFF = RGB_ANIMATION_FIRST + 70;
+
+//Extern Communication
+static unsigned int const UART_RGB_LED_SET_PATTERN_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 50;
+static unsigned int const UART_RGB_LED_SET_COLOR_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 51;
+static unsigned int const UART_RGB_LED_SET_AUTO_BRIGHTNESS_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 52;
+static unsigned int const UART_RGB_LED_SET_BRIGHTNESS_EXTERN = UART_RGB_LED_DEVICE_FIRST_MESSAGE + 53;
+
+#endif

@@ -13,14 +13,14 @@
 
 class Button_Device_Driver;
 class Led_Device_Driver;
-class Uart_GRBW_Led_Device_Driver;
+class Uart_RGB_Led_Device_Driver;
 
 class Dash_Mqqt_Wifi_Module_Driver : public Mqqt_Wifi_Module_Driver
 {
  private:
 	 Button_Device_Driver *resident_button;
 	 Led_Device_Driver *resident_Led;
-	 Uart_GRBW_Led_Device_Driver *resident_stripe;
+	 Uart_RGB_Led_Device_Driver *resident_stripe;
 
 	 void UpdateHardware(uint32_t deltaTime);
 

@@ -15,6 +15,7 @@ extern "C" {
 #include "Mqqt_Wifi_Device_Driver.h"
 #include "WebServer_Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
+#include "Uart_RGB_Led_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
 #include "OLED_Display_Device_Driver.h"
 #include "Distance_Device_Driver.h"
@@ -32,6 +33,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	oled_display_index = -1;
 	temperature_index = -1;
 	Uart_GRBW_Led_index = -1;
+	Uart_RGB_Led_index = -1;
 	webserver_wifi_index = -1;
 	websocket_wifi_index = -1;
 
@@ -46,6 +48,7 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	mqqt_wifi_list = new Vector <Mqqt_Wifi_Device_Driver*>;
 	oled_display_list = new Vector <OLED_Display_Device_Driver*>;
 	temperature_list = new Vector <Temperature_Device_Driver*>;
+	Uart_RGB_Led_list = new Vector <Uart_RGB_Led_Device_Driver*>;
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
 	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
 	websocket_wifi_list = new Vector <WebSocket_Wifi_Device_Driver*>;
@@ -95,6 +98,11 @@ void Module_Driver::AddDevice(Device_Driver* device)
 		temperature_list->PushBack((Temperature_Device_Driver*)(device));
 		temperature_index++;
 	}
+	if ((device)->GetDriverName().equals("Uart_RGB_Led_Device_Driver")) {
+		Serial.println("Add Uart_RGB_Led_Device_Driver");
+		Uart_RGB_Led_list->PushBack((Uart_RGB_Led_Device_Driver*)(device));
+		Uart_RGB_Led_index++;
+	}
 	if ((device)->GetDriverName().equals("Uart_GRBW_Led_Device_Driver")) {
 		Serial.println("Add Uart_GRBW_Led_Device_Driver");
 		Uart_GRBW_Led_list->PushBack((Uart_GRBW_Led_Device_Driver*)(device));
@@ -127,10 +135,6 @@ Driver *Module_Driver::GetDeviceById(int Id)
 	}
 	else {
 		for (int i = 0; i < device_list->Size(); i++) {
-			//Serial.print("(*device_list)[i]->DriverId: ");
-			//Serial.print((*device_list)[i]->DriverId);
-			//Serial.print(" - Id: ");
-			//Serial.println(Id);
 			if ((*device_list)[i]->DriverId == Id) {
 				result = (*device_list)[i];
 			}
@@ -316,6 +320,13 @@ Uart_GRBW_Led_Device_Driver *Module_Driver::Get_Selected_Uart_GRBW_Led_Device() 
 {
 	if ((Uart_GRBW_Led_index > -1) && (Uart_GRBW_Led_index < Uart_GRBW_Led_list->Size())) {
 		return (*Uart_GRBW_Led_list)[Uart_GRBW_Led_index];
+	}
+}
+
+Uart_RGB_Led_Device_Driver *Module_Driver::Get_Selected_Uart_RGB_Led_Device() const
+{
+	if ((Uart_RGB_Led_index > -1) && (Uart_RGB_Led_index < Uart_RGB_Led_list->Size())) {
+		return (*Uart_RGB_Led_list)[Uart_RGB_Led_index];
 	}
 }
 
