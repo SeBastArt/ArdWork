@@ -9,44 +9,62 @@
 	#include "WProgram.h"
 #endif
 #include <ESP8266WiFi.h>        
-
-#include <DNSServer.h>
+#include <ESP8266WiFiMulti.h>
+#include <WebSocketsServer.h>
 #include <ESP8266WebServer.h>
-#include <WiFiManager.h>    
+#include <ESP8266mDNS.h>
+#include <ArduinoJson.h>
+
+
 #include "Device_Driver.h"
 #include "Wifi_Device_Driver_Consts.h"
 #include "Led_Device_Driver.h"
-#include "Comm_Device_Driver.h"
-#include <ArduinoJson.h>       
+#include "Comm_Device_Driver.h"     
+#include "Filesystem.h"
+
+
 
 class Wifi_Device_Driver : public Device_Driver, public Comm_Device_Driver
 {
 public:
 	Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = NULL , uint8_t priority = THREAD_PRIORITY_NORMAL);
-	void SetWiFiStatusLed(Led_Device_Driver *led);
-	void SetHostName(String _hostname);
-private:
-	IPAddress localhost;
-	String Ssid;
-	String Password;
 	
-	bool isConnected;
+private:
+	FileSystem _filesystem;
+	IPAddress localhost;
+	String __ssid;
+	String __password;
+	uint8_t __connection_try;
 	uint32_t conn_delta;
 	uint32_t conn_delay;
-	WiFiManager wifiManager;
 
+	void SetSSID(String _ssid);
+	void SetPassword(String _password);
+	void SetMode(int _mode);
+	void ConnectToWifi();
+	void SaveConnectionParameters();
+	void Build_Descriptor();
 protected:
-	static Led_Device_Driver *statusLED;
+	bool __isConnected;
+	bool __isAP;
+	bool __fallbackAP;
 	String hostname;
+	static Led_Device_Driver *statusLED;
 	virtual void UpdateComm(uint32_t deltaTime) = 0;
 	virtual void InitComm() = 0;
+
 protected:
 	void DoAfterInit();
+	void ProvideAP();
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
 	void DoDeviceMessage(Int_Thread_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	
+public:
+	void Exec_Set_SSID(String _ssid);
+	void Exec_Set_Password(String _password);
+	void Exec_Reconnect();
 };
 
 

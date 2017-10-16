@@ -6,16 +6,14 @@
 //#define SLEEP
 
 //#define COMPILE_TEST
-#include <ArduinoOTA.h>
 #include <DNSServer.h>
-#include <WiFiManager.h>
 #include "Filesystem.h"
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
 #include <WebSocketsClient.h>
 #include <WebSockets.h>
 #include <ArduinoJson.h>
-#include "FS.h"
+
 #define PICTURE_NodeMCU_GBR
 
 
@@ -111,7 +109,7 @@
 //Main
 #include "Thread/ThreadManager.h"
 
-FileSystem _filesystem;
+
 ThreadManager threadManager;
 
 uint32_t start;
@@ -119,33 +117,11 @@ String WifiSsid;
 String password;
 
 void setup() {
-	WiFi.forceSleepWake(); // Wlan ON f�r neue Zyklus	
+	WiFi.disconnect();
+	delay(1000);
+	WiFi.forceSleepWake();  // Wlan ON fuer neue Zyklus	
 	Serial.begin(115200);
-
-	ArduinoOTA.onStart([]() {
-		Serial.println("Start");
-	});
-	ArduinoOTA.onEnd([]() {
-		Serial.println("\nEnd");
-	});
-	ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-		Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-	});
-	ArduinoOTA.onError([](ota_error_t error) {
-		Serial.printf("Error[%u]: ", error);
-		if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-		else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-		else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-		else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-		else if (error == OTA_END_ERROR) Serial.println("End Failed");
-	});
-	ArduinoOTA.begin();
-
-	_filesystem.OpenFile("/config.json");
-		WifiSsid = _filesystem.Json_GetvalueFromKey("WifiSsid");
-		password = _filesystem.Json_GetvalueFromKey("password");
-	_filesystem.CloseFile();
-
+	
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) 
 	Dash_Mqqt_Wifi_Module_Driver *dash_mqqt_wifi_module = new Dash_Mqqt_Wifi_Module_Driver("ESP8266", ssid, pass);
 #endif
@@ -329,5 +305,4 @@ void loop() {
 	}
 #endif // SLEEP
 	threadManager.Loop();
-	ArduinoOTA.handle();
 }

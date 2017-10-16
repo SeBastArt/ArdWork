@@ -49,13 +49,15 @@ public:
 	}
 
 
-	bool SaveToFile(String FileName, JsonObject json) {
+	bool SaveToFile(String FileName, JsonObject &json) {
 		actFile = SPIFFS.open(FileName.c_str(), "w");
 		if (!actFile) {
 			Serial.println("Failed to open config file for writing");
 			return false;
 		}
 		json.printTo(actFile);
+		json.printTo(Serial);
+		actFile.close();
 		return true;
 	}
 
@@ -65,7 +67,10 @@ public:
 			Serial.println("Failed to open config file for writing");
 			return false;
 		}
+		Serial.print("SaveToFile: ");
+		Serial.println(text.c_str());
 		actFile.println(text.c_str());
+		actFile.close();
 		return true;
 	}
 	

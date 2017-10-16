@@ -11,7 +11,7 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 void Led_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "LED";
 	__descriptor->descr = "a simple LED";
-	__descriptor->published = true;
+	__descriptor->published = false;
 
 	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_MODE, "LED-Mode", select, "Select the Mode of the LED");
 

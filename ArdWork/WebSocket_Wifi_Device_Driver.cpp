@@ -75,7 +75,8 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 	Wifi_Device_Driver(module, _ssid, _password, _statusLED, priority)
 {
 	driver_name = "WebSocket_Wifi_Device_Driver";
-
+	server = nullptr;
+	webSocket = nullptr;
 
 	__event_msg._filled = false;
 	accuracy_delay = 2000;
@@ -83,42 +84,6 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 }
 
 
-void WebSocket_Wifi_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Wifi";
-	__descriptor->descr = "Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit";
-	__descriptor->published = false;
-
-	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE, "Wifi-Mode", select, "Mode aendern");
-
-	Atomic<String> *atomic_mode_sta = new Atomic<String>(0, "STA", "");
-	Atomic<String> *atomic_mode_ap = new Atomic<String>(1, "AP", "");
-	Atomic<String> *atomic_mode_staap = new Atomic<String>(2, "STA/AP", "");
-
-	ctrl_elem_mode->AddAtomic(atomic_mode_sta);
-	ctrl_elem_mode->AddAtomic(atomic_mode_ap);
-	ctrl_elem_mode->AddAtomic(atomic_mode_staap);
-	ctrl_elem_mode->published = true;
-
-	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE + 1, "SSID", text, "SSID aendern");
-
-	Atomic<String> *atomic_SSID = new Atomic<String>(0, "SSID");
-	ctrl_elem_SSID->AddAtomic(atomic_SSID);
-	ctrl_elem_SSID->published = true;
-
-	Ctrl_Elem *ctrl_elem_pass = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE + 2, "Passwort", pass, "Passwort aendern");
-
-	Atomic<String> *atomic_pass = new Atomic<String>(0, "Passwort");
-	ctrl_elem_pass->AddAtomic(atomic_pass);
-	ctrl_elem_pass->published = true;
-
-	Ctrl_Elem *ctrl_elem_reconnect = new Ctrl_Elem(WEBSOCKET_WIFI_DEVICE_DRIVER_FIRST_MESSAGE + 3, "Reconnect", button, "Reconnect to Wifi");
-	ctrl_elem_reconnect->published = true;
-
-	__descriptor->Add_Descriptor_Element(ctrl_elem_SSID);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_pass);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_mode);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_reconnect);
-}
 
 
 void WebSocket_Wifi_Device_Driver::UpdateControls() {
@@ -134,7 +99,7 @@ void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 			for (int I = 0; I < __descriptor_list->count; I++)
 				if (__descriptor_list->GetElemByIndex(I)->published)
 					for (int J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
-						if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value)  || (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == edtvalue)) {
+						if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) || (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == edtvalue)) {
 							String json_str;
 							StaticJsonBuffer<200> jsonBuffer;
 							JsonObject& root = jsonBuffer.createObject();
@@ -163,12 +128,27 @@ void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 }
 
 void WebSocket_Wifi_Device_Driver::InitComm() {
-	server = new ESP8266WebServer(80);
-	
+	if (server != nullptr)
+		server->~ESP8266WebServer();
+	server = nullptr,
+		server = new ESP8266WebServer(80);
 
 	// handle index
-	server->serveStatic("/dist/js/jscolor.min.js", SPIFFS, "/dist/js/jscolor.min.js");
-	server->serveStatic("/dist/css/kube.min.css", SPIFFS, "/dist/css/kube.min.css");
+	//server->serveStatic("/dist/js/jscolor.min.js", SPIFFS, "/dist/js/jscolor.min.js");
+	//server->serveStatic("/dist/css/kube.min.css", SPIFFS, "/dist/css/kube.min.css");
+
+	server->on("/dist/css/kube.min.css", [&]() {
+		File file = SPIFFS.open("/dist/css/kube.min.css", "r");
+		server->streamFile(file, "text/css");
+		file.close();
+	});
+
+
+	server->on("/dist/js/jscolor.min.js", [&]() {
+		File file = SPIFFS.open("/dist/js/jscolor.min.js", "r");
+		server->streamFile(file, "application/javascript");
+		file.close();
+	});
 
 	server->on("/", [&]() {
 		WiFiClient client = server->client();
@@ -177,6 +157,18 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 		client.println("<html>");
 		SendHeader(&client);
 		client.println("<body>");
+
+		if (__isAP) {
+			String thisName = __descriptor->name;
+			for (int i = 0; i < __descriptor_list->count; i++)
+				if (!thisName.equals(__descriptor_list->GetElemByIndex(i)->name)) {
+					if (__fallbackAP)
+						__descriptor_list->GetElemByIndex(i)->published = false;
+				}
+				else
+					__descriptor_list->GetElemByIndex(i)->published = true;
+		}
+
 		if (__descriptor_list->count > 0) {
 			client.println("<div class=\"container\">");
 			client.println("<h2 class=\"head-line\">Bilderrahmen Steuerung</h2>");
@@ -185,7 +177,7 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 			for (int I = 0; I < __descriptor_list->count; I++) {
 				if (__descriptor_list->GetElemByIndex(I)->published) {
 					client.print("<div id=\"tab" + String(__descriptor_list->GetElemByIndex(I)->name) + "\" class=\"tabcontent\"");
-					if (first){
+					if (first) {
 						client.print(" style=\"display:block\"");
 						first = false;
 					}
@@ -195,7 +187,7 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 					yield();
 				}
 			}
-			client.println("</div>");	
+			client.println("</div>");
 		}
 		client.println("</body>");
 		client.println("</html>");
@@ -203,8 +195,12 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 	});
 
 	server->begin();
-	
-	webSocket = new WebSocketsServer(81);
+
+
+	if (webSocket != nullptr)
+		webSocket->~WebSocketsServer();
+	webSocket = nullptr,
+		webSocket = new WebSocketsServer(81);
 
 	if (MDNS.begin("esp8266")) {
 		Serial.println("MDNS responder started");
@@ -213,9 +209,7 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 	webSocket->onEvent(webSocketEvent);
 	webSocket->begin();
 
-	// Add service to MDNS
-	MDNS.addService("http", "tcp", 80);
-	MDNS.addService("ws", "tcp", 81);
+
 }
 
 void WebSocket_Wifi_Device_Driver::GenerateNav(WiFiClient *client, Descriptor_List *_descriptor_list) {
@@ -407,7 +401,11 @@ void WebSocket_Wifi_Device_Driver::GenerateInput(WiFiClient *client, int _device
 
 void WebSocket_Wifi_Device_Driver::GenerateButton(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {
 
-	client->print("				<button class=\"button small\" onclick=\"SendMessage(");
+	client->print("				<button class=\"button small\" id=\"");
+	client->print(String(_deviceId) + "_" + String(_ctrl_elem->id));
+	client->print("\" ");
+	client->print("value=\"0\" ");
+	client->print("onclick=\"SendMessage(");
 	client->print(String(_deviceId));
 	client->print(", ");
 	client->print(String(_ctrl_elem->id));
