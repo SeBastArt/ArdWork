@@ -75,7 +75,7 @@ private:
 	int __id;
 	String __name;
 	String __descr;
-	int __atomic_count;
+	uint8_t __atomic_count;
 	bool __published;
 
 	bool GetPublished() const { return __published; }
@@ -84,7 +84,7 @@ private:
 	int GetId() const { return __id; }
 	func_type GetType() const { return __type; }
 	void SetPublished(bool _published) { __published = _published; }
-	int GetAtomicCount() const { return __atomic_count; }
+	uint8_t GetAtomicCount() const { return __atomic_count; }
 public:
 	Ctrl_Elem(int _id, String _name, func_type _type, String _descr = "Control Element Description") :
 		__id(_id),
@@ -105,7 +105,7 @@ public:
 		__atomic_count++;
 	}
 
-	Atomic_Base *GetAtomicByIndex(int _index) {
+	Atomic_Base *GetAtomicByIndex(uint8_t _index) {
 		if ((index >= 0) && (_index < __atomic_count)) {
 			return (*__vec_atomic)[_index];
 		}
@@ -118,7 +118,7 @@ public:
 	Property<String, Ctrl_Elem> name{ this, nullptr, &Ctrl_Elem::GetName };
 	Property<func_type, Ctrl_Elem> type{ this, nullptr, &Ctrl_Elem::GetType };
 	Property<String, Ctrl_Elem> descr{ this, nullptr, &Ctrl_Elem::GetDescr };
-	Property<int, Ctrl_Elem> atomic_count{ this, nullptr, &Ctrl_Elem::GetAtomicCount };
+	Property<uint8_t, Ctrl_Elem> atomic_count{ this, nullptr, &Ctrl_Elem::GetAtomicCount };
 	Property<bool, Ctrl_Elem> published{ this, &Ctrl_Elem::SetPublished, &Ctrl_Elem::GetPublished };
 };
 
@@ -131,9 +131,9 @@ private:
 	String __name;
 	String __descr;
 	bool __published;
-	int __ctrl_elem_count;
+	uint8_t __ctrl_elem_count;
 
-	int GetCtrlElemCount() const { return __ctrl_elem_count; }
+	uint8_t GetCtrlElemCount() const { return __ctrl_elem_count; }
 	int GetId() const { return __id; }
 	bool GetPublished() const { return __published; }
 	void SetPublished(bool _published) { __published = _published; }
@@ -152,7 +152,7 @@ public:
 	};
 	virtual ~Descriptor() { delete  __vec_ctrl_elem; }
 
-	Ctrl_Elem *GetCtrlElemByIndex(int _index) {
+	Ctrl_Elem *GetCtrlElemByIndex(uint8_t _index) {
 		if ((index >= 0) && (_index < __ctrl_elem_count))
 			return (*__vec_ctrl_elem)[_index];
 		else
@@ -166,16 +166,16 @@ public:
 	Property<int, Descriptor> id{ this, nullptr, &Descriptor::GetId };
 	Property<String, Descriptor> name{ this, &Descriptor::SetName, &Descriptor::GetName };
 	Property<String, Descriptor> descr{ this, &Descriptor::SetDescr, &Descriptor::GetDescr };
-	Property<int, Descriptor> ctrl_count{ this, nullptr, &Descriptor::GetCtrlElemCount };
+	Property<uint8_t, Descriptor> ctrl_count{ this, nullptr, &Descriptor::GetCtrlElemCount };
 	Property<bool, Descriptor> published{ this, &Descriptor::SetPublished, &Descriptor::GetPublished };
 };
 
 class Descriptor_List
 {
 private:
-	int __elem_count;
+	uint8_t __elem_count;
 	Vector<Descriptor*> *__vec_descriptor_elem;
-	int GetElemCount() const { return __elem_count; }
+	uint8_t GetElemCount() const { return __elem_count; }
 public:
 	Descriptor_List() {
 		__vec_descriptor_elem = new Vector<Descriptor*>;
@@ -200,7 +200,7 @@ public:
 			return nullptr;
 	}
 
-	Property<int, Descriptor_List> count{ this, nullptr, &Descriptor_List::GetElemCount };
+	Property<uint8_t, Descriptor_List> count{ this, nullptr, &Descriptor_List::GetElemCount };
 };
 
 static Descriptor_List *__descriptor_list = new Descriptor_List;

@@ -80,10 +80,10 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 
 
 void Driver::ExecInit() {
-	//Serial.print("Driver::ExecInit() with ");
-	//Serial.print(GetDriverName());
-	//Serial.print(" and message: ");
-	//Serial.println(DRIVER_INIT);
+	Serial.print("Driver::ExecInit() with ");
+	Serial.print(GetDriverName());
+	Serial.print(" and message: ");
+	Serial.println(DRIVER_INIT);
 	Int_Thread_Msg *message = new Int_Thread_Msg(DRIVER_INIT);
 	PostMessage(&message);
 }

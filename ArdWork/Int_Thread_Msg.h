@@ -22,6 +22,7 @@ public:
 	void AddParam(String text);
 	void AddParam(float floatNumber);
 	int GetID();
+	uint8_t GetUint8ParamByIndex(int index);
 	int GetIntParamByIndex(int index);
 	float GetFloatParamByIndex(int index);
 	bool GetBoolParamByIndex(int index);

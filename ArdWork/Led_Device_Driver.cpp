@@ -55,7 +55,7 @@ void Led_Device_Driver::DoAfterInit()
 	__blink_flag = false;
 	__delay = 500;
 	__blink_delta = 0;
-
+	
 	__pulse_flag = false;
 	__pulse_delta = 0;
 	__pulse_counter = 0;

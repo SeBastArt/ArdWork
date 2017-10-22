@@ -40,11 +40,13 @@ void Picture_Module_Driver::DoAfterInit()
 
 void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 {
+	
 	switch ((message)->Class) {
 	case MessageClass_Float:
 	{
 		FloatMessage* pFMessage = (FloatMessage*)(message);
-		((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Set_Brightness(round(pFMessage->Value));
+		
+		//((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Set_Brightness(round(pFMessage->Value));
 		break;
 	}
 
@@ -53,20 +55,20 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 		ButtonMessage* pButton = (ButtonMessage*)(message);
 		if (pButton->State == THREAD_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
-			if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
-			((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Next();
-			}
+			//if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
+			//((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Next();
+			//}
 		}
 		else if (pButton->State == THREAD_MSG_BUTTONSTATE_RELEASED)
 		{
-			if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
-			}
+			//if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
+			//}
 		}
 		else if (pButton->State == THREAD_MSG_BUTTONSTATE_AUTOREPEAT)
 		{
-			if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
-				((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Off();
-			}
+			//if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
+				//((Uart_RGB_Led_Device_Driver *)Selected_Uart_RGB_Led_Device)->Exec_Animation_Off();
+			//}
 		}
 		break;
 	}

@@ -10,12 +10,13 @@
 #endif
 #include <ESP8266WiFi.h>        
 #include <ESP8266WiFiMulti.h>
+
 #include <WebSocketsServer.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <ArduinoJson.h>
 
-
+#include "./DNSServer.h"
 #include "Device_Driver.h"
 #include "Wifi_Device_Driver_Consts.h"
 #include "Led_Device_Driver.h"
@@ -27,7 +28,7 @@
 class Wifi_Device_Driver : public Device_Driver, public Comm_Device_Driver
 {
 public:
-	Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = NULL , uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = nullptr , uint8_t priority = THREAD_PRIORITY_NORMAL);
 	
 private:
 	FileSystem _filesystem;
@@ -37,7 +38,7 @@ private:
 	uint8_t __connection_try;
 	uint32_t conn_delta;
 	uint32_t conn_delay;
-
+	DNSServer *__dnsServer;
 	void SetSSID(String _ssid);
 	void SetPassword(String _password);
 	void SetMode(int _mode);

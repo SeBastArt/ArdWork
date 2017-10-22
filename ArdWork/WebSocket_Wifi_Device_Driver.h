@@ -34,6 +34,7 @@ private:
 	static WebSocketsServer *webSocket;
 	static event_msg __event_msg;
 
+	void GenerateAndSendHtml(WiFiClient * _client);
 	void GenerateNav(WiFiClient * client, Descriptor_List * _descriptor_list);
 	void GenerateTab(WiFiClient * client, Descriptor * _descriptor);
 	void GenerateForm(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
@@ -49,13 +50,14 @@ private:
 	static String Json_GetvalueFromKey(String Text, String key);
 
 public:
-	WebSocket_Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = NULL, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	WebSocket_Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = nullptr, uint8_t priority = THREAD_PRIORITY_NORMAL);
 	void UpdateControls();
 
 //herited
 protected:
 	void UpdateComm(uint32_t deltaTime);
 	void InitComm();
+	
 };
 
 #endif

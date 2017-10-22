@@ -5,7 +5,7 @@
 #include "Uart_GRBW_Led_Device_Driver.h"
 #include "math.h"
 
-int Uart_GRBW_Led_Device_Driver::pixelCount;
+uint8_t Uart_GRBW_Led_Device_Driver::pixelCount;
 uint16_t Uart_GRBW_Led_Device_Driver::lastPixel = 0;
 int8_t Uart_GRBW_Led_Device_Driver::moveDir = 1;
 Vector <GRBWAnimationState*> Uart_GRBW_Led_Device_Driver::animationState_list;
@@ -15,7 +15,7 @@ NeoGamma<NeoGammaTableMethod>* Uart_GRBW_Led_Device_Driver::colorGamma;
 NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* Uart_GRBW_Led_Device_Driver::strip;
 NeoPixelAnimator* Uart_GRBW_Led_Device_Driver::animations;
 
-Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority) :
+Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority) :
 	Device_Driver(module, priority)
 {
 	driver_name = "Uart_GRBW_Led_Device_Driver";
@@ -25,7 +25,7 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelcount);
 	animations = new NeoPixelAnimator(_pixelcount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
 
-	for (int i = 0; i < _pixelcount; i++) {
+	for (uint8_t i = 0; i < _pixelcount; i++) {
 		GRBWAnimationState* animationState = new GRBWAnimationState();
 		animationState_list.PushBack(animationState);
 	}
@@ -52,9 +52,9 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_pattern->published = true;
 
 	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_GRBW_LED_SET_COLOR_EXTERN, "Color", color, "The main color for the ambient light pattern");
-	Atomic<int> *atomic_color_r = new Atomic<int>(0, 227, "Dec");
-	Atomic<int> *atomic_color_g = new Atomic<int>(1, 227, "Dec");
-	Atomic<int> *atomic_color_b = new Atomic<int>(2, 227, "Dec");
+	Atomic<uint8_t> *atomic_color_r = new Atomic<uint8_t>(0, 227, "Dec");
+	Atomic<uint8_t> *atomic_color_g = new Atomic<uint8_t>(1, 227, "Dec");
+	Atomic<uint8_t> *atomic_color_b = new Atomic<uint8_t>(2, 227, "Dec");
 
 	ctrl_elem_color->AddAtomic(atomic_color_r);
 	ctrl_elem_color->AddAtomic(atomic_color_g);
@@ -127,25 +127,20 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	break;
 	case UART_GRBW_LED_DEVICE_COLOR:
 	{
-		int R = message.GetIntParamByIndex(1);
-		int G = message.GetIntParamByIndex(2);
-		int B = message.GetIntParamByIndex(3);
+		uint8_t R = message.GetUint8ParamByIndex(1);
+		uint8_t G = message.GetUint8ParamByIndex(2);
+		uint8_t B = message.GetUint8ParamByIndex(3);
 		Animation_Color(R, G, B);
 	}
 	break;
 	case UART_GRBW_LED_SET_PATTERN_EXTERN:
 	{
-		int animation_number = message.GetIntParamByIndex(1);
+		uint8_t animation_number = message.GetUint8ParamByIndex(1);
 		Animation_Number(animation_number);
 	}
 	break;
 	case UART_GRBW_LED_SET_COLOR_EXTERN:
 	{
-		//uint32_t rgb = (uint32_t)strtol((const char *)&payload[1], NULL, 16);
-		//analogWrite(LED_RED, ((rgb >> 16) & 0xFF));
-		//analogWrite(LED_GREEN, ((rgb >> 8) & 0xFF));
-		//analogWrite(LED_BLUE, ((rgb >> 0) & 0xFF));
-
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(1).c_str(), NULL, 16);
 		Serial.print("R: ");
 		Serial.print(((rgb >> 16) & 0xFF));
@@ -153,7 +148,7 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		Serial.print(((rgb >> 8) & 0xFF));
 		Serial.print(", B: ");
 		Serial.println(((rgb >> 0) & 0xFF));
-		Animation_Color((rgb >> 16), (rgb >> 8), (rgb >> 0));
+		Animation_Color((uint8_t)(rgb >> 16), (uint8_t)(rgb >> 8), (uint8_t)(rgb >> 0));
 	}
 	break;
 	}
@@ -223,9 +218,9 @@ void Uart_GRBW_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 				animations->StartAnimation(actpixel, 200, BlendAnimUpdate);
 			}
 		}*/
-		uint8 count = 2;
-		for (int j = 0; j < count; j++) {
-			int actpixel = (nextPixel + (j * (pixelCount / count))) % pixelCount;
+		uint8_t count = 2;
+		for (uint8_t j = 0; j < count; j++) {
+			uint8_t actpixel = (nextPixel + (j * (pixelCount / count))) % pixelCount;
 
 			RgbwColor startingColor;
 			startingColor.R = fmin(255, mainColor.R + 200);
@@ -254,7 +249,7 @@ void Uart_GRBW_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
-		uint16_t count = random(pixelCount);
+		uint8_t count = random(pixelCount);
 
 		while (count > 0)
 		{
@@ -298,12 +293,12 @@ void Uart_GRBW_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
-		uint16_t count = random(pixelCount);
+		uint8_t count = random(pixelCount);
 
 		while (count > 0)
 		{
 			// pick a random pixel
-			uint16_t pixel = random(pixelCount);
+			uint8_t pixel = random(pixelCount);
 
 			// pick random time and random color
 			// we use HslColor object as it allows us to easily pick a color
@@ -345,7 +340,7 @@ void Uart_GRBW_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 
 void Uart_GRBW_Led_Device_Driver::Animation_Off() {
 	animations->StopAll();
-	for (int i = 0; i < pixelCount; i++) {
+	for (uint8_t i = 0; i < pixelCount; i++) {
 		strip->SetPixelColor(i, RgbColor(0, 0, 0));
 	}
 	strip->Show();
@@ -380,7 +375,7 @@ void Uart_GRBW_Led_Device_Driver::Animation_Next() {
 	Set_Animation();
 }
 
-void Uart_GRBW_Led_Device_Driver::Animation_Number(int _animation_number) {
+void Uart_GRBW_Led_Device_Driver::Animation_Number(uint8_t _animation_number) {
 	actAnimation = _animation_number;
 	Set_Animation();
 }
@@ -412,7 +407,7 @@ void Uart_GRBW_Led_Device_Driver::Set_Animation() {
 	}
 }
 
-void Uart_GRBW_Led_Device_Driver::Animation_Color(int R, int G, int B)
+void Uart_GRBW_Led_Device_Driver::Animation_Color(uint8_t R, uint8_t G, uint8_t B)
 {
 	mainColor = RgbColor(R, G, B);
 }
@@ -455,7 +450,7 @@ void Uart_GRBW_Led_Device_Driver::Exec_Animation_Prev() {
 	PostMessage(&message);
 }
 
-void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(int R, int G, int B)
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(uint8_t R, uint8_t G, uint8_t B)
 {
 	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_COLOR);
 	message->AddParam(R);

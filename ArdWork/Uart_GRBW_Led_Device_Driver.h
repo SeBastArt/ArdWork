@@ -26,8 +26,8 @@ class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
 	
 private:
-	static int pixelCount;
-	int actAnimation;
+	static uint8_t pixelCount;
+	uint8_t actAnimation;
 	static RgbColor mainColor;
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
@@ -46,7 +46,7 @@ private:
 	
 	static Vector <GRBWAnimationState*> animationState_list;
 public:
-	Uart_GRBW_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority = THREAD_PRIORITY_NORMAL);
 private:
 	void DoAfterInit();
 	void DoBeforeShutdown();
@@ -62,10 +62,10 @@ protected:
 	void Animation_Cyclon();
 	void Animation_Fire();
 	void Animation_Next();
-	void Animation_Number(int _animation_number);
+	void Animation_Number(uint8_t _animation_number);
 	void Animation_Prev();
 	void Set_Animation();
-	void Animation_Color(int R, int G, int B);
+	void Animation_Color(uint8_t R, uint8_t G, uint8_t B);
 
 public:
 	void Exec_Animation_Off();
@@ -75,7 +75,7 @@ public:
 	void Exec_Animation_Fire();
 	void Exec_Animation_Next();
 	void Exec_Animation_Prev();
-	void Exec_Animation_Color(int R, int G, int B);
+	void Exec_Animation_Color(uint8_t R, uint8_t G, uint8_t B);
 };
 
 #endif

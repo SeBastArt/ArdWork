@@ -366,6 +366,9 @@
     <ClInclude Include="Uart_RGB_Led_Device_Driver_Consts.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
     </ClInclude>
+    <ClInclude Include="DNSServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">
@@ -457,6 +460,9 @@
     </ClCompile>
     <ClCompile Include="Uart_RGB_Led_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
+    </ClCompile>
+    <ClCompile Include="DNSServer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

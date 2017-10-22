@@ -18,12 +18,13 @@ Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, String _ssid, Stri
 	hostname = "ESP";
 	conn_delta = 0;
 	conn_delay = 500;
+	__dnsServer = nullptr;
 }
 
 void Wifi_Device_Driver::Build_Descriptor() {
 	__descriptor->name = "Wifi";
 	__descriptor->descr = "Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit";
-	__descriptor->published = false;
+	__descriptor->published = true;
 
 	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(WIFI_DEVICE_DRIVER_SET_SSID, "SSID", text, "SSID aendern");
 
@@ -85,14 +86,27 @@ void Wifi_Device_Driver::DoAfterInit()
 
 void Wifi_Device_Driver::ProvideAP() {
 	const char* ssid;
+	IPAddress apIP(192, 168, 1, 1);
+	const byte DNS_PORT = 53;
+
+
 	if (!__ssid.equals(""))
 		ssid = &__ssid[0];
 	else
 		ssid = "EspSetup";
 
+	if (__dnsServer != nullptr)
+		__dnsServer = nullptr;
+	__dnsServer = new DNSServer();
 	WiFi.disconnect();
-	delay(1000);
+	WiFi.mode(WIFI_AP);
+	WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
 	WiFi.softAP(ssid);
+
+	// if DNSServer is started with "*" for domain name, it will reply with
+	// provided IP to all DNS request
+	__dnsServer->start(DNS_PORT, "*", apIP);
+
 	Serial.print("AccessPoint SSID: [");
 	Serial.print(ssid);
 	Serial.print("]");
@@ -106,6 +120,7 @@ void Wifi_Device_Driver::ProvideAP() {
 void Wifi_Device_Driver::ConnectToWifi() {
 	__connection_try = 0;
 	WiFi.disconnect();
+	WiFi.mode(WIFI_STA);
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
 	WiFi.begin(ssid, password);
@@ -114,7 +129,6 @@ void Wifi_Device_Driver::ConnectToWifi() {
 	Serial.print("] with password [");
 	Serial.print(password);
 	Serial.println("]");
-
 }
 
 void Wifi_Device_Driver::SaveConnectionParameters() {
@@ -197,8 +211,8 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 		conn_delta += deltaTime;
 		if (conn_delta > conn_delay) {
-			if (statusLED != NULL)
-				statusLED->Exec_Set_Led_Blink(200);
+			//if (statusLED != nullptr)
+				//statusLED->Exec_Set_Led_Blink(200);
 			conn_delta = 0;
 			Serial.print(".");
 			__connection_try++;
@@ -210,8 +224,8 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			Serial.println("Fallback to AccessPoint: ");
 			ProvideAP();
 			InitComm();
-			if (statusLED != NULL)
-				statusLED->Exec_Set_Led_Off();
+			//if (statusLED != nullptr)
+				//statusLED->Exec_Set_Led_Off();
 		}
 	}
 	else {
@@ -225,10 +239,13 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			__isAP = false;
 			__fallbackAP = false;
 			InitComm();
-			if (statusLED != NULL)
-				statusLED->Exec_Set_Led_Off();
+			//if (statusLED != nullptr)
+				//statusLED->Exec_Set_Led_Off();
 		}
 		UpdateComm(deltaTime);
+	}
+	if (__isAP && __isConnected) {
+		__dnsServer->processNextRequest();
 	}
 }
 

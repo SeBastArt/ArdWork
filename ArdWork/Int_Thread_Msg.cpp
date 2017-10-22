@@ -44,6 +44,12 @@ int Int_Thread_Msg::GetID() {
 	return i;
 }
 
+uint8_t Int_Thread_Msg::GetUint8ParamByIndex(int index) {
+	String ParamStr;
+	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	return (uint8_t)ParamStr.toInt();
+}
+
 int Int_Thread_Msg::GetIntParamByIndex(int index) {
 	String ParamStr;
 	ParamStr = GetStringPartByNr(ParamString, ':', index);
@@ -75,7 +81,7 @@ String Int_Thread_Msg::GetStringParamByIndex(int index) {
 	return ParamStr;
 }
 
-unsigned char Int_Thread_Msg::GetCharParamByIndex(int index) {
+uint8_t Int_Thread_Msg::GetCharParamByIndex(int index) {
 	String ParamStr;
 	unsigned char result;
 	ParamStr = GetStringPartByNr(ParamString, ':', index);
