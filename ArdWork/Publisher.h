@@ -26,12 +26,13 @@ private:
 	String __unit;
 	int GetId() const { return __id; }
 	String GetUnit() const { return __unit; }
+	void SetUnit(String _unit) { __unit = _unit; }
 public:
 	Atomic_Base(int _Id, String _unit) { __id = _Id; __unit = _unit; }
 	virtual  ~Atomic_Base() {}
 
 	Property<int, Atomic_Base> id{ this, nullptr, &Atomic_Base::GetId };
-	Property<String, Atomic_Base> unit{ this, nullptr, &Atomic_Base::GetUnit };
+	Property<String, Atomic_Base> unit{ this, &Atomic_Base::SetUnit, &Atomic_Base::GetUnit };
 };
 
 class Atomic_Impl : public Atomic_Base

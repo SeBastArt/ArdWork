@@ -52,9 +52,9 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_pattern->published = true;
 
 	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_GRBW_LED_SET_COLOR_EXTERN, "Color", color, "The main color for the ambient light pattern");
-	Atomic<uint8_t> *atomic_color_r = new Atomic<uint8_t>(0, 227, "Dec");
-	Atomic<uint8_t> *atomic_color_g = new Atomic<uint8_t>(1, 227, "Dec");
-	Atomic<uint8_t> *atomic_color_b = new Atomic<uint8_t>(2, 227, "Dec");
+	Atomic<uint8_t> *atomic_color_r = new Atomic<uint8_t>(0, 220, "Dec");
+	Atomic<uint8_t> *atomic_color_g = new Atomic<uint8_t>(1, 123, "Dec");
+	Atomic<uint8_t> *atomic_color_b = new Atomic<uint8_t>(2, 234, "Dec");
 
 	ctrl_elem_color->AddAtomic(atomic_color_r);
 	ctrl_elem_color->AddAtomic(atomic_color_g);
@@ -69,9 +69,9 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 void Uart_GRBW_Led_Device_Driver::DoAfterInit()
 {
 	SetRandomSeed();
-	actAnimation = 1;
 	Animation_Off();
 	Animation_Shine();
+	actAnimation = GRBW_ANIMATION_FIRST;
 	Serial.println("Uart_Rgb_Led-Driver initialized!");
 }
 
@@ -174,8 +174,6 @@ void Uart_GRBW_Led_Device_Driver::SetRandomSeed()
 		seed ^= analogRead(0) << shifts;
 		delay(1);
 	}
-
-	// Serial.println(seed);
 	randomSeed(seed);
 }
 
@@ -186,38 +184,7 @@ void Uart_GRBW_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 
 	float progress = NeoEase::Linear(param.progress);
 	nextPixel = round(progress * pixelCount) % pixelCount;
-	if ((lastPixel != nextPixel))
-	{
-		/*for (uint16_t i = lastPixel + 1; i != nextPixel; i += 1)
-		{
-			strip->SetPixelColor(i, mainColor);
-			animationState_list[i]->StartingColor = mainColor;
-			animationState_list[i]->EndingColor = RgbColor(0, 0, 0);
-			if (animations->IsAnimationActive(i)) {
-				animations->StopAnimation(i);
-			}
-			animations->StartAnimation(i, 500, BlendAnimUpdate);
-		}*/
-
-		/*strip->SetPixelColor(nextPixel, mainColor);
-		animationState_list[nextPixel]->StartingColor = mainColor;
-		animationState_list[nextPixel]->EndingColor = RgbColor(0, 0, 0);
-		if (animations->IsAnimationActive(nextPixel)) {
-			animations->StopAnimation(nextPixel);
-		}
-		animations->StartAnimation(nextPixel, 500, BlendAnimUpdate);*/
-
-		/*for (uint16_t i = lastPixel + 1; i != nextPixel; i++)
-		{
-			for (int j = 0; j < 4; j++) {
-				int actpixel = (i + (j * (pixelCount / 4))) % pixelCount;
-				strip->SetPixelColor(actpixel, mainColor);
-				animationState_list[actpixel]->StartingColor = colorGamma->Correct(mainColor);
-				animationState_list[actpixel]->EndingColor = RgbColor(0, 0, 0);
-
-				animations->StartAnimation(actpixel, 200, BlendAnimUpdate);
-			}
-		}*/
+	if ((lastPixel != nextPixel)){
 		uint8_t count = 2;
 		for (uint8_t j = 0; j < count; j++) {
 			uint8_t actpixel = (nextPixel + (j * (pixelCount / count))) % pixelCount;

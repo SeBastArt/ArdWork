@@ -17,7 +17,7 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit es erlaubt die Kontrolle &uuml;ber die Ausleseparameter und stellt Live - Werte sowie Diagramme bereit";
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 1, "update rate", select, "select rate you want the value be updated");
+	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY, "update rate", select, "select rate you want the value be updated");
 	ctrl_elem_rate->published = true;
 
 	Atomic<int> *atomic_1000 = new Atomic<int>(0, 1000, "ms");
@@ -30,8 +30,8 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	ctrl_elem_rate->AddAtomic(atomic_5000);
 	ctrl_elem_rate->AddAtomic(atomic_10000);
 
-	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 2, "Integrationtime", select, "set the time the sensor collect light");
-	ctrl_elem_integr->published = true;
+	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Integrationtime", select, "set the time the sensor collect light");
+	ctrl_elem_integr->published = false;
 
 	Atomic<String> *atomic_13ms = new Atomic<String>(0, "13", "ms");
 	Atomic<String> *atomic_101ms = new Atomic<String>(1, "101", "ms");
@@ -41,7 +41,7 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	ctrl_elem_integr->AddAtomic(atomic_101ms);
 	ctrl_elem_integr->AddAtomic(atomic_402ms);
 
-	Ctrl_Elem *ctrl_elem_gain = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 3, "Gain", select, "select the Gain for make values better fit");
+	Ctrl_Elem *ctrl_elem_gain = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_GAIN, "Gain", select, "select the Gain for make values better fit");
 	ctrl_elem_gain->published = true;
 
 	Atomic<String> *atomic_auto = new Atomic<String>(0, "Auto");
@@ -52,16 +52,24 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	ctrl_elem_gain->AddAtomic(atomic_1x);
 	ctrl_elem_gain->AddAtomic(atomic_16x);
 
-	Ctrl_Elem *ctrl_elem_lux = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_FIRST_MESSAGE + 4, "Meassured Lux-Value", value, "the value of the ambient light");
+	Ctrl_Elem *ctrl_elem_autorange = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE, "Auto Range", select, "Autorange on or Off");
+	ctrl_elem_autorange->published = true;
+
+	Atomic<String> *atomic_autorange_off = new Atomic<String>(0, "Off");
+	Atomic<String> *atomic_autorange_on = new Atomic<String>(1, "On");
+	ctrl_elem_autorange->AddAtomic(atomic_autorange_on);
+	ctrl_elem_autorange->AddAtomic(atomic_autorange_off);
+
+	Ctrl_Elem *ctrl_elem_lux = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_LUX_VALUE, "Meassured Lux-Value", value, "the value of the ambient light");
 	ctrl_elem_lux->published = true;
 
 	Atomic<float> *atomic_lux = new Atomic<float>(0, &lastLux, "Lux");
-
 	ctrl_elem_lux->AddAtomic(atomic_lux);
 
 	__descriptor->Add_Descriptor_Element(ctrl_elem_rate);
-	//__descriptor->Add_Descriptor_Element(ctrl_elem_integr);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_integr);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_gain);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_autorange);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_lux);
 }
 
@@ -147,7 +155,7 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		if (event.light) {
 			if (fabs(event.light - lastLux) > EPSILON) {
 				lastLux = event.light;
-				FloatMessage* message = new FloatMessage(DriverId, event.light);
+				FloatMessage* message = new FloatMessage(DriverId, lastLux);
 				if (!parentModule->SendAsyncThreadMessage(message))
 				{
 					Serial.println(">> message buffer overflow <<");

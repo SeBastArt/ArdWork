@@ -20,7 +20,6 @@ class Uart_GRBW_Led_Device_Driver;
 class Luxmeter_Device_Driver;
 class Distance_Device_Driver;
 class OLED_Display_Device_Driver;
-class WebServer_Wifi_Device_Driver;
 class Mqqt_Wifi_Device_Driver;
 class Temperature_Device_Driver;
 class WebSocket_Wifi_Device_Driver;
@@ -40,7 +39,6 @@ private:
 	int8_t temperature_index;
 	int8_t Uart_GRBW_Led_index;
 	int8_t Uart_RGB_Led_index;
-	int8_t webserver_wifi_index;
 	int8_t websocket_wifi_index;
 
 	Vector <Button_Device_Driver*> *button_list;
@@ -52,7 +50,6 @@ private:
 	Vector <Temperature_Device_Driver*> *temperature_list;
 	Vector <Uart_RGB_Led_Device_Driver*> *Uart_RGB_Led_list;
 	Vector <Uart_GRBW_Led_Device_Driver*> *Uart_GRBW_Led_list;
-	Vector <WebServer_Wifi_Device_Driver*> *webserver_wifi_list;
 	Vector <WebSocket_Wifi_Device_Driver*> *websocket_wifi_list;
 
 	Button_Device_Driver* Get_Selected_Button_Device() const;
@@ -64,7 +61,6 @@ private:
 	Temperature_Device_Driver* Get_Selected_Temperature_Device() const;
 	Uart_RGB_Led_Device_Driver* Get_Selected_Uart_RGB_Led_Device() const;
 	Uart_GRBW_Led_Device_Driver* Get_Selected_Uart_GRBW_Led_Device() const;
-	WebServer_Wifi_Device_Driver* Get_Selected_WebServer_Wifi_Device() const;
 	WebSocket_Wifi_Device_Driver* Get_Selected_WebSocket_Wifi_Device() const;
 
 	void DoUpdate(uint32_t deltaTime);
@@ -80,7 +76,6 @@ protected:
 	Property<Temperature_Device_Driver*, Module_Driver> Selected_Temperature_Device{ this, nullptr, &Module_Driver::Get_Selected_Temperature_Device };
 	Property<Uart_RGB_Led_Device_Driver*, Module_Driver> Selected_Uart_RGB_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_RGB_Led_Device };
 	Property<Uart_GRBW_Led_Device_Driver*, Module_Driver> Selected_Uart_GRBW_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_GRBW_Led_Device };
-	Property<WebServer_Wifi_Device_Driver*, Module_Driver> Selected_WebServer_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_WebServer_Wifi_Device };
 	Property<WebSocket_Wifi_Device_Driver*, Module_Driver> Selected_WebSocket_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_WebSocket_Wifi_Device };
 
 	Driver *GetDeviceById(int Id);

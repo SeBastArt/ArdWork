@@ -26,7 +26,6 @@ void Button_Device_Driver::DoAfterInit()
 	__sys_state = buttonstate_released;
 	__last_state = buttonstate_released;
 	__lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
-	__last_tick = 0;
 	Serial.println("Button-Driver initialized!");
 }
 
@@ -68,8 +67,7 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	if (__hasPullUp == true) {
 		new_State = (__pin->PinState() == HIGH) ? buttonstate_released : buttonstate_pressed;
 	}
-	else
-	{
+	else {
 		new_State = (__pin->PinState() == HIGH) ? buttonstate_pressed : buttonstate_released;
 	}
 	if (new_State != __last_state) {

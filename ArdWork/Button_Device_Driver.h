@@ -11,7 +11,6 @@
 
 #include "Device_Driver.h"
 #include "Button_Device_Driver_Consts.h"
-#include "Module_Driver.h"
 #include "IO_Pin.h" 
 
 
@@ -27,10 +26,9 @@ private:
 
 	Button_State __sys_state;
 	Button_State __last_state;
-	uint32 __last_tick;
 
 	bool __hasPullUp;
-	unsigned int __lastMessage;
+	uint8_t __lastMessage;
 private:
 	void DoAfterInit();
 	void DoBeforeShutdown();

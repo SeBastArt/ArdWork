@@ -13,7 +13,6 @@ extern "C" {
 #include "Led_Device_Driver.h"
 #include "Luxmeter_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
-#include "WebServer_Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Uart_RGB_Led_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
@@ -34,7 +33,6 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	temperature_index = -1;
 	Uart_GRBW_Led_index = -1;
 	Uart_RGB_Led_index = -1;
-	webserver_wifi_index = -1;
 	websocket_wifi_index = -1;
 
 	//__descriptor_list = new Descriptor_List;
@@ -50,7 +48,6 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	temperature_list = new Vector <Temperature_Device_Driver*>;
 	Uart_RGB_Led_list = new Vector <Uart_RGB_Led_Device_Driver*>;
 	Uart_GRBW_Led_list = new Vector <Uart_GRBW_Led_Device_Driver*>;
-	webserver_wifi_list = new Vector <WebServer_Wifi_Device_Driver*>;
 	websocket_wifi_list = new Vector <WebSocket_Wifi_Device_Driver*>;
 }
 
@@ -107,12 +104,6 @@ void Module_Driver::AddDevice(Device_Driver* device)
 		Serial.println("Add Uart_GRBW_Led_Device_Driver");
 		Uart_GRBW_Led_list->PushBack((Uart_GRBW_Led_Device_Driver*)(device));
 		Uart_GRBW_Led_index++;
-	}
-	if ((device)->GetDriverName().equals("WebServer_Wifi_Device_Driver")) {
-		Serial.println("Add WebServer_Wifi_Device_Driver");
-		webserver_wifi_list->PushBack((WebServer_Wifi_Device_Driver*)(device));
-		AddObserver((WebServer_Wifi_Device_Driver*)(device));
-		webserver_wifi_index++;
 	}
 	if ((device)->GetDriverName().equals("WebSocket_Wifi_Device_Driver")) {
 		Serial.println("Add WebSocket_Wifi_Device_Driver");
@@ -327,13 +318,6 @@ Uart_RGB_Led_Device_Driver *Module_Driver::Get_Selected_Uart_RGB_Led_Device() co
 {
 	if ((Uart_RGB_Led_index > -1) && (Uart_RGB_Led_index < Uart_RGB_Led_list->Size())) {
 		return (*Uart_RGB_Led_list)[Uart_RGB_Led_index];
-	}
-}
-
-WebServer_Wifi_Device_Driver *Module_Driver::Get_Selected_WebServer_Wifi_Device() const
-{
-	if ((webserver_wifi_index > -1) && (webserver_wifi_index < webserver_wifi_list->Size())) {
-		return (*webserver_wifi_list)[webserver_wifi_index];
 	}
 }
 

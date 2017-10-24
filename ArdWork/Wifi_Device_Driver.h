@@ -10,6 +10,7 @@
 #endif
 #include <ESP8266WiFi.h>        
 #include <ESP8266WiFiMulti.h>
+#include <ArduinoOTA.h>
 
 #include <WebSocketsServer.h>
 #include <ESP8266WebServer.h>
@@ -45,6 +46,7 @@ private:
 	void ConnectToWifi();
 	void SaveConnectionParameters();
 	void Build_Descriptor();
+	void SetupOTA();
 protected:
 	bool __isConnected;
 	bool __isAP;
@@ -66,6 +68,7 @@ public:
 	void Exec_Set_SSID(String _ssid);
 	void Exec_Set_Password(String _password);
 	void Exec_Reconnect();
+
 };
 
 

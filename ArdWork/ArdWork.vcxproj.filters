@@ -103,21 +103,6 @@
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Temperature">
       <UniqueIdentifier>{1974d664-41cb-464b-98f8-3f933bfbc932}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver">
-      <UniqueIdentifier>{5303f63b-ae3a-4091-90c1-3e26144d083f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Driver\Module_Driver\WiFi_Module_Driver">
-      <UniqueIdentifier>{f8888c41-5f41-497c-a64c-087f4e97078f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver">
-      <UniqueIdentifier>{d54e5f34-f7b7-4780-9624-c677bb3ac0c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver">
-      <UniqueIdentifier>{895c2dff-0ea8-4c52-9208-3161cf8abd37}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Dash_Mqqt_Wifi_Module_Driver">
-      <UniqueIdentifier>{454fe239-1348-486a-b755-0eb0c732f7c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller">
       <UniqueIdentifier>{151311ad-dae9-47ae-9a37-9b2065474a97}</UniqueIdentifier>
     </Filter>
@@ -126,9 +111,6 @@
     </Filter>
     <Filter Include="Source Files\Controller\Custom_Controller\ESP8266_Controller\Custom_ESP8266_Controller">
       <UniqueIdentifier>{ace35228-2f54-41d5-aa68-7280e404d99e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Custom_Mqqt_Wifi_Module_Driver">
-      <UniqueIdentifier>{046b1cca-fd02-4c5c-814c-5a91a0245f05}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Luxmeter">
       <UniqueIdentifier>{ca351b57-bad2-4ddd-aa4e-9ae481081c57}</UniqueIdentifier>
@@ -142,17 +124,11 @@
     <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver">
       <UniqueIdentifier>{d82fb861-20d3-4724-bdc9-4afc5fc3f7bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver">
-      <UniqueIdentifier>{4c6ad80a-4352-4ba7-9ad6-493c0bde856a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi">
       <UniqueIdentifier>{33261cb4-2982-43f5-a4cf-62899b67e52d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver">
       <UniqueIdentifier>{8ccc1c05-a727-484f-9e78-f6d149914923}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver">
-      <UniqueIdentifier>{585b672c-ef7a-4cbf-8d5e-bf51b4be0d62}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Helper">
       <UniqueIdentifier>{6d18e8c2-7225-46ef-9d12-e42f07c16cc5}</UniqueIdentifier>
@@ -252,21 +228,6 @@
     <ClInclude Include="Temperature_Device_Driver_Consts.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Temperature</Filter>
     </ClInclude>
-    <ClInclude Include="WiFi_Module_Driver.h">
-      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="Mqqt_Wifi_Module_Driver.h">
-      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="WiFi_Module_Driver_Consts.h">
-      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="Mqqt_WiFi_Module_Driver_Consts.h">
-      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="Dash_Mqqt_Wifi_Module_Driver.h">
-      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Dash_Mqqt_Wifi_Module_Driver</Filter>
-    </ClInclude>
     <ClInclude Include="ESP8266_Controller_Consts.h">
       <Filter>Header Files\Controller\Custom_Controller\ESP_Controller</Filter>
     </ClInclude>
@@ -278,12 +239,6 @@
     </ClInclude>
     <ClInclude Include="ESP8266_01_Controller.h">
       <Filter>Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller</Filter>
-    </ClInclude>
-    <ClInclude Include="Header.h">
-      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
-    </ClInclude>
-    <ClInclude Include="RGBLed_Mqqt_Wifi_Module_Driver.h">
-      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Dash_Mqqt_Wifi_Module_Driver</Filter>
     </ClInclude>
     <ClInclude Include="Uart_GRBW_Led_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
@@ -311,12 +266,6 @@
     </ClInclude>
     <ClInclude Include="Mqqt_Wifi_Device_Driver_Consts.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="WebServer_Wifi_Device_Driver.h">
-      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="WebServer_Wifi_Device_Driver_Consts.h">
-      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver</Filter>
     </ClInclude>
     <ClInclude Include="Comm_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
@@ -407,15 +356,6 @@
     <ClCompile Include="Temperature_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Temperature</Filter>
     </ClCompile>
-    <ClCompile Include="WiFi_Module_Driver.cpp">
-      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="Mqqt_Wifi_Module_Driver.cpp">
-      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="Dash_Mqqt_Wifi_Module_Driver.cpp">
-      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Custom_Mqqt_Wifi_Module_Driver</Filter>
-    </ClCompile>
     <ClCompile Include="ESP8266_Controller.cpp">
       <Filter>Source Files\Controller\Custom_Controller\ESP8266_Controller</Filter>
     </ClCompile>
@@ -424,9 +364,6 @@
     </ClCompile>
     <ClCompile Include="ESP8266_01_Controller.cpp">
       <Filter>Source Files\Controller\Custom_Controller\ESP8266_Controller\Custom_ESP8266_Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="RGBLed_Mqqt_Wifi_Module_Driver.cpp">
-      <Filter>Source Files\Driver\Module_Driver\WiFi_Module_Driver\Mqqt_Wifi_Module_Driver\Custom_Mqqt_Wifi_Module_Driver</Filter>
     </ClCompile>
     <ClCompile Include="Uart_GRBW_Led_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
@@ -445,9 +382,6 @@
     </ClCompile>
     <ClCompile Include="Mqqt_Wifi_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="WebServer_Wifi_Device_Driver.cpp">
-      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebServer_Wifi_Device_Driver</Filter>
     </ClCompile>
     <ClCompile Include="Int_Thread_Msg.cpp">
       <Filter>Header Files\Helper\Message_System</Filter>

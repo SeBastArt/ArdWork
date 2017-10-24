@@ -82,6 +82,7 @@ void Wifi_Device_Driver::DoAfterInit()
 	else {
 		ConnectToWifi();
 	}
+
 }
 
 void Wifi_Device_Driver::ProvideAP() {
@@ -238,6 +239,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			__isConnected = true;
 			__isAP = false;
 			__fallbackAP = false;
+			SetupOTA();
 			InitComm();
 			//if (statusLED != nullptr)
 				//statusLED->Exec_Set_Led_Off();
@@ -265,4 +267,15 @@ void Wifi_Device_Driver::Exec_Set_Password(String _password) {
 void Wifi_Device_Driver::Exec_Reconnect() {
 	Int_Thread_Msg *message = new Int_Thread_Msg(WIFI_DEVICE_DRIVER_RECONNECT);
 	PostMessage(&message);
+}
+
+void Wifi_Device_Driver::SetupOTA()
+{
+	ArduinoOTA.setHostname(&hostname[0]);
+
+	ArduinoOTA.onError([](ota_error_t error) { ESP.restart(); });
+
+	/* setup the OTA server */
+	ArduinoOTA.begin();
+	Serial.println("OTA is Ready");
 }

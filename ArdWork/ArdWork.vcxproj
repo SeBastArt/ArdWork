@@ -47,10 +47,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\ArduinoJson\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ESP8266WebServer\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ESP8266WiFi\src;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\arduinoWebSockets;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\NeoPixelBus_by_Makuna\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\SPI;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_Sensor-master;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_TSL2561-master;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\Wire;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ESP8266mDNS;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\pubsubclient\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\Hash\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ArduinoOTA;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_GFX_Library;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_SSD1306;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\DHT_sensor_library;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\Arduino\libraries;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266\libb64;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266\spiffs;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266\umm_malloc;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\variants\nodemcu;$(ProjectDir)..\ArdWork;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\tools\sdk\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\tools\sdk\lwip\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2\xtensa-lx106-elf;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\lib\gcc\xtensa-lx106-elf\4.8.2\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\tools\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\ArdWork;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\ArduinoJson\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ESP8266WebServer\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ESP8266WiFi\src;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\WebSockets\src;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\NeoPixelBus_by_Makuna\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\SPI;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_Unified_Sensor;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_TSL2561;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\Wire;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ESP8266mDNS;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\PubSubClient\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\Hash\src;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries\ArduinoOTA;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_GFX_Library;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\Adafruit_SSD1306;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries\DHT_sensor_library;$(ProjectDir)..\..\..\..\..\..\Program Files (x86)\Arduino\libraries;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\libraries;$(ProjectDir)..\..\..\..\Documents\Arduino\libraries;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266\libb64;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266\spiffs;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\cores\esp8266\umm_malloc;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\variants\nodemcu;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\tools\sdk\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\tools\sdk\lwip\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include\c++\4.8.2\xtensa-lx106-elf;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\xtensa-lx106-elf\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\1.20.0-26-gb404fb9-2\lib\gcc\xtensa-lx106-elf\4.8.2\include;$(ProjectDir)..\..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.3.0\tools\sdk\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ProjectDir)__vm\.ArdWork.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
-      <PreprocessorDefinitions>__ESP8266_ESp8266__;__ESP8266_ESP8266__;_VMDEBUG=1;__ets__;ICACHE_FLASH;F_CPU=80000000L;LWIP_OPEN_SRC;ARDUINO=10800;ARDUINO_ESP8266_NODEMCU;ARDUINO_ARCH_ESP8266;ESP8266;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>__ESP8266_ESp8266__;__ESP8266_ESP8266__;_VMDEBUG=1;__ets__;ICACHE_FLASH;F_CPU=80000000L;LWIP_OPEN_SRC;ARDUINO=10803;ARDUINO_ESP8266_NODEMCU;ARDUINO_ARCH_ESP8266;ESP8266;__cplusplus=201103L;_VMICRO_INTELLISENSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -93,7 +93,6 @@
     <ClInclude Include="Base_Controller_Consts.h" />
     <ClInclude Include="Button_Device_Driver_Consts.h" />
     <ClInclude Include="Comm_Device_Driver.h" />
-    <ClInclude Include="Dash_Mqqt_Wifi_Module_Driver.h" />
     <ClInclude Include="Device_Driver.h" />
     <ClInclude Include="Device_Driver_Consts.h" />
     <ClInclude Include="Base_Consts.h" />
@@ -106,7 +105,6 @@
     <ClInclude Include="ESP8266_NodeMCU_Controller.h" />
     <ClInclude Include="ESP8266_Controller_Consts.h" />
     <ClInclude Include="Filesystem.h" />
-    <ClInclude Include="Header.h" />
     <ClInclude Include="I2C_Controller.h" />
     <ClInclude Include="I2C_Controller_Consts.h" />
     <ClInclude Include="Index_html.h" />
@@ -124,8 +122,6 @@
     <ClInclude Include="Led_Device_Driver_Consts.h" />
     <ClInclude Include="Mqqt_Wifi_Device_Driver.h" />
     <ClInclude Include="Mqqt_Wifi_Device_Driver_Consts.h" />
-    <ClInclude Include="Mqqt_Wifi_Module_Driver.h" />
-    <ClInclude Include="Mqqt_WiFi_Module_Driver_Consts.h" />
     <ClInclude Include="m_Vector.h" />
     <ClInclude Include="OLED_Display_Device_Driver.h" />
     <ClInclude Include="OLED_Display_Device_Driver_Consts.h" />
@@ -134,7 +130,6 @@
     <ClInclude Include="Picture_Module_Driver.h" />
     <ClInclude Include="Picture_Module_Driver_Consts.h" />
     <ClInclude Include="Publisher.h" />
-    <ClInclude Include="RGBLed_Mqqt_Wifi_Module_Driver.h" />
     <ClInclude Include="Temperature_Device_Driver.h" />
     <ClInclude Include="Temperature_Device_Driver_Consts.h" />
     <ClInclude Include="Thread\Thread.h" />
@@ -143,20 +138,15 @@
     <ClInclude Include="Uart_GRBW_Led_Device_Driver_Consts.h" />
     <ClInclude Include="Uart_RGB_Led_Device_Driver.h" />
     <ClInclude Include="Uart_RGB_Led_Device_Driver_Consts.h" />
-    <ClInclude Include="WebServer_Wifi_Device_Driver.h" />
-    <ClInclude Include="WebServer_Wifi_Device_Driver_Consts.h" />
     <ClInclude Include="WebSocket_Wifi_Device_Driver.h" />
     <ClInclude Include="WebSocket_Wifi_Device_Driver_Consts.h" />
     <ClInclude Include="Wifi_Device_Driver.h" />
     <ClInclude Include="Wifi_Device_Driver_Consts.h" />
-    <ClInclude Include="WiFi_Module_Driver.h" />
-    <ClInclude Include="WiFi_Module_Driver_Consts.h" />
     <ClInclude Include="ESP8266_01_Controller.h" />
     <ClInclude Include="__vm\.ArdWork.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Base_Controller.cpp" />
-    <ClCompile Include="Dash_Mqqt_Wifi_Module_Driver.cpp" />
     <ClCompile Include="Device_Driver.cpp" />
     <ClCompile Include="Display_Device_Driver.cpp" />
     <ClCompile Include="Distance_Device_Driver.cpp" />
@@ -172,19 +162,15 @@
     <ClCompile Include="Button_Device_Driver.cpp" />
     <ClCompile Include="Led_Device_Driver.cpp" />
     <ClCompile Include="Mqqt_Wifi_Device_Driver.cpp" />
-    <ClCompile Include="Mqqt_Wifi_Module_Driver.cpp" />
     <ClCompile Include="OLED_Display_Device_Driver.cpp" />
     <ClCompile Include="PCF8574_Controller.cpp" />
     <ClCompile Include="Picture_Module_Driver.cpp" />
-    <ClCompile Include="RGBLed_Mqqt_Wifi_Module_Driver.cpp" />
     <ClCompile Include="Temperature_Device_Driver.cpp" />
     <ClCompile Include="Thread\ThreadManager.cpp" />
     <ClCompile Include="Uart_GRBW_Led_Device_Driver.cpp" />
     <ClCompile Include="Uart_RGB_Led_Device_Driver.cpp" />
-    <ClCompile Include="WebServer_Wifi_Device_Driver.cpp" />
     <ClCompile Include="WebSocket_Wifi_Device_Driver.cpp" />
     <ClCompile Include="Wifi_Device_Driver.cpp" />
-    <ClCompile Include="WiFi_Module_Driver.cpp" />
     <ClCompile Include="ESP8266_01_Controller.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
