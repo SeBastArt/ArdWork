@@ -5,7 +5,7 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 	__pin(_pin),
 	__hasPullUp(_hasPullUp)
 {
-	driver_name = "Led_Device_Driver";
+	__DriverType = LED_DEVICE_DRIVER_TYPE;
 };
 
 void Led_Device_Driver::Build_Descriptor() {

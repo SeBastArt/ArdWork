@@ -9,7 +9,7 @@ Led_Device_Driver *Wifi_Device_Driver::statusLED;
 Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED, uint8_t priority) :
 	Device_Driver(module, priority)
 {
-	driver_name = "Wifi_Device_Driver";
+	__DriverType = WIFI_DEVICE_DRIVER_TYPE;
 	statusLED = _statusLED;
 	__isConnected = false;
 	__isAP = false;

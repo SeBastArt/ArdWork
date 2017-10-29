@@ -9,7 +9,7 @@ Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pi
 	__pin_t(pin_trig),
 	__pin_e(pin_echo)
 {
-	driver_name = "Distance_Device_Driver";
+	__DriverType = DISTANCE_DEVICE_DRIVER_TYPE;
 	__threePins = __pin_t == __pin_e ? true : false;
 	pinMode(__pin_t, OUTPUT);
 	pinMode(__pin_e, INPUT);

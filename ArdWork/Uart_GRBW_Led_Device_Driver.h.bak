@@ -1,7 +1,7 @@
-// Uart_RGB_Led_Device_Driver.h
+// Uart_GRBW_Led_Device_Driver.h
 
-#ifndef _Uart_RGB_Led_Device_Driver_h
-#define _Uart_RGB_Led_Device_Driver_h
+#ifndef _Uart_GRBW_Led_Device_Driver_h
+#define _Uart_GRBW_Led_Device_Driver_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
@@ -12,18 +12,19 @@
 #include "m_Vector.h"
 
 #include "Device_Driver.h"
-#include "Uart_RGB_Led_Device_Driver_Consts.h"
+#include "Uart_GRBW_Led_Device_Driver_Consts.h"
 #include <NeoPixelBus.h>
 #include <NeoPixelAnimator.h>
 
-struct RGBAnimationState
+struct GRBWAnimationState
 {
-	RgbColor StartingColor;
-	RgbColor EndingColor;
+	RgbwColor StartingColor;
+	RgbwColor EndingColor;
 };
 
-class Uart_RGB_Led_Device_Driver : public Device_Driver
-{	
+class Uart_GRBW_Led_Device_Driver : public Device_Driver
+{
+	
 private:
 	static uint8_t pixelCount;
 	uint8_t actAnimation;
@@ -32,7 +33,7 @@ private:
 	bool __auto_brightness;
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
-	static NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>* strip;
+	static NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* strip;
 	static NeoPixelAnimator* animations; // NeoPixel animation management object
 
 	static void CylonAnimUpdate(const AnimationParam& param);
@@ -44,10 +45,10 @@ private:
 	void SetRandomSeed();
 	static uint16_t lastPixel; // track the eye position
 	static int8_t moveDir; // track the direction of movement
-
-	static Vector <RGBAnimationState*> animationState_list;
+	
+	static Vector <GRBWAnimationState*> animationState_list;
 public:
-	Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority = THREAD_PRIORITY_NORMAL);
 private:
 	void DoAfterInit();
 	void DoBeforeShutdown();

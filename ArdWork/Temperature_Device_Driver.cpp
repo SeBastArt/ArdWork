@@ -9,7 +9,7 @@ Temperature_Device_Driver::Temperature_Device_Driver(Module_Driver* module, IO_P
 	pin(_pin),
 	fahrenheit(isFahrenheit)
 {
-	driver_name = "Temperature_Device_Driver";
+	__DriverType = TEMPERATURE_DEVICE_DRIVER_TYPE;
 
 	pin->SetPinState(LOW);
 	dht = new DHT(pin->PinNumber(), DHT11);

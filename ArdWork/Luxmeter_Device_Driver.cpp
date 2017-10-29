@@ -7,7 +7,7 @@
 Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t adress, uint8_t priority) :
 	Device_Driver(module, priority)
 {
-	driver_name = "Luxmeter_Device_Driver";
+	__DriverType = LUXMETER_DEVICE_DRIVER_TYPE;
 	tsl = new Adafruit_TSL2561_Unified(adress, 1);
 }
 
@@ -60,7 +60,7 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 	ctrl_elem_autorange->AddAtomic(atomic_autorange_on);
 	ctrl_elem_autorange->AddAtomic(atomic_autorange_off);
 
-	Ctrl_Elem *ctrl_elem_lux = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_LUX_VALUE, "Meassured Lux-Value", value, "the value of the ambient light");
+	Ctrl_Elem *ctrl_elem_lux = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_EXTERN_LUX_VALUE, "Meassured Lux-Value", value, "the value of the ambient light");
 	ctrl_elem_lux->published = true;
 
 	Atomic<float> *atomic_lux = new Atomic<float>(0, &lastLux, "Lux");
@@ -146,7 +146,7 @@ void Luxmeter_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
 void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	accuracy_delta += deltaTime;
 	if (accuracy_delta > accuracy_delay) {
-		//Serial.printf("index heap size: %u", ESP.getFreeHeap());
+		Serial.printf("index heap size: %u", ESP.getFreeHeap());
 		accuracy_delta = 0;
 		sensor_t sensor;
 		tsl->getSensor(&sensor);

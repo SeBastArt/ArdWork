@@ -9,6 +9,7 @@
 	#include "WProgram.h"
 #endif
 #include "Wifi_Device_Driver.h"
+#include "Mqqt_Wifi_Device_Driver_Consts.h"
 #include "m_Vector.h"
 #include <PubSubClient.h>
 

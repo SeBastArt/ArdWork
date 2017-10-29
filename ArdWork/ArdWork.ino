@@ -68,7 +68,6 @@
 #include "Luxmeter_Device_Driver.h"
 #include "Luxmeter_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
-#include "WebServer_Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
 #endif // PICTURE_NodeMCU_GBR
 
@@ -160,13 +159,14 @@ void setup() {
 #endif // PICTURE_NodeMCU_GBRW
 
 #ifdef PICTURE_NodeMCU_GBR
-	Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 24, THREAD_PRIORITY_VERY_HIGH);
-	Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D3"), true);
+	//Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 24);
+	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 24);
+
+	//Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	//Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(LED_BUILTIN), true);
 	//Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D2"), true);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
 	//Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, Wifissid, pass, wifi_status_led);
-	//WebServer_Wifi_Device_Driver *server_wifi = new WebServer_Wifi_Device_Driver(picture_module, WifiSsid, password, wifi_status_led);
 	WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(picture_module, WifiSsid, password);
 #endif // PICTURE_NodeMCU_GBR
 
@@ -211,11 +211,10 @@ void setup() {
 	//mqqt_wifi->SetOutTopic("fhem/wohnzimmer/rgb/set");
 	//mqqt_wifi->SetMQQTBroker("192.168.178.33");
 	//picture_module->AddDevice(button);
-	picture_module->AddDevice(led);
+	//picture_module->AddDevice(led);
 	picture_module->AddDevice(strip);
 	picture_module->AddDevice(luxmeter);
 	//picture_module->AddDevice(mqqt_wifi);
-	//picture_module->AddDevice(server_wifi);
 	picture_module->AddDevice(webSocket_server_wifi);
 #endif
 
@@ -241,7 +240,7 @@ void setup() {
 	Serial.println("Start ESP8266-NodeMCU-Controller");
 	threadManager.StartThread(esp8266_NodeMCU_controller);
 
-	/*Serial.println("Start Uart_RGB_Led_Device_Driver");
+	/*Serial.println("Start Uart_RGB_Led_DevDrv");
 	threadManager.StartThread(rgb_mqqt_wifi_module);*/
 
 	Serial.println("Start Picture_Module_Driver");
@@ -258,8 +257,8 @@ void setup() {
 	//Serial.println("Start Wifi-Status LED-Driver");
 	//threadManager.StartThread(wifi_status_led);
 
-	Serial.println("Start LED-Driver");
-	threadManager.StartThread(led);
+	//Serial.println("Start LED-Driver");
+	//threadManager.StartThread(led);
 
 	//Serial.println("Start Button-Driver");
 	//threadManager.StartThread(button);
@@ -270,7 +269,7 @@ void setup() {
 	//Serial.println("Start WebServer_Wifi-Driver");
 	//threadManager.StartThread(server_wifi);
 
-	//Serial.println("Start WebSocket_Wifi-Driver");
+	Serial.println("Start WebSocket_Wifi-Driver");
 	threadManager.StartThread(webSocket_server_wifi);
 #endif
 

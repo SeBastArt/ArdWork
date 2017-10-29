@@ -6,7 +6,7 @@
 #include "Display_Device_Driver_Consts.h"
 
 Display_Device_Driver::Display_Device_Driver(Module_Driver* module, uint8_t priority) : Device_Driver(module, priority) {
-	driver_name = "Display_Device_Driver";
+	__DriverType = DISPLAY_DEVICE_DRIVER_TYPE;
 }
 
 void Display_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)

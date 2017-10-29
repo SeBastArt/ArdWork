@@ -5,7 +5,7 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 	__pin(_pin),
 	__hasPullUp(_hasPullUp)
 {
-	driver_name = "Button_Device_Driver";
+	__DriverType = BUTTON_DEVICE_DRIVER_TYPE;
 }
 
 void Button_Device_Driver::Build_Descriptor() {

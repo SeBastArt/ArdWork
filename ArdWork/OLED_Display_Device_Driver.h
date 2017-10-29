@@ -12,6 +12,7 @@
 #include <gfxfont.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "OLED_Display_Device_Driver_Consts.h"
 
 #include "Display_Device_Driver.h"
 

@@ -13,6 +13,7 @@ Driver::Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) :
 	driver_count++;
 	__descriptor = new Descriptor(driver_count);
 	__DriverId = driver_count;
+	__DriverType = -1;
 }
 
 bool Driver::OnStart() {
@@ -21,11 +22,6 @@ bool Driver::OnStart() {
 
 void Driver::OnStop() {
 
-}
-
-String Driver::GetDriverName()
-{
-	return driver_name;
 }
 
 void Driver::Exec_Command(int _cmdId, String _value)
@@ -80,10 +76,6 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 
 
 void Driver::ExecInit() {
-	Serial.print("Driver::ExecInit() with ");
-	Serial.print(GetDriverName());
-	Serial.print(" and message: ");
-	Serial.println(DRIVER_INIT);
 	Int_Thread_Msg *message = new Int_Thread_Msg(DRIVER_INIT);
 	PostMessage(&message);
 }

@@ -19,13 +19,12 @@ class Driver : public Thread, public Int_Thread_Msg_Sys
 {
 private:
 	int __DriverId;
-	int GetDriverId() const
-	{
-		return __DriverId;
-	}
+	
+	int GetDriverId() const { return __DriverId; }
+	unsigned int GetDriverType() const { return __DriverType;}
 protected:
+	unsigned int __DriverType;
 	Descriptor *__descriptor;
-	String driver_name;
 	static int driver_count;
 	int error_Code;
 	bool is_Error;
@@ -47,6 +46,7 @@ protected:
 public:
 	Driver(uint8_t priority);
 	Property<int, Driver> DriverId{ this,nullptr,&Driver::GetDriverId };
+	Property<unsigned int, Driver> DriverType{ this,nullptr,&Driver::GetDriverType };
 	void ExecInit();
 	void ExecShutdown();
 	void ExecSuspend();
@@ -59,7 +59,6 @@ public:
 	bool isInactive() const;
 
 	Descriptor *GetDescriptor();
-	String GetDriverName();
 	void Exec_Command(int _cmdId, String _command);
 };
 

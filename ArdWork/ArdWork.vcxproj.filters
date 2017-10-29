@@ -285,9 +285,6 @@
     <ClInclude Include="__vm\.ArdWork.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Publisher.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Button_Device_Driver_Consts.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
     </ClInclude>
@@ -306,9 +303,6 @@
     <ClInclude Include="Filesystem.h">
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="Index_html.h">
-      <Filter>Header Files\Helper</Filter>
-    </ClInclude>
     <ClInclude Include="Uart_RGB_Led_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
     </ClInclude>
@@ -316,7 +310,10 @@
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
     </ClInclude>
     <ClInclude Include="DNSServer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Publisher.h">
+      <Filter>Header Files\Helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

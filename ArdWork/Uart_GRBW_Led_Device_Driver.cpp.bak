@@ -2,48 +2,49 @@
 // 
 // 
 
-#include "Uart_RGB_Led_Device_Driver.h"
+#include "Uart_GRBW_Led_Device_Driver.h"
 #include "math.h"
 
-uint8_t Uart_RGB_Led_Device_Driver::pixelCount;
-uint16_t Uart_RGB_Led_Device_Driver::lastPixel = 0;
-int8_t Uart_RGB_Led_Device_Driver::moveDir = 1;
-Vector <RGBAnimationState*> Uart_RGB_Led_Device_Driver::animationState_list;
-HslColor Uart_RGB_Led_Device_Driver::mainColor = RgbColor(150, 0, 0);
+uint8_t Uart_GRBW_Led_Device_Driver::pixelCount;
+uint16_t Uart_GRBW_Led_Device_Driver::lastPixel = 0;
+int8_t Uart_GRBW_Led_Device_Driver::moveDir = 1;
+Vector <GRBWAnimationState*> Uart_GRBW_Led_Device_Driver::animationState_list;
+HslColor Uart_GRBW_Led_Device_Driver::mainColor = RgbColor(150, 0, 0);
 
-NeoGamma<NeoGammaTableMethod>* Uart_RGB_Led_Device_Driver::colorGamma;
-NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>* Uart_RGB_Led_Device_Driver::strip;
-NeoPixelAnimator* Uart_RGB_Led_Device_Driver::animations;
+NeoGamma<NeoGammaTableMethod>* Uart_GRBW_Led_Device_Driver::colorGamma;
+NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* Uart_GRBW_Led_Device_Driver::strip;
+NeoPixelAnimator* Uart_GRBW_Led_Device_Driver::animations;
 
-Uart_RGB_Led_Device_Driver::Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority) :
+Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority) :
 	Device_Driver(module, priority)
 {
-	__DriverType = UART_RGB_LED_DEVICE_TYPE;
+	__DriverType = UART_GRBW_LED_DEVICE_TYPE;
+
 	pixelCount = _pixelcount;
 	__brightness = 50;
 	__auto_brightness = true;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
-	strip = new NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>(_pixelcount);
-	animations = new NeoPixelAnimator(_pixelcount + RGB_ANIMATION_COUNT); // NeoPixel animation management object
+	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelcount);
+	animations = new NeoPixelAnimator(_pixelcount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
 
 	for (uint8_t i = 0; i < _pixelcount; i++) {
-		RGBAnimationState* animationState = new RGBAnimationState();
+		GRBWAnimationState* animationState = new GRBWAnimationState();
 		animationState_list.PushBack(animationState);
 	}
 	strip->Begin();
 };
 
-void Uart_RGB_Led_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "RGB-Stripe";
-	__descriptor->descr = "RGB-Stripe stellt die Steuerung der RGB-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben";
+void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
+	__descriptor->name = "GRBW-Stripe";
+	__descriptor->descr = "GRBW-Stripe stellt die Steuerung der GRBW-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben";
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_RGB_LED_SET_PATTERN_EXTERN, "Pattern", select, "Choose a pattern for the ambient light");
-	Atomic<String> *atomic_pattern_cyclon = new Atomic<String>(RGB_ANIMATION_CYLON, "Cyclon");
-	Atomic<String> *atomic_pattern_random = new Atomic<String>(RGB_ANIMATION_RANDOM, "Random");
-	Atomic<String> *atomic_pattern_fire = new Atomic<String>(RGB_ANIMATION_FIRE, "Fire");
-	Atomic<String> *atomic_pattern_shine = new Atomic<String>(RGB_ANIMATION_SHINE, "Shine");
-	Atomic<String> *atomic_pattern_off = new Atomic<String>(RGB_ANIMATION_OFF, "Off");
+	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_GRBW_LED_SET_PATTERN_EXTERN, "Pattern", select, "Choose a pattern for the ambient light");
+	Atomic<String> *atomic_pattern_cyclon = new Atomic<String>(GRBW_ANIMATION_CYLON, "Cyclon");
+	Atomic<String> *atomic_pattern_random = new Atomic<String>(GRBW_ANIMATION_RANDOM, "Random");
+	Atomic<String> *atomic_pattern_fire = new Atomic<String>(GRBW_ANIMATION_FIRE, "Fire");
+	Atomic<String> *atomic_pattern_shine = new Atomic<String>(GRBW_ANIMATION_SHINE, "Shine");
+	Atomic<String> *atomic_pattern_off = new Atomic<String>(GRBW_ANIMATION_OFF, "Off");
 
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_cyclon);
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_random);
@@ -52,7 +53,7 @@ void Uart_RGB_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_off);
 	ctrl_elem_pattern->published = true;
 
-	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_RGB_LED_SET_COLOR_EXTERN, "Color", color, "The main color for the ambient light pattern");
+	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_GRBW_LED_SET_COLOR_EXTERN, "Color", color, "The main color for the ambient light pattern");
 	Atomic<uint8_t> *atomic_color_r = new Atomic<uint8_t>(0, 220, "Dec");
 	Atomic<uint8_t> *atomic_color_g = new Atomic<uint8_t>(1, 123, "Dec");
 	Atomic<uint8_t> *atomic_color_b = new Atomic<uint8_t>(2, 234, "Dec");
@@ -62,14 +63,14 @@ void Uart_RGB_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_color->AddAtomic(atomic_color_b);
 	ctrl_elem_color->published = true;
 
-	Ctrl_Elem *ctrl_elem_auto_brightess = new Ctrl_Elem(UART_RGB_LED_SET_AUTO_BRIGHTNESS_EXTERN, "auto brightness mode", select, "choose if the brithness should be estimate automatically");
+	Ctrl_Elem *ctrl_elem_auto_brightess = new Ctrl_Elem(UART_GRBW_LED_SET_AUTO_BRIGHTNESS_EXTERN, "auto brightness mode", select, "choose if the brithness should be estimate automatically");
 	Atomic<String> *atomic_auto_brightess_on = new Atomic<String>(1, "On", "");
 	Atomic<String> *atomic_auto_brightess_off = new Atomic<String>(0, "Off", "");
 	ctrl_elem_auto_brightess->AddAtomic(atomic_auto_brightess_on);
 	ctrl_elem_auto_brightess->AddAtomic(atomic_auto_brightess_off);
 	ctrl_elem_auto_brightess->published = true;
 
-	Ctrl_Elem *ctrl_elem_brightess = new Ctrl_Elem(UART_RGB_LED_SET_BRIGHTNESS_EXTERN, "brightness", edtvalue, "the brightness for the ambient light pattern");
+	Ctrl_Elem *ctrl_elem_brightess = new Ctrl_Elem(UART_GRBW_LED_SET_BRIGHTNESS_EXTERN, "brightness", edtvalue, "the brightness for the ambient light pattern");
 	Atomic<uint8_t> *atomic_brightess = new Atomic<uint8_t>(0, &__brightness, "%");
 	ctrl_elem_brightess->AddAtomic(atomic_brightess);
 	ctrl_elem_brightess->published = true;
@@ -81,66 +82,67 @@ void Uart_RGB_Led_Device_Driver::Build_Descriptor() {
 }
 
 
-void Uart_RGB_Led_Device_Driver::DoAfterInit()
+void Uart_GRBW_Led_Device_Driver::DoAfterInit()
 {
 	SetRandomSeed();
-	actAnimation = RGB_ANIMATION_SHINE;
 	Animation_Off();
 	Animation_Shine();
+	actAnimation = GRBW_ANIMATION_FIRST;
 	Serial.println("Uart_Rgb_Led-Driver initialized!");
 }
 
-void Uart_RGB_Led_Device_Driver::DoBeforeShutdown()
+void Uart_GRBW_Led_Device_Driver::DoBeforeShutdown()
 {
 	//
 }
 
-void Uart_RGB_Led_Device_Driver::DoBeforeSuspend()
+void Uart_GRBW_Led_Device_Driver::DoBeforeSuspend()
 {
 	//
 }
 
-void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
+void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 {
+	Serial.println("Hier");
 	int messageID = message.GetID();
 	switch (messageID)
 	{
-	case UART_RGB_LED_DEVICE_OFF:
+	case UART_GRBW_LED_DEVICE_OFF:
 	{
 		Animation_Off();
 	}
 	break;
-	case UART_RGB_LED_DEVICE_CYCLON:
+	case UART_GRBW_LED_DEVICE_CYCLON:
 	{
 		Animation_Cyclon();
 	}
 	break;
-	case UART_RGB_LED_DEVICE_RANDOM:
+	case UART_GRBW_LED_DEVICE_RANDOM:
 	{
 		Animation_Random();
 	}
 	break;
-	case UART_RGB_LED_DEVICE_FIRE:
+	case UART_GRBW_LED_DEVICE_FIRE:
 	{
 		Animation_Fire();
 	}
 	break;
-	case UART_RGB_LED_DEVICE_SHINE:
+	case UART_GRBW_LED_DEVICE_SHINE:
 	{
 		Animation_Shine();
 	}
 	break;
-	case UART_RGB_LED_DEVICE_NEXT:
+	case UART_GRBW_LED_DEVICE_NEXT:
 	{
 		Animation_Next();
 	}
 	break;
-	case UART_RGB_LED_DEVICE_PREV:
+	case UART_GRBW_LED_DEVICE_PREV:
 	{
 		Animation_Prev();
 	}
 	break;
-	case UART_RGB_LED_DEVICE_COLOR:
+	case UART_GRBW_LED_DEVICE_COLOR:
 	{
 		uint8_t R = message.GetUint8ParamByIndex(1);
 		uint8_t G = message.GetUint8ParamByIndex(2);
@@ -148,7 +150,7 @@ void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		Animation_Color(R, G, B);
 	}
 	break;
-	case UART_RGB_LED_DEVICE_BRIGHTNESS:
+	case UART_GRBW_LED_DEVICE_BRIGHTNESS:
 	{
 		if (__auto_brightness) {
 			uint8_t brightness = message.GetIntParamByIndex(1);
@@ -156,13 +158,13 @@ void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		}
 	}
 	break;
-	case UART_RGB_LED_SET_PATTERN_EXTERN:
+	case UART_GRBW_LED_SET_PATTERN_EXTERN:
 	{
 		uint8_t animation_number = message.GetUint8ParamByIndex(1);
 		Animation_Number(animation_number);
 	}
 	break;
-	case UART_RGB_LED_SET_COLOR_EXTERN:
+	case UART_GRBW_LED_SET_COLOR_EXTERN:
 	{
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(1).c_str(), NULL, 16);
 		Serial.print("R: ");
@@ -174,13 +176,13 @@ void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		Animation_Color((uint8_t)(rgb >> 16), (uint8_t)(rgb >> 8), (uint8_t)(rgb >> 0));
 	}
 	break;
-	case UART_RGB_LED_SET_AUTO_BRIGHTNESS_EXTERN:
+	case UART_GRBW_LED_SET_AUTO_BRIGHTNESS_EXTERN:
 	{
 		bool auto_brightness = message.GetIntParamByIndex(1);
 		__auto_brightness = auto_brightness;
 	}
 	break;
-	case UART_RGB_LED_SET_BRIGHTNESS_EXTERN:
+	case UART_GRBW_LED_SET_BRIGHTNESS_EXTERN:
 	{
 		if (__auto_brightness) {
 			uint8_t brightness = message.GetIntParamByIndex(1);
@@ -189,15 +191,16 @@ void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	}
 	break;
 	}
+	Serial.println("Da");
 }
 
-void Uart_RGB_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
+void Uart_GRBW_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	animations->UpdateAnimations();
 	strip->Show();
 }
 
 
-void Uart_RGB_Led_Device_Driver::SetBrightness(uint8_t _brightness) {
+void Uart_GRBW_Led_Device_Driver::SetBrightness(uint8_t _brightness) {
 	__brightness = MIN(_brightness, 100);
 	__brightness = MAX(__brightness, 1);
 
@@ -208,7 +211,7 @@ void Uart_RGB_Led_Device_Driver::SetBrightness(uint8_t _brightness) {
 	mainColor.L = light;
 }
 
-void Uart_RGB_Led_Device_Driver::SetRandomSeed()
+void Uart_GRBW_Led_Device_Driver::SetRandomSeed()
 {
 	uint32_t seed;
 
@@ -226,7 +229,7 @@ void Uart_RGB_Led_Device_Driver::SetRandomSeed()
 }
 
 
-void Uart_RGB_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
+void Uart_GRBW_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 {
 	uint16_t nextPixel;
 
@@ -257,11 +260,11 @@ void Uart_RGB_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 	if (param.state == AnimationState_Completed)
 	{
 		// done, time to restart this position tracking animation/timer
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_CYLON - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_CYLON - GRBW_ANIMATION_FIRST);
 	}
 }
 
-void Uart_RGB_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
+void Uart_GRBW_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
@@ -285,18 +288,18 @@ void Uart_RGB_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_RANDOM - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_RANDOM - GRBW_ANIMATION_FIRST);
 	}
 }
 
 
-void Uart_RGB_Led_Device_Driver::BlendAnimUpdate(const AnimationParam& param)
+void Uart_GRBW_Led_Device_Driver::BlendAnimUpdate(const AnimationParam& param)
 {
 	// this gets called for each animation on every time step
 	// progress will start at 0.0 and end at 1.0
 	// we use the blend function on the RgbColor to mix
 	// color based on the progress given to us in the animation
-	RgbColor updatedColor = RgbColor::LinearBlend(
+	RgbwColor updatedColor = RgbwColor::LinearBlend(
 		animationState_list[param.index]->StartingColor,
 		animationState_list[param.index]->EndingColor,
 		param.progress);
@@ -305,7 +308,7 @@ void Uart_RGB_Led_Device_Driver::BlendAnimUpdate(const AnimationParam& param)
 }
 
 
-void Uart_RGB_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
+void Uart_GRBW_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
@@ -339,11 +342,11 @@ void Uart_RGB_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_FIRE - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_FIRE - GRBW_ANIMATION_FIRST);
 	}
 }
 
-void Uart_RGB_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
+void Uart_GRBW_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 	if (param.state != AnimationState_Completed)
 	{
 		for (int pixel = 0; pixel < pixelCount; pixel++) {
@@ -351,11 +354,11 @@ void Uart_RGB_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_SHINE - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_SHINE - GRBW_ANIMATION_FIRST);
 	}
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Off() {
+void Uart_GRBW_Led_Device_Driver::Animation_Off() {
 	animations->StopAll();
 	for (uint8_t i = 0; i < pixelCount; i++) {
 		strip->SetPixelColor(i, RgbColor(0, 0, 0));
@@ -363,60 +366,60 @@ void Uart_RGB_Led_Device_Driver::Animation_Off() {
 	strip->Show();
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Shine() {
+void Uart_GRBW_Led_Device_Driver::Animation_Shine() {
 	animations->StopAll();
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_SHINE - RGB_ANIMATION_FIRST, 200, ShineAnimUpdate);
+	animations->StartAnimation(pixelCount + GRBW_ANIMATION_SHINE - GRBW_ANIMATION_FIRST, 200, ShineAnimUpdate);
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Random() {
+void Uart_GRBW_Led_Device_Driver::Animation_Random() {
 	Animation_Off();
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_RANDOM - RGB_ANIMATION_FIRST, 200, RandomAnimUpdate);
+	animations->StartAnimation(pixelCount + GRBW_ANIMATION_RANDOM - GRBW_ANIMATION_FIRST, 200, RandomAnimUpdate);
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Cyclon() {
+void Uart_GRBW_Led_Device_Driver::Animation_Cyclon() {
 	Animation_Off();
 	lastPixel = 0;
 	moveDir = 1;
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_CYLON - RGB_ANIMATION_FIRST, 2000, CylonAnimUpdate);
+	animations->StartAnimation(pixelCount + GRBW_ANIMATION_CYLON - GRBW_ANIMATION_FIRST, 2000, CylonAnimUpdate);
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Fire() {
+void Uart_GRBW_Led_Device_Driver::Animation_Fire() {
 	Animation_Off();
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_FIRE - RGB_ANIMATION_FIRST, 200, FireAnimUpdate);
+	animations->StartAnimation(pixelCount + GRBW_ANIMATION_FIRE - GRBW_ANIMATION_FIRST, 200, FireAnimUpdate);
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Next() {
+void Uart_GRBW_Led_Device_Driver::Animation_Next() {
 	actAnimation++;
-	if (actAnimation > RGB_ANIMATION_LAST)
-		actAnimation = RGB_ANIMATION_FIRST;
+	if (actAnimation > GRBW_ANIMATION_LAST)
+		actAnimation = GRBW_ANIMATION_FIRST;
 	Set_Animation();
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Number(uint8_t _animation_number) {
+void Uart_GRBW_Led_Device_Driver::Animation_Number(uint8_t _animation_number) {
 	actAnimation = _animation_number;
 	Set_Animation();
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Prev() {
+void Uart_GRBW_Led_Device_Driver::Animation_Prev() {
 	actAnimation--;
-	if (actAnimation < RGB_ANIMATION_FIRST)
-		actAnimation = RGB_ANIMATION_LAST;
+	if (actAnimation < GRBW_ANIMATION_FIRST)
+		actAnimation = GRBW_ANIMATION_LAST;
 	Set_Animation();
 }
 
-void Uart_RGB_Led_Device_Driver::Set_Animation() {
+void Uart_GRBW_Led_Device_Driver::Set_Animation() {
 	switch (actAnimation)
 	{
-	case RGB_ANIMATION_CYLON:
+	case GRBW_ANIMATION_CYLON:
 		Animation_Cyclon();
 		break;
-	case RGB_ANIMATION_RANDOM:
+	case GRBW_ANIMATION_RANDOM:
 		Animation_Random();
 		break;
-	case RGB_ANIMATION_FIRE:
+	case GRBW_ANIMATION_FIRE:
 		Animation_Fire();
 		break;
-	case RGB_ANIMATION_SHINE:
+	case GRBW_ANIMATION_SHINE:
 		Animation_Shine();
 		break;
 	default:
@@ -424,61 +427,61 @@ void Uart_RGB_Led_Device_Driver::Set_Animation() {
 	}
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Color(uint8_t R, uint8_t G, uint8_t B)
+void Uart_GRBW_Led_Device_Driver::Animation_Color(uint8_t R, uint8_t G, uint8_t B)
 {
 	mainColor = RgbColor(R, G, B);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Off()
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Off()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_OFF);
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_OFF);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Shine()
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Shine()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_SHINE);
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_SHINE);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Random()
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Random()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_RANDOM);
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_RANDOM);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Cyclon() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_CYCLON);
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Cyclon() {
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_CYCLON);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Fire() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_FIRE);
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Fire() {
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_FIRE);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Next() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_NEXT);
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Next() {
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_NEXT);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Prev() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_PREV);
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Prev() {
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_PREV);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Animation_Color(uint8_t R, uint8_t G, uint8_t B)
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(uint8_t R, uint8_t G, uint8_t B)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_COLOR);
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_COLOR);
 	message->AddParam(R);
 	message->AddParam(G);
 	message->AddParam(B);
 	PostMessage(&message);
 }
 
-void Uart_RGB_Led_Device_Driver::Exec_Set_Brightness(uint8_t _brightness)
+void Uart_GRBW_Led_Device_Driver::Exec_Set_Brightness(uint8_t _brightness)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_BRIGHTNESS);
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_BRIGHTNESS);
 	message->AddParam(_brightness);
 	PostMessage(&message);
 }

@@ -30,54 +30,22 @@ private:
 	bool isdebug;
 	Vector<ThreadMessage*> queue;
 
-	int8_t button_index;
-	int8_t distance_index;
-	int8_t led_index;
-	int8_t luxmeter_index;
-	int8_t mqqt_wifi_index;
-	int8_t oled_display_index;
-	int8_t temperature_index;
-	int8_t Uart_GRBW_Led_index;
-	int8_t Uart_RGB_Led_index;
-	int8_t websocket_wifi_index;
-
-	Vector <Button_Device_Driver*> *button_list;
-	Vector <Distance_Device_Driver*> *distance_list;
-	Vector <Led_Device_Driver*> *led_list;
-	Vector <Luxmeter_Device_Driver*> *luxmeter_list;
-	Vector <Mqqt_Wifi_Device_Driver*> *mqqt_wifi_list;
-	Vector <OLED_Display_Device_Driver*> *oled_display_list;
-	Vector <Temperature_Device_Driver*> *temperature_list;
-	Vector <Uart_RGB_Led_Device_Driver*> *Uart_RGB_Led_list;
-	Vector <Uart_GRBW_Led_Device_Driver*> *Uart_GRBW_Led_list;
-	Vector <WebSocket_Wifi_Device_Driver*> *websocket_wifi_list;
-
-	Button_Device_Driver* Get_Selected_Button_Device() const;
-	Distance_Device_Driver* Get_Selected_Distance_Device() const;
-	Led_Device_Driver* Get_Selected_Led_Device() const;
-	Luxmeter_Device_Driver* Get_Selected_Luxmeter_Device() const;
-	Mqqt_Wifi_Device_Driver* Get_Selected_Mqqt_Wifi_Device() const;
-	OLED_Display_Device_Driver* Get_Selected_OLED_Display_Device() const;
-	Temperature_Device_Driver* Get_Selected_Temperature_Device() const;
-	Uart_RGB_Led_Device_Driver* Get_Selected_Uart_RGB_Led_Device() const;
-	Uart_GRBW_Led_Device_Driver* Get_Selected_Uart_GRBW_Led_Device() const;
-	WebSocket_Wifi_Device_Driver* Get_Selected_WebSocket_Wifi_Device() const;
-
 	void DoUpdate(uint32_t deltaTime);
 	void UpdateControls();
 protected:
 	Vector <Driver*> *device_list;
-	Property<Button_Device_Driver*, Module_Driver> Selected_Button_Device{ this, nullptr, &Module_Driver::Get_Selected_Button_Device };
-	Property<Distance_Device_Driver*, Module_Driver> Selected_Distance_Device{ this, nullptr, &Module_Driver::Get_Selected_Distance_Device };
-	Property<Led_Device_Driver*, Module_Driver> Selected_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Led_Device };
-	Property<Luxmeter_Device_Driver*, Module_Driver> Selected_Luxmeter_Device{ this, nullptr, &Module_Driver::Get_Selected_Luxmeter_Device };
-	Property<Mqqt_Wifi_Device_Driver*, Module_Driver> Selected_Mqqt_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_Mqqt_Wifi_Device };
-	Property<OLED_Display_Device_Driver*, Module_Driver> Selected_OLED_Display_Device{ this, nullptr, &Module_Driver::Get_Selected_OLED_Display_Device };
-	Property<Temperature_Device_Driver*, Module_Driver> Selected_Temperature_Device{ this, nullptr, &Module_Driver::Get_Selected_Temperature_Device };
-	Property<Uart_RGB_Led_Device_Driver*, Module_Driver> Selected_Uart_RGB_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_RGB_Led_Device };
-	Property<Uart_GRBW_Led_Device_Driver*, Module_Driver> Selected_Uart_GRBW_Led_Device{ this, nullptr, &Module_Driver::Get_Selected_Uart_GRBW_Led_Device };
-	Property<WebSocket_Wifi_Device_Driver*, Module_Driver> Selected_WebSocket_Wifi_Device{ this, nullptr, &Module_Driver::Get_Selected_WebSocket_Wifi_Device };
 
+	Button_Device_Driver * Get_Button_DevDrv(uint8_t _index);
+	Distance_Device_Driver * Get_Distance_DevDrv(uint8_t _index);
+	Led_Device_Driver * Get_LED_DevDrv(uint8_t _index);
+	Luxmeter_Device_Driver * Get_Luxmeter_DevDrv(uint8_t _index);
+	Mqqt_Wifi_Device_Driver * Get_Mqqt_Wifi_DevDrv(uint8_t _index);
+	OLED_Display_Device_Driver * Get_OLED_Display_DevDrv(uint8_t _index);
+	Temperature_Device_Driver * Get_Temperatur_DevDrv(uint8_t _index);
+	Uart_RGB_Led_Device_Driver * Get_Uart_RGB_Led_DevDrv(uint8_t _index);
+	Uart_GRBW_Led_Device_Driver * Get_Uart_GRBW_Led_DevDrv(uint8_t _index);
+	WebSocket_Wifi_Device_Driver * Get_WebSocket_Wifi_DevDrv(uint8_t _index);
+	
 	Driver *GetDeviceById(int Id);
 
 	void DoMessage(Int_Thread_Msg message);
@@ -100,6 +68,8 @@ public:
 	~Module_Driver();
 	bool SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr = false);
 	void AddDevice(Device_Driver* device);
+
+
 
 	void Exec_Set_Debug_On();
 	void Exec_Set_Debug_Off();

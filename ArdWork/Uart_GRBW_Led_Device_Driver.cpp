@@ -9,7 +9,7 @@ uint8_t Uart_GRBW_Led_Device_Driver::pixelCount;
 uint16_t Uart_GRBW_Led_Device_Driver::lastPixel = 0;
 int8_t Uart_GRBW_Led_Device_Driver::moveDir = 1;
 Vector <GRBWAnimationState*> Uart_GRBW_Led_Device_Driver::animationState_list;
-RgbColor Uart_GRBW_Led_Device_Driver::mainColor = RgbColor(150, 0, 0);
+HslColor Uart_GRBW_Led_Device_Driver::mainColor = RgbColor(150, 0, 0);
 
 NeoGamma<NeoGammaTableMethod>* Uart_GRBW_Led_Device_Driver::colorGamma;
 NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* Uart_GRBW_Led_Device_Driver::strip;
@@ -18,9 +18,11 @@ NeoPixelAnimator* Uart_GRBW_Led_Device_Driver::animations;
 Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority) :
 	Device_Driver(module, priority)
 {
-	driver_name = "Uart_GRBW_Led_Device_Driver";
+	__DriverType = UART_GRBW_LED_DEVICE_TYPE;
 
 	pixelCount = _pixelcount;
+	__brightness = 50;
+	__auto_brightness = true;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
 	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelcount);
 	animations = new NeoPixelAnimator(_pixelcount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
@@ -61,17 +63,31 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_color->AddAtomic(atomic_color_b);
 	ctrl_elem_color->published = true;
 
+	Ctrl_Elem *ctrl_elem_auto_brightess = new Ctrl_Elem(UART_GRBW_LED_SET_AUTO_BRIGHTNESS_EXTERN, "auto brightness mode", select, "choose if the brithness should be estimate automatically");
+	Atomic<String> *atomic_auto_brightess_on = new Atomic<String>(1, "On", "");
+	Atomic<String> *atomic_auto_brightess_off = new Atomic<String>(0, "Off", "");
+	ctrl_elem_auto_brightess->AddAtomic(atomic_auto_brightess_on);
+	ctrl_elem_auto_brightess->AddAtomic(atomic_auto_brightess_off);
+	ctrl_elem_auto_brightess->published = true;
+
+	Ctrl_Elem *ctrl_elem_brightess = new Ctrl_Elem(UART_GRBW_LED_SET_BRIGHTNESS_EXTERN, "brightness", edtvalue, "the brightness for the ambient light pattern");
+	Atomic<uint8_t> *atomic_brightess = new Atomic<uint8_t>(0, &__brightness, "%");
+	ctrl_elem_brightess->AddAtomic(atomic_brightess);
+	ctrl_elem_brightess->published = true;
+
 	__descriptor->Add_Descriptor_Element(ctrl_elem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_color);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_auto_brightess);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_brightess);
 }
 
 
 void Uart_GRBW_Led_Device_Driver::DoAfterInit()
 {
 	SetRandomSeed();
+	actAnimation = GRBW_ANIMATION_SHINE;
 	Animation_Off();
 	Animation_Shine();
-	actAnimation = GRBW_ANIMATION_FIRST;
 	Serial.println("Uart_Rgb_Led-Driver initialized!");
 }
 
@@ -133,6 +149,14 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		Animation_Color(R, G, B);
 	}
 	break;
+	case UART_GRBW_LED_DEVICE_BRIGHTNESS:
+	{
+		if (__auto_brightness) {
+			uint8_t brightness = message.GetIntParamByIndex(1);
+			SetBrightness(brightness);
+		}
+	}
+	break;
 	case UART_GRBW_LED_SET_PATTERN_EXTERN:
 	{
 		uint8_t animation_number = message.GetUint8ParamByIndex(1);
@@ -151,7 +175,22 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		Animation_Color((uint8_t)(rgb >> 16), (uint8_t)(rgb >> 8), (uint8_t)(rgb >> 0));
 	}
 	break;
+	case UART_GRBW_LED_SET_AUTO_BRIGHTNESS_EXTERN:
+	{
+		bool auto_brightness = message.GetIntParamByIndex(1);
+		__auto_brightness = auto_brightness;
 	}
+	break;
+	case UART_GRBW_LED_SET_BRIGHTNESS_EXTERN:
+	{
+		if (__auto_brightness) {
+			uint8_t brightness = message.GetIntParamByIndex(1);
+			SetBrightness(brightness);
+		}
+	}
+	break;
+	}
+	Serial.println("Da");
 }
 
 void Uart_GRBW_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
@@ -159,6 +198,17 @@ void Uart_GRBW_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	strip->Show();
 }
 
+
+void Uart_GRBW_Led_Device_Driver::SetBrightness(uint8_t _brightness) {
+	__brightness = MIN(_brightness, 100);
+	__brightness = MAX(__brightness, 1);
+
+	_brightness = MIN(_brightness, 99);
+	_brightness = MAX(_brightness, 1);
+	float light;
+	light = _brightness / 100.0;
+	mainColor.L = light;
+}
 
 void Uart_GRBW_Led_Device_Driver::SetRandomSeed()
 {
@@ -184,19 +234,20 @@ void Uart_GRBW_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 
 	float progress = NeoEase::Linear(param.progress);
 	nextPixel = round(progress * pixelCount) % pixelCount;
-	if ((lastPixel != nextPixel)){
+	if ((lastPixel != nextPixel)) {
 		uint8_t count = 2;
 		for (uint8_t j = 0; j < count; j++) {
 			uint8_t actpixel = (nextPixel + (j * (pixelCount / count))) % pixelCount;
 
-			RgbwColor startingColor;
-			startingColor.R = fmin(255, mainColor.R + 200);
-			startingColor.G = fmin(255, mainColor.G + 200);
-			startingColor.B = fmin(255, mainColor.B + 200);
+			RgbColor startingColor;
+			RgbColor tempRGBColor = mainColor;
+			startingColor.R = fmin(255, tempRGBColor.R + 200);
+			startingColor.G = fmin(255, tempRGBColor.G + 200);
+			startingColor.B = fmin(255, tempRGBColor.B + 200);
 
 			strip->SetPixelColor(actpixel, colorGamma->Correct(startingColor));
 			animationState_list[actpixel]->StartingColor = colorGamma->Correct(startingColor);
-			animationState_list[actpixel]->EndingColor = colorGamma->Correct(mainColor);
+			animationState_list[actpixel]->EndingColor = mainColor;
 			if (animations->IsAnimationActive(actpixel)) {
 				animations->StopAnimation(actpixel);
 			}
@@ -273,13 +324,14 @@ void Uart_GRBW_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 			if (!(animations->IsAnimationActive(pixel))) {
 				uint16_t time = random(40, 300);
 				uint8 region = 255;
-				uint8 regionR = region * mainColor.R * 1 / 255;
-				uint8 regionG = region * mainColor.G * 1 / 255;
-				uint8 regionB = region * mainColor.B * 1 / 255;
+				RgbColor tempRGBColor = mainColor;
+				uint8 regionR = region * tempRGBColor.R * 1 / 255;
+				uint8 regionG = region * tempRGBColor.G * 1 / 255;
+				uint8 regionB = region * tempRGBColor.B * 1 / 255;
 
-				uint8 r = random(fmax(0, mainColor.R - (regionR / 2)), fmin(255, mainColor.R + (regionR / 2)));
-				uint8 g = random(fmax(0, mainColor.G - (regionG / 2)), fmin(255, mainColor.G + (regionG / 2)));
-				uint8 b = random(fmax(0, mainColor.B - (regionB / 2)), fmin(255, mainColor.B + (regionB / 2)));
+				uint8 r = random(fmax(0, tempRGBColor.R - (regionR / 2)), fmin(255, tempRGBColor.R + (regionR / 2)));
+				uint8 g = random(fmax(0, tempRGBColor.G - (regionG / 2)), fmin(255, tempRGBColor.G + (regionG / 2)));
+				uint8 b = random(fmax(0, tempRGBColor.B - (regionB / 2)), fmin(255, tempRGBColor.B + (regionB / 2)));
 
 				animationState_list[pixel]->StartingColor = strip->GetPixelColor(pixel);
 				animationState_list[pixel]->EndingColor = colorGamma->Correct(RgbColor(r, g, b));
@@ -297,7 +349,7 @@ void Uart_GRBW_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 	if (param.state != AnimationState_Completed)
 	{
 		for (int pixel = 0; pixel < pixelCount; pixel++) {
-			strip->SetPixelColor(pixel, colorGamma->Correct(mainColor));
+			strip->SetPixelColor(pixel, mainColor);
 		}
 	}
 	else {
@@ -423,5 +475,12 @@ void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(uint8_t R, uint8_t G, uin
 	message->AddParam(R);
 	message->AddParam(G);
 	message->AddParam(B);
+	PostMessage(&message);
+}
+
+void Uart_GRBW_Led_Device_Driver::Exec_Set_Brightness(uint8_t _brightness)
+{
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_BRIGHTNESS);
+	message->AddParam(_brightness);
 	PostMessage(&message);
 }

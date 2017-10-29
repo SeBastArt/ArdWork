@@ -21,7 +21,7 @@ String WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey(String _text, String _
 	JsonObject& root = jsonBuffer.parseObject(buf.get());
 
 	if (!root.success()) {
-		Serial.println("Failed to parse config file");
+		Serial.println("Failed to parse json file");
 	}
 	value = root[_key].as<String>();
 	return value;
@@ -48,11 +48,11 @@ void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, ui
 
 			// decode rgb data
 			//uint32_t rgb = (uint32_t)strtol((const char *)&payload[1], NULL, 16);
-			String test = String((const char *)&payload[0]);
+			String json_string = String((const char *)&payload[0]);
 
-			int deviceId = atoi(Json_GetvalueFromKey(test, "deviceId").c_str());
-			int cmdId = atoi(Json_GetvalueFromKey(test, "cmdId").c_str());
-			String value = Json_GetvalueFromKey(test, "value");
+			int deviceId = atoi(Json_GetvalueFromKey(json_string, "deviceId").c_str());
+			int cmdId = atoi(Json_GetvalueFromKey(json_string, "cmdId").c_str());
+			String value = Json_GetvalueFromKey(json_string, "value");
 			if (__event_msg._filled == false) {
 				__event_msg._deviceId = deviceId;
 				__event_msg._cmdId = cmdId;
@@ -60,10 +60,6 @@ void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, ui
 				__event_msg._filled = true;
 			}
 			delay(10);
-
-			//analogWrite(LED_RED, ((rgb >> 16) & 0xFF));
-			//analogWrite(LED_GREEN, ((rgb >> 8) & 0xFF));
-			//analogWrite(LED_BLUE, ((rgb >> 0) & 0xFF));
 		}
 
 		break;
@@ -74,7 +70,7 @@ void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, ui
 WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * module, String _ssid, String _password, Led_Device_Driver * _statusLED, uint8_t priority) :
 	Wifi_Device_Driver(module, _ssid, _password, _statusLED, priority)
 {
-	driver_name = "WebSocket_Wifi_Device_Driver";
+	__DriverType = WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE;
 	server = nullptr;
 	webSocket = nullptr;
 

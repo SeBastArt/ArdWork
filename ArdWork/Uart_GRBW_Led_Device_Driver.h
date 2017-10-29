@@ -24,11 +24,12 @@ struct GRBWAnimationState
 
 class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
-	
 private:
 	static uint8_t pixelCount;
 	uint8_t actAnimation;
-	static RgbColor mainColor;
+	static HslColor mainColor;
+	uint8_t __brightness;
+	bool __auto_brightness;
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
 	static NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* strip;
@@ -63,10 +64,10 @@ protected:
 	void Animation_Fire();
 	void Animation_Next();
 	void Animation_Number(uint8_t _animation_number);
-	void Animation_Prev();
 	void Set_Animation();
+	void Animation_Prev();
 	void Animation_Color(uint8_t R, uint8_t G, uint8_t B);
-
+	void SetBrightness(uint8_t _brightness);
 public:
 	void Exec_Animation_Off();
 	void Exec_Animation_Shine();
@@ -76,6 +77,7 @@ public:
 	void Exec_Animation_Next();
 	void Exec_Animation_Prev();
 	void Exec_Animation_Color(uint8_t R, uint8_t G, uint8_t B);
+	void Exec_Set_Brightness(uint8_t _brightness);
 };
 
 #endif
