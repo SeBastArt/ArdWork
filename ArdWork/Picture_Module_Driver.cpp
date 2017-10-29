@@ -10,6 +10,7 @@
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
 #include "Uart_RGB_Led_Device_Driver.h"
+#include "Uart_GRBW_Led_Device_Driver.h"
 
 Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	Module_Driver(priority)
@@ -44,7 +45,7 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 	{
 		FloatMessage* pFMessage = (FloatMessage*)(message);
 		if (pFMessage->Id == Get_Luxmeter_DevDrv(0)->DriverId ) {
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Brightness (round(pFMessage->Value));
+			Get_Uart_RGB_Led_DevDrv(0)->Exec_Set_Brightness (round(pFMessage->Value));
 		}
 		break;
 	}
@@ -72,7 +73,6 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 		break;
 	}
 	}
-	Serial.println("7 Done");
 }
 
 

@@ -19,7 +19,6 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	Device_Driver(module, priority)
 {
 	__DriverType = UART_GRBW_LED_DEVICE_TYPE;
-
 	pixelCount = _pixelcount;
 	__brightness = 50;
 	__auto_brightness = true;
@@ -88,7 +87,7 @@ void Uart_GRBW_Led_Device_Driver::DoAfterInit()
 	actAnimation = GRBW_ANIMATION_SHINE;
 	Animation_Off();
 	Animation_Shine();
-	Serial.println("Uart_Rgb_Led-Driver initialized!");
+	Serial.println("Uart_GRBW_Led-Driver initialized!");
 }
 
 void Uart_GRBW_Led_Device_Driver::DoBeforeShutdown()
@@ -152,14 +151,14 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	case UART_GRBW_LED_DEVICE_BRIGHTNESS:
 	{
 		if (__auto_brightness) {
-			uint8_t brightness = message.GetIntParamByIndex(1);
+			uint8_t brightness = message.GetUint8ParamByIndex(1);
 			SetBrightness(brightness);
 		}
 	}
 	break;
 	case UART_GRBW_LED_SET_PATTERN_EXTERN:
 	{
-		uint8_t animation_number = message.GetUint8ParamByIndex(1);
+		unsigned int animation_number = message.GetIntParamByIndex(1);
 		Animation_Number(animation_number);
 	}
 	break;
@@ -190,7 +189,6 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	}
 	break;
 	}
-	Serial.println("Da");
 }
 
 void Uart_GRBW_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
@@ -394,7 +392,7 @@ void Uart_GRBW_Led_Device_Driver::Animation_Next() {
 	Set_Animation();
 }
 
-void Uart_GRBW_Led_Device_Driver::Animation_Number(uint8_t _animation_number) {
+void Uart_GRBW_Led_Device_Driver::Animation_Number(unsigned int _animation_number) {
 	actAnimation = _animation_number;
 	Set_Animation();
 }

@@ -26,7 +26,7 @@ class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
 private:
 	static uint8_t pixelCount;
-	uint8_t actAnimation;
+	unsigned int actAnimation;
 	static HslColor mainColor;
 	uint8_t __brightness;
 	bool __auto_brightness;
@@ -63,7 +63,7 @@ protected:
 	void Animation_Cyclon();
 	void Animation_Fire();
 	void Animation_Next();
-	void Animation_Number(uint8_t _animation_number);
+	void Animation_Number(unsigned int _animation_number);
 	void Set_Animation();
 	void Animation_Prev();
 	void Animation_Color(uint8_t R, uint8_t G, uint8_t B);

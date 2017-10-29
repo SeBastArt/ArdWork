@@ -151,14 +151,14 @@ void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	case UART_RGB_LED_DEVICE_BRIGHTNESS:
 	{
 		if (__auto_brightness) {
-			uint8_t brightness = message.GetIntParamByIndex(1);
+			uint8_t brightness = message.GetUint8ParamByIndex(1);
 			SetBrightness(brightness);
 		}
 	}
 	break;
 	case UART_RGB_LED_SET_PATTERN_EXTERN:
 	{
-		uint8_t animation_number = message.GetUint8ParamByIndex(1);
+		unsigned int animation_number = message.GetIntParamByIndex(1);
 		Animation_Number(animation_number);
 	}
 	break;
@@ -392,7 +392,7 @@ void Uart_RGB_Led_Device_Driver::Animation_Next() {
 	Set_Animation();
 }
 
-void Uart_RGB_Led_Device_Driver::Animation_Number(uint8_t _animation_number) {
+void Uart_RGB_Led_Device_Driver::Animation_Number(unsigned int _animation_number) {
 	actAnimation = _animation_number;
 	Set_Animation();
 }

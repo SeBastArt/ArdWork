@@ -159,8 +159,8 @@ void setup() {
 #endif // PICTURE_NodeMCU_GBRW
 
 #ifdef PICTURE_NodeMCU_GBR
-	//Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 24);
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 24);
+	Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 24);
+	//Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 24);
 
 	//Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D3"), true);
 	//Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(LED_BUILTIN), true);

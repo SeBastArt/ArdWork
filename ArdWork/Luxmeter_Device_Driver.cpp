@@ -99,7 +99,7 @@ void Luxmeter_Device_Driver::DoAfterInit()
 		Serial.println("");
 
 	}
-	accuracy_delay = 200;
+	accuracy_delay = 1000;
 	accuracy_delta = 0;
 	lastLux = 0.0;
 }
@@ -146,7 +146,7 @@ void Luxmeter_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
 void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	accuracy_delta += deltaTime;
 	if (accuracy_delta > accuracy_delay) {
-		Serial.printf("index heap size: %u", ESP.getFreeHeap());
+		//Serial.printf("index heap size: %u", ESP.getFreeHeap());
 		accuracy_delta = 0;
 		sensor_t sensor;
 		tsl->getSensor(&sensor);

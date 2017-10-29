@@ -15,8 +15,8 @@
 class Device_Driver;
 class Led_Device_Driver;
 class Button_Device_Driver;
-class Uart_RGB_Led_Device_Driver;
 class Uart_GRBW_Led_Device_Driver;
+class Uart_RGB_Led_Device_Driver;
 class Luxmeter_Device_Driver;
 class Distance_Device_Driver;
 class OLED_Display_Device_Driver;
