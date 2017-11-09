@@ -37,7 +37,7 @@ void Temperature_Device_Driver::DoAfterInit()
 	act_hum = 50.0;
 	accuracy_delay = 2000;
 	accuracy_delta = 0;
-	Serial.println("Temperature-Driver initialized!");
+	Serial.println(F("Temperature-Driver initialized!"));
 }
 
 void Temperature_Device_Driver::DoBeforeShutdown() {

@@ -34,7 +34,6 @@ private:
 	static WebSocketsServer *webSocket;
 	static event_msg __event_msg;
 
-	void GenerateAndSendHtml(WiFiClient * _client);
 	void GenerateNav(WiFiClient * client, Descriptor_List * _descriptor_list);
 	void GenerateTab(WiFiClient * client, Descriptor * _descriptor);
 	void GenerateForm(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
@@ -43,7 +42,7 @@ private:
 	void GenerateSelect(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
 	void GenerateOption(WiFiClient * client, Ctrl_Elem * _ctrl_elem);
 	void GenerateInput(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
-	void GenerateButton(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
+	void GenerateButtonGroup(WiFiClient * client, int _deviceId, Ctrl_Elem * _ctrl_elem);
 	void GenerateSetButton(WiFiClient * client, int _deviceId, int _cmdId);
 	
 	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);

@@ -25,16 +25,16 @@ Mqqt_Wifi_Device_Driver::Mqqt_Wifi_Device_Driver(Module_Driver * module, String 
 }
 
 void Mqqt_Wifi_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Luxmeter";
-	__descriptor->descr = "messeaure brightness";
+	__descriptor->name = F("Mqqt Broker");
+	__descriptor->descr = F("provide moquitto server-client communication");
 }
 
 
 void Mqqt_Wifi_Device_Driver::EventMsgIn(char* topic, uint8_t* payload, unsigned int length) {
-	Serial.print("Message arrived [");
+	Serial.print(F("Message arrived ["));
 	Serial.print(topic);
 	Serial.print("] ");
-	Serial.print("Payload: ");
+	Serial.print(F("Payload: "));
 	mqtt_message = "";
 	for (int i = 0; i < length; i++) {
 		mqtt_message += (char)payload[i];
@@ -43,7 +43,7 @@ void Mqqt_Wifi_Device_Driver::EventMsgIn(char* topic, uint8_t* payload, unsigned
 }
 
 void Mqqt_Wifi_Device_Driver::SetMQQTBroker(String adress) {
-	Serial.print("Set MQQT-Broker to: ");
+	Serial.print(F("Set MQQT-Broker to: "));
 	Serial.println(adress);
 	mqqt_broker.fromString(adress);
 }
@@ -59,14 +59,14 @@ void Mqqt_Wifi_Device_Driver::UpdateControls()
 }
 
 void Mqqt_Wifi_Device_Driver::SetOutTopic(String topic) {
-	Serial.print("Set Mqqt-Server PublicTopic to: ");
+	Serial.print(F("Set Mqqt-Server PublicTopic to: "));
 	Serial.println(topic);
 	outTopic = topic;
 }
 
 void Mqqt_Wifi_Device_Driver::SetInTopic(String topic) {
 	
-	Serial.print("SubScripe Mqqt-Server to: ");
+	Serial.print(F("SubScripe Mqqt-Server to: "));
 	Serial.println(topic);
 	inTopic = topic;
 	if (WiFi.status() == WL_CONNECTED) {
@@ -79,9 +79,9 @@ void Mqqt_Wifi_Device_Driver::SetInTopic(String topic) {
 
 void Mqqt_Wifi_Device_Driver::InitComm() {
 	client->setServer(mqqt_broker, 1883);
-	Serial.print("Connect to MQTT FHEM...");
+	Serial.print(F("Connect to MQTT FHEM..."));
 	if (client->connect(&hostname[0])) {
-		Serial.println("connected");
+		Serial.println(F("connected"));
 		// ... and resubscribe
 		client->subscribe(&inTopic[0]);
 		isCommConnected = true;
@@ -92,7 +92,7 @@ void Mqqt_Wifi_Device_Driver::InitComm() {
 		statusLED->Exec_Set_Led_On();
 		Serial.print("failed, rc=");
 		Serial.print(client->state());
-		Serial.println(" try again in 5 seconds");
+		Serial.println(F(" try again in 5 seconds"));
 	}
 }
 
@@ -104,7 +104,7 @@ void Mqqt_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 			MqqtMessage* message = new MqqtMessage("Teste mal das hier");
 			if (!parentModule->SendAsyncThreadMessage(message))
 			{
-				Serial.println(">> message buffer overflow <<");
+				Serial.println(F(">> message buffer overflow <<"));
 			}
 			mqtt_message = "";
 		}
@@ -125,8 +125,8 @@ void Mqqt_Wifi_Device_Driver::CheckComm(uint32_t deltaTime) {
 		if (connRetry < 3) {
 			if (isCommConnected) {
 				connRetry = 0;
-				Serial.println("Lost Connection to MQQT Server...");
-				Serial.println("Try to reconnect...");
+				Serial.println(F("Lost Connection to MQQT Server..."));
+				Serial.println(F("Try to reconnect..."));
 				isCommConnected = false;
 			}
 			comm_delta += deltaTime;

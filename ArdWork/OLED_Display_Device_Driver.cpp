@@ -13,15 +13,15 @@ OLED_Display_Device_Driver::OLED_Display_Device_Driver(Module_Driver* module, ui
 };
 
 void OLED_Display_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Display";
-	__descriptor->descr = "a monochrome Display";
+	__descriptor->name = F("Display");
+	__descriptor->descr = F("a monochrome Display");
 }
 
 void OLED_Display_Device_Driver::DoAfterInit()
 {
 	__display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
 	DoClear();
-	Serial.println("OLED-Driver initialized!");
+	Serial.println(F("OLED-Driver initialized!"));
 }
 
 void OLED_Display_Device_Driver::DoBeforeShutdown()

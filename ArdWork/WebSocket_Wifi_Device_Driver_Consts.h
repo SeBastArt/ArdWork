@@ -44,12 +44,17 @@ static void SendHeader(WiFiClient *_client) {
 	_client->println("                document.getElementById(search_id).placeholder = value + \" \" + unit;");
 	_client->println("            };");
 	_client->println("        };");
-	_client->println("        function SendMessage(_deviceId, _cmdId) {");
+	_client->println("        function SendMessage(_deviceId, _cmdId, _value) {");
 	_client->println("            var search_id = _deviceId.toString() + \"_\" + _cmdId.toString();");
 	_client->println("            var obj = new Object();");
 	_client->println("            obj.deviceId = _deviceId;");
 	_client->println("            obj.cmdId = _cmdId;");
-	_client->println("            obj.value = document.getElementById(search_id).value;");
+	_client->println("            if (typeof _value !== \"undefined\") {");
+	_client->println("				obj.value = _value;");
+	_client->println("            }");
+	_client->println("            else {");
+	_client->println("				obj.value = document.getElementById(search_id).value;");
+	_client->println("            }");
 	_client->println("            var jsonString = JSON.stringify(obj);");
 	_client->println("            connection.send(jsonString);");
 	_client->println("        };");
@@ -130,7 +135,7 @@ static void SendHeader(WiFiClient *_client) {
 	_client->println("            -webkit-box-shadow: 1px 1px 3px #292929;");
 	_client->println("            color: #454545;");
 	_client->println("            text-shadow: 0 1px 0 white;");
-	_client->println("            align: left;");
+	_client->println("            margin-right: 15px;");
 	_client->println("        }");
 	_client->println("            .button:hover {");
 	_client->println("                background-color: #454545;");

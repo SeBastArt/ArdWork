@@ -45,7 +45,6 @@ private:
 	void SetMode(int _mode);
 	void ConnectToWifi();
 	void SaveConnectionParameters();
-	void Build_Descriptor();
 	void SetupOTA();
 protected:
 	bool __isConnected;
@@ -53,6 +52,7 @@ protected:
 	bool __fallbackAP;
 	String hostname;
 	static Led_Device_Driver *statusLED;
+	void Build_Descriptor();
 	virtual void UpdateComm(uint32_t deltaTime) = 0;
 	virtual void InitComm() = 0;
 

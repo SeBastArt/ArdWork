@@ -211,37 +211,6 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 
 }
 
-void WebSocket_Wifi_Device_Driver::GenerateAndSendHtml(WiFiClient *_client) {
-	_client->println("<!DOCTYPE html>");
-	_client->println("<html>");
-	SendHeader(_client);
-	_client->println("<body>");
-
-	if (__descriptor_list->count > 0) {
-		_client->println("<div class=\"container\">");
-		_client->println("<h2 class=\"head-line\">Bilderrahmen Steuerung</h2>");
-		GenerateNav(_client, __descriptor_list);
-		bool first = true;
-		for (uint8_t I = 0; I < __descriptor_list->count; I++) {
-			if (__descriptor_list->GetElemByIndex(I)->published) {
-				_client->print("<div id=\"tab" + String(__descriptor_list->GetElemByIndex(I)->name) + "\" class=\"tabcontent\"");
-				if (first) {
-					_client->print(" style=\"display:block\"");
-					first = false;
-				}
-				_client->println(">");
-				GenerateTab(_client, __descriptor_list->GetElemByIndex(I));
-				_client->println("</div>");
-				yield();
-			}
-		}
-		_client->println("</div>");
-	}
-	_client->println("</body>");
-	_client->println("</html>");
-	_client->stop();
-}
-
 void WebSocket_Wifi_Device_Driver::GenerateNav(WiFiClient *client, Descriptor_List *_descriptor_list) {
 	client->println("		<div class=\"tab\">");
 	bool first = true;
@@ -267,7 +236,7 @@ void WebSocket_Wifi_Device_Driver::GenerateTab(WiFiClient *client, Descriptor *_
 	client->print(String(_descriptor->descr) + "");
 	client->print("</strong>");
 	client->println("		</p>");
-	client->println("		<div class=\"head-line small\">Features</div>");
+	client->println(F("		<div class=\"head-line small\">Features</div>"));
 	client->println("		<p>");
 	client->println("			<ul>");
 	for (uint8_t J = 0; J < _descriptor->ctrl_count; J++)
@@ -275,7 +244,7 @@ void WebSocket_Wifi_Device_Driver::GenerateTab(WiFiClient *client, Descriptor *_
 	client->println("			</ul>");
 	client->println("		</p>");
 	client->println("	</div>");
-	client->println("	<div class=\"head-line small\">Steuerung</div>");
+	client->println(F("	<div class=\"head-line small\">Steuerung</div>"));
 	client->println("	<br>");
 	for (uint8_t I = 0; I < _descriptor->ctrl_count; I++) {
 		GenerateForm(client, _descriptor->id, _descriptor->GetCtrlElemByIndex(I));
@@ -316,9 +285,9 @@ void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceI
 		GenerateSetButton(client, _deviceId, _ctrl_elem->id);
 		break;
 	}
-	case button:
+	case button_group:
 	{
-		GenerateButton(client, _deviceId, _ctrl_elem);
+		GenerateButtonGroup(client, _deviceId, _ctrl_elem);
 		break;
 	}
 	case value:
@@ -365,9 +334,8 @@ void WebSocket_Wifi_Device_Driver::GenerateDecending(WiFiClient *client, Ctrl_El
 		client->print("				Pick a ");
 		break;
 	}
-	case button:
+	case button_group:
 	{
-		client->print("				" + String(_ctrl_elem->descr));
 		break;
 	}
 	}
@@ -429,19 +397,18 @@ void WebSocket_Wifi_Device_Driver::GenerateInput(WiFiClient *client, int _device
 	}
 }
 
-void WebSocket_Wifi_Device_Driver::GenerateButton(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {
-
-	client->print("				<button class=\"button small\" id=\"");
-	client->print(String(_deviceId) + "_" + String(_ctrl_elem->id));
-	client->print("\" ");
-	client->print("value=\"0\" ");
-	client->print("onclick=\"SendMessage(");
-	client->print(String(_deviceId));
-	client->print(", ");
-	client->print(String(_ctrl_elem->id));
-	client->print(");\">");
-	client->print(_ctrl_elem->name);
-	client->println("</button>");
+void WebSocket_Wifi_Device_Driver::GenerateButtonGroup(WiFiClient *client, int _deviceId, Ctrl_Elem* _ctrl_elem) {
+	for (uint8_t I = 0; I < _ctrl_elem->atomic_count; I++) {
+		client->print("				<button class=\"button small\" ");
+		client->print("onclick=\"SendMessage(");
+		client->print(String(_deviceId));
+		client->print(", ");
+		client->print(String(_ctrl_elem->id));
+		client->print(", ");
+		client->print(String(((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->id) + "); \">");
+		client->print(((Atomic<String>*)_ctrl_elem->GetAtomicByIndex(I))->ValueToString());
+		client->println("</button>");
+	}
 }
 
 void WebSocket_Wifi_Device_Driver::GenerateSetButton(WiFiClient *client, int _deviceId, int _cmdId) {

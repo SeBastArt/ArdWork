@@ -9,16 +9,16 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 };
 
 void Led_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "LED";
-	__descriptor->descr = "a simple LED";
+	__descriptor->name = F("LED");
+	__descriptor->descr = F("a simple LED");
 	__descriptor->published = false;
 
-	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_MODE, "LED-Mode", select, "Select the Mode of the LED");
+	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_MODE, F("LED-Mode"), select, F("Select the Mode of the LED"));
 
-	Atomic<String> *atomic_mode_on = new Atomic<String>(0, "On", "");
-	Atomic<String> *atomic_mode_off = new Atomic<String>(1, "OFF", "");
-	Atomic<String> *atomic_mode_blink = new Atomic<String>(2, "Blink", "");
-	Atomic<String> *atomic_mode_pulse = new Atomic<String>(3, "Pulse", "");
+	Atomic<String> *atomic_mode_on = new Atomic<String>(0, F("On"), "");
+	Atomic<String> *atomic_mode_off = new Atomic<String>(1, F("OFF"), "");
+	Atomic<String> *atomic_mode_blink = new Atomic<String>(2, F("Blink"), "");
+	Atomic<String> *atomic_mode_pulse = new Atomic<String>(3, F("Pulse"), "");
 
 	ctrl_elem_mode->AddAtomic(atomic_mode_on);
 	ctrl_elem_mode->AddAtomic(atomic_mode_off);
@@ -26,13 +26,13 @@ void Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_mode->AddAtomic(atomic_mode_pulse);
 	ctrl_elem_mode->published = true;
 
-	Ctrl_Elem *ctrl_elem_delay = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_DELAY, "Delay", text, "Blink Delay is the delay between status change On/Off");
-	Atomic<String> *atomic_delay = new Atomic<String>(0, "Delay");
+	Ctrl_Elem *ctrl_elem_delay = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_DELAY, F("Delay"), text, F("Blink Delay is the delay between status change On/Off"));
+	Atomic<String> *atomic_delay = new Atomic<String>(0, F("Delay"));
 	ctrl_elem_delay->AddAtomic(atomic_delay);
 	ctrl_elem_delay->published = true;
 
-	Ctrl_Elem *ctrl_elem_pulse_count = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT, "Pulse count", text, "change the count how often die led is blinking during pulse");
-	Atomic<String> *atomic_pulse_count = new Atomic<String>(0, "Pulse Count");
+	Ctrl_Elem *ctrl_elem_pulse_count = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT, F("Pulse count"), text, F("change the count how often die led is blinking during pulse"));
+	Atomic<String> *atomic_pulse_count = new Atomic<String>(0, F("Pulse Count"));
 	ctrl_elem_pulse_count->AddAtomic(atomic_pulse_count);
 	ctrl_elem_pulse_count->published = true;
 
@@ -61,7 +61,7 @@ void Led_Device_Driver::DoAfterInit()
 	__pulse_counter = 0;
 	__pulse_count = 5;
 
-	Serial.println("Led-Driver initialized!");
+	Serial.println(F("Led-Driver initialized!"));
 }
 
 void Led_Device_Driver::DoBeforeShutdown()

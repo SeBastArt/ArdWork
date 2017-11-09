@@ -52,17 +52,18 @@ protected:
 	void DoInit();
 	void DoShutdown();
 	void DoSuspend();
+	void Build_Descriptor();
 	Descriptor_List * GetDescriptrorList();
 	bool PopMessage(ThreadMessage** message);
 
-	void Set_Debug_On();
-	void Set_Debug_Off();
+	void Set_Debug_Mode(bool _state);
  protected:
 	 virtual void DoBeforeSuspend() = 0;
 	 virtual void DoBeforeShutdown() = 0;
 	 virtual void DoAfterInit() = 0;
 	 virtual void DoModuleMessage(Int_Thread_Msg message) = 0;
 	 virtual void DoThreadMessage(ThreadMessage *message) = 0;
+	 virtual void Build_Module_Discriptor() = 0;
 public:
 	Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
 	~Module_Driver();
@@ -71,8 +72,7 @@ public:
 
 
 
-	void Exec_Set_Debug_On();
-	void Exec_Set_Debug_Off();
+	void Exec_Set_Debug_Mode(bool _state);
 };
 
 #endif

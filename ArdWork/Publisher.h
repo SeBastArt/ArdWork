@@ -16,7 +16,7 @@ enum func_type
 	value,
 	edtvalue,
 	select,
-	button
+	button_group
 };
 
 class Atomic_Base
@@ -95,6 +95,7 @@ public:
 		__atomic_count(0)
 	{
 		__vec_atomic = new Vector<Atomic_Base*>;
+		__published = false;
 	}
 
 	virtual ~Ctrl_Elem() {

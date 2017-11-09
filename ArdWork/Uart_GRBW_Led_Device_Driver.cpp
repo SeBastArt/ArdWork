@@ -21,7 +21,6 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	__DriverType = UART_GRBW_LED_DEVICE_TYPE;
 	pixelCount = _pixelcount;
 	__brightness = 50;
-	__auto_brightness = true;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
 	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelcount);
 	animations = new NeoPixelAnimator(_pixelcount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
@@ -34,16 +33,16 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 };
 
 void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "GRBW-Stripe";
-	__descriptor->descr = "GRBW-Stripe stellt die Steuerung der GRBW-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben";
+	__descriptor->name = F("GRBW-Stripe");
+	__descriptor->descr = F("GRBW-Stripe stellt die Steuerung der GRBW-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben");
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_GRBW_LED_SET_PATTERN_EXTERN, "Pattern", select, "Choose a pattern for the ambient light");
-	Atomic<String> *atomic_pattern_cyclon = new Atomic<String>(GRBW_ANIMATION_CYLON, "Cyclon");
-	Atomic<String> *atomic_pattern_random = new Atomic<String>(GRBW_ANIMATION_RANDOM, "Random");
-	Atomic<String> *atomic_pattern_fire = new Atomic<String>(GRBW_ANIMATION_FIRE, "Fire");
-	Atomic<String> *atomic_pattern_shine = new Atomic<String>(GRBW_ANIMATION_SHINE, "Shine");
-	Atomic<String> *atomic_pattern_off = new Atomic<String>(GRBW_ANIMATION_OFF, "Off");
+	Ctrl_Elem *ctrl_elem_pattern = new Ctrl_Elem(UART_GRBW_LED_SET_PATTERN_EXTERN, F("Pattern"), select, F("Choose a pattern for the stripe"));
+	Atomic<String> *atomic_pattern_cyclon = new Atomic<String>(GRBW_ANIMATION_CYLON, F("Cyclon"));
+	Atomic<String> *atomic_pattern_random = new Atomic<String>(GRBW_ANIMATION_RANDOM, F("Random"));
+	Atomic<String> *atomic_pattern_fire = new Atomic<String>(GRBW_ANIMATION_FIRE, F("Fire"));
+	Atomic<String> *atomic_pattern_shine = new Atomic<String>(GRBW_ANIMATION_SHINE, F("Shine"));
+	Atomic<String> *atomic_pattern_off = new Atomic<String>(GRBW_ANIMATION_OFF, F("Off"));
 
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_cyclon);
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_random);
@@ -52,31 +51,23 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	ctrl_elem_pattern->AddAtomic(atomic_pattern_off);
 	ctrl_elem_pattern->published = true;
 
-	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_GRBW_LED_SET_COLOR_EXTERN, "Color", color, "The main color for the ambient light pattern");
-	Atomic<uint8_t> *atomic_color_r = new Atomic<uint8_t>(0, 220, "Dec");
-	Atomic<uint8_t> *atomic_color_g = new Atomic<uint8_t>(1, 123, "Dec");
-	Atomic<uint8_t> *atomic_color_b = new Atomic<uint8_t>(2, 234, "Dec");
+	Ctrl_Elem *ctrl_elem_color = new Ctrl_Elem(UART_GRBW_LED_SET_COLOR_EXTERN, F("Color"), color, F("The main color for the stripe pattern"));
+	Atomic<uint8_t> *atomic_color_r = new Atomic<uint8_t>(0, 220, F("Dec"));
+	Atomic<uint8_t> *atomic_color_g = new Atomic<uint8_t>(1, 123, F("Dec"));
+	Atomic<uint8_t> *atomic_color_b = new Atomic<uint8_t>(2, 234, F("Dec"));
 
 	ctrl_elem_color->AddAtomic(atomic_color_r);
 	ctrl_elem_color->AddAtomic(atomic_color_g);
 	ctrl_elem_color->AddAtomic(atomic_color_b);
 	ctrl_elem_color->published = true;
 
-	Ctrl_Elem *ctrl_elem_auto_brightess = new Ctrl_Elem(UART_GRBW_LED_SET_AUTO_BRIGHTNESS_EXTERN, "auto brightness mode", select, "choose if the brithness should be estimate automatically");
-	Atomic<String> *atomic_auto_brightess_on = new Atomic<String>(1, "On", "");
-	Atomic<String> *atomic_auto_brightess_off = new Atomic<String>(0, "Off", "");
-	ctrl_elem_auto_brightess->AddAtomic(atomic_auto_brightess_on);
-	ctrl_elem_auto_brightess->AddAtomic(atomic_auto_brightess_off);
-	ctrl_elem_auto_brightess->published = true;
-
-	Ctrl_Elem *ctrl_elem_brightess = new Ctrl_Elem(UART_GRBW_LED_SET_BRIGHTNESS_EXTERN, "brightness", edtvalue, "the brightness for the ambient light pattern");
-	Atomic<uint8_t> *atomic_brightess = new Atomic<uint8_t>(0, &__brightness, "%");
+	Ctrl_Elem *ctrl_elem_brightess = new Ctrl_Elem(UART_GRBW_LED_SET_BRIGHTNESS_EXTERN, F("brightness"), edtvalue, F("the brightness for the ambient light pattern"));
+	Atomic<uint8_t> *atomic_brightess = new Atomic<uint8_t>(0, &__brightness, F("%"));
 	ctrl_elem_brightess->AddAtomic(atomic_brightess);
 	ctrl_elem_brightess->published = true;
 
 	__descriptor->Add_Descriptor_Element(ctrl_elem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_color);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_auto_brightess);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_brightess);
 }
 
@@ -87,7 +78,7 @@ void Uart_GRBW_Led_Device_Driver::DoAfterInit()
 	actAnimation = GRBW_ANIMATION_SHINE;
 	Animation_Off();
 	Animation_Shine();
-	Serial.println("Uart_GRBW_Led-Driver initialized!");
+	Serial.println(F("Uart_GRBW_Led-Driver initialized!"));
 }
 
 void Uart_GRBW_Led_Device_Driver::DoBeforeShutdown()
@@ -142,18 +133,22 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	break;
 	case UART_GRBW_LED_DEVICE_COLOR:
 	{
-		uint8_t R = message.GetUint8ParamByIndex(1);
-		uint8_t G = message.GetUint8ParamByIndex(2);
-		uint8_t B = message.GetUint8ParamByIndex(3);
+		int R = message.GetIntParamByIndex(1);
+		int G = message.GetIntParamByIndex(2);
+		int B = message.GetIntParamByIndex(3);
 		Animation_Color(R, G, B);
 	}
 	break;
 	case UART_GRBW_LED_DEVICE_BRIGHTNESS:
 	{
-		if (__auto_brightness) {
-			uint8_t brightness = message.GetUint8ParamByIndex(1);
-			SetBrightness(brightness);
-		}
+		uint8_t brightness = message.GetIntParamByIndex(1);
+		SetBrightness(brightness);
+	}
+	break;
+	case UART_GRBW_LED_SET_BRIGHTNESS_EXTERN:
+	{
+		uint8_t brightness = message.GetIntParamByIndex(1);
+		SetBrightness(brightness);
 	}
 	break;
 	case UART_GRBW_LED_SET_PATTERN_EXTERN:
@@ -165,27 +160,13 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	case UART_GRBW_LED_SET_COLOR_EXTERN:
 	{
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(1).c_str(), NULL, 16);
-		Serial.print("R: ");
+		/*Serial.print("R: ");
 		Serial.print(((rgb >> 16) & 0xFF));
 		Serial.print(", G: ");
 		Serial.print(((rgb >> 8) & 0xFF));
 		Serial.print(", B: ");
-		Serial.println(((rgb >> 0) & 0xFF));
+		Serial.println(((rgb >> 0) & 0xFF));*/
 		Animation_Color((uint8_t)(rgb >> 16), (uint8_t)(rgb >> 8), (uint8_t)(rgb >> 0));
-	}
-	break;
-	case UART_GRBW_LED_SET_AUTO_BRIGHTNESS_EXTERN:
-	{
-		bool auto_brightness = message.GetIntParamByIndex(1);
-		__auto_brightness = auto_brightness;
-	}
-	break;
-	case UART_GRBW_LED_SET_BRIGHTNESS_EXTERN:
-	{
-		if (__auto_brightness) {
-			uint8_t brightness = message.GetIntParamByIndex(1);
-			SetBrightness(brightness);
-		}
 	}
 	break;
 	}
@@ -467,7 +448,8 @@ void Uart_GRBW_Led_Device_Driver::Exec_Animation_Prev() {
 	PostMessage(&message);
 }
 
-void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(uint8_t R, uint8_t G, uint8_t B)
+
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(int R, int G, int B)
 {
 	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_COLOR);
 	message->AddParam(R);
@@ -476,7 +458,7 @@ void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(uint8_t R, uint8_t G, uin
 	PostMessage(&message);
 }
 
-void Uart_GRBW_Led_Device_Driver::Exec_Set_Brightness(uint8_t _brightness)
+void Uart_GRBW_Led_Device_Driver::Exec_Set_Brightness(int _brightness)
 {
 	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_BRIGHTNESS);
 	message->AddParam(_brightness);

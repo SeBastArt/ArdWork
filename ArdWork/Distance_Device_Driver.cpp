@@ -21,26 +21,26 @@ Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pi
 
 
 void Distance_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Ultrasonic Distance";
-	__descriptor->descr = "estimate the distance to a target";
+	__descriptor->name = F("Ultrasonic Distance");
+	__descriptor->descr = F("estimate the distance to a target");
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_dist = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE, "Distance", value, "measure the distance to a target via ultrasonic");
+	Ctrl_Elem *ctrl_elem_dist = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE, F("Distance"), value, F("measure the distance to a target via ultrasonic"));
 	ctrl_elem_dist->published = true;
 	Atomic<float> *atomic_distance = new Atomic<float>(0, &__distance, CM_STRING);
 	ctrl_elem_dist->AddAtomic(atomic_distance);
 
 
-	Ctrl_Elem *ctrl_elem_unit = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_SET_UNIT, "Unit", select, "select the unit for distance");
+	Ctrl_Elem *ctrl_elem_unit = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_SET_UNIT, F("Unit"), select, F("select the unit for distance"));
 	ctrl_elem_unit->published = true;
 	Atomic<String> *atomic_cm = new Atomic<String>(dist_unit::cm, CM_STRING);
 	Atomic<String> *atomic_inch = new Atomic<String>(dist_unit::inch, INCH_STRING);
 	ctrl_elem_unit->AddAtomic(atomic_cm);
 	ctrl_elem_unit->AddAtomic(atomic_inch);
 
-	Ctrl_Elem *ctrl_elem_timeout = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_SET_TIMEOUT, "Timeout", edtvalue, "timeout for define max distance and max integrationtime");
+	Ctrl_Elem *ctrl_elem_timeout = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_SET_TIMEOUT, F("Timeout"), edtvalue, F("timeout for define max distance and max integrationtime"));
 	ctrl_elem_timeout->published = true;
-	Atomic<unsigned long> *atomic_timeout = new Atomic<unsigned long>(0, &__timeout, "ms");
+	Atomic<unsigned long> *atomic_timeout = new Atomic<unsigned long>(0, &__timeout, F("ms"));
 	ctrl_elem_timeout->AddAtomic(atomic_timeout);
 
 	__descriptor->Add_Descriptor_Element(ctrl_elem_unit);
@@ -50,7 +50,7 @@ void Distance_Device_Driver::Build_Descriptor() {
 
 
 void Distance_Device_Driver::DoAfterInit() {
-	Serial.println("Distance-Driver initialized!");
+	Serial.println(F("Distance-Driver initialized!"));
 }
 
 void Distance_Device_Driver::DoBeforeShutdown() {
@@ -94,7 +94,7 @@ void Distance_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		FloatMessage* message = new FloatMessage(DriverId, __distance);
 		if (!parentModule->SendAsyncThreadMessage(message))
 		{
-			Serial.println(">> message buffer overflow <<");
+			Serial.println(F(">> message buffer overflow <<"));
 		}
 	}
 }

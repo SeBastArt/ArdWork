@@ -12,6 +12,7 @@ Driver::Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) :
 {
 	driver_count++;
 	__descriptor = new Descriptor(driver_count);
+	__descriptor->published = true;
 	__DriverId = driver_count;
 	__DriverType = -1;
 }
@@ -71,7 +72,7 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 	Serial.print(this->driver_name);
 	Serial.print(" took ");
 	Serial.print(end - start);
-	Serial.println("ms");*/
+	Serial.println(F("ms");*/
 }
 
 

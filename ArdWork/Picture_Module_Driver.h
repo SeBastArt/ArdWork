@@ -17,16 +17,24 @@ public:
 	Picture_Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
 
 private:
+	bool __autoBrightness;
+	uint8_t __brightness;
 	void Pattern_Next();
 	void Pattern_Prev();
 	void Pattern_Off();
+	void SwitchPattern(uint8_t _brightness);
+	void SetBrightness(uint8_t _brightness);
+	void Set_Auto_Brightness(bool _state);
+	void Set_Pattern_Color(int _r, int _g, int _b);
+
 protected:
 	void DoBeforeSuspend();
 	void DoBeforeShutdown();
 	void DoAfterInit();
 	void DoModuleMessage(Int_Thread_Msg message);
+
 	void DoThreadMessage(ThreadMessage *message);
-	void Build_Descriptor();
+	void Build_Module_Discriptor();
 public:
 	void Exec_Pattern_Next();
 	void Exec_Pattern_Prev();

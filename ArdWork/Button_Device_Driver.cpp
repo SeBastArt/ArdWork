@@ -9,14 +9,16 @@ Button_Device_Driver::Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, 
 }
 
 void Button_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Button";
-	__descriptor->descr = "a simple button";
+	__descriptor->name = F("Button");
+	__descriptor->descr = F("a simple button");
 	__descriptor->published = false;
 
-	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, "Press Me", button, "Press the button");
-	ctrl_elem->published = true;
+	Ctrl_Elem *ctrl_elem_button = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, F("virtual Button"), button_group, F("You can press it, if you want"));
+	Atomic<String> *atomic_press = new Atomic<String>(0, F("Press"));
+	ctrl_elem_button->AddAtomic(atomic_press);
+	ctrl_elem_button->published = true;
 
-	__descriptor->Add_Descriptor_Element(ctrl_elem);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_button);
 }
 
 void Button_Device_Driver::DoAfterInit()
@@ -26,7 +28,7 @@ void Button_Device_Driver::DoAfterInit()
 	__sys_state = buttonstate_released;
 	__last_state = buttonstate_released;
 	__lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
-	Serial.println("Button-Driver initialized!");
+	Serial.println(F("Button-Driver initialized!"));
 }
 
 void Button_Device_Driver::DoBeforeShutdown()
@@ -84,7 +86,7 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 				ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_RELEASED);
 				if (!parentModule->SendAsyncThreadMessage(message))
 				{
-					Serial.println(">> message buffer overflow <<");
+					Serial.println(F(">> message buffer overflow <<"));
 				}
 				__lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
 			}
@@ -104,7 +106,7 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 					ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_PRESSED);
 					if (!parentModule->SendAsyncThreadMessage(message))
 					{
-						Serial.println(">> message buffer overflow <<");
+						Serial.println(F(">> message buffer overflow <<"));
 					}
 					__lastMessage = THREAD_MSG_BUTTONSTATE_PRESSED;
 				}
@@ -126,7 +128,7 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 					ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_AUTOREPEAT);
 					if (!parentModule->SendAsyncThreadMessage(message))
 					{
-						Serial.println(">> message buffer overflow <<");
+						Serial.println(F(">> message buffer overflow <<"));
 					}
 					__lastMessage = THREAD_MSG_BUTTONSTATE_AUTOREPEAT;
 				}
@@ -149,7 +151,7 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 						ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_AUTOREPEAT);
 						if (!parentModule->SendAsyncThreadMessage(message))
 						{
-							Serial.println(">> message buffer overflow <<");
+							Serial.println(F(">> message buffer overflow <<"));
 						}
 						__lastMessage = THREAD_MSG_BUTTONSTATE_AUTOREPEAT;
 					}
@@ -160,7 +162,7 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 						ButtonMessage* message = new ButtonMessage(__pin->GetID(), THREAD_MSG_BUTTONSTATE_RELEASED);
 						if (!parentModule->SendAsyncThreadMessage(message))
 						{
-							Serial.println(">> message buffer overflow <<");
+							Serial.println(F(">> message buffer overflow <<"));
 						}
 						__lastMessage = THREAD_MSG_BUTTONSTATE_RELEASED;
 					}

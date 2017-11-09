@@ -218,63 +218,63 @@ void setup() {
 	picture_module->AddDevice(webSocket_server_wifi);
 #endif
 
-	Serial.println("Try to start resident driver...");
+	Serial.println(F("Try to start resident driver..."));
 
 #ifdef DASH_ESP01
-	Serial.println("Start esp8266_01_controller");
+	Serial.println(F("Start esp8266_01_controller");
 	threadManager.StartThread(esp8266_01_controller);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10)
-	Serial.println("Start ESP8266-NodeMCU-Controller");
+	Serial.println(F("Start ESP8266-NodeMCU-Controller");
 	threadManager.StartThread(esp8266_NodeMCU_controller);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01)
-	Serial.println("Start Dash_Mqqt_Wifi_Module_Driver");
+	Serial.println(F("Start Dash_Mqqt_Wifi_Module_Driver");
 	threadManager.StartThread(dash_mqqt_wifi_module);
 #endif
 
 
 #if defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	Serial.println("Start ESP8266-NodeMCU-Controller");
+	Serial.println(F("Start ESP8266-NodeMCU-Controller"));
 	threadManager.StartThread(esp8266_NodeMCU_controller);
 
-	/*Serial.println("Start Uart_RGB_Led_DevDrv");
+	/*Serial.println(F("Start Uart_RGB_Led_DevDrv");
 	threadManager.StartThread(rgb_mqqt_wifi_module);*/
 
-	Serial.println("Start Picture_Module_Driver");
+	Serial.println(F("Start Picture_Module_Driver"));
 	threadManager.StartThread(picture_module);
 
-	Serial.println("Start UART_Rgb_Led-Driver");
+	Serial.println(F("Start UART_Rgb_Led-Driver"));
 	threadManager.StartThread(strip);
 
-	Serial.println("Start Luxmeter-Driver");
+	Serial.println(F("Start Luxmeter-Driver"));
 	threadManager.StartThread(luxmeter);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) || defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	//Serial.println("Start Wifi-Status LED-Driver");
+	//Serial.println(F("Start Wifi-Status LED-Driver");
 	//threadManager.StartThread(wifi_status_led);
 
-	//Serial.println("Start LED-Driver");
+	//Serial.println(F("Start LED-Driver");
 	//threadManager.StartThread(led);
 
-	//Serial.println("Start Button-Driver");
+	//Serial.println(F("Start Button-Driver");
 	//threadManager.StartThread(button);
 
-	//Serial.println("Start MQQT_Wifi-Driver");
+	//Serial.println(F("Start MQQT_Wifi-Driver");
 	//threadManager.StartThread(mqqt_wifi);
 
-	//Serial.println("Start WebServer_Wifi-Driver");
+	//Serial.println(F("Start WebServer_Wifi-Driver");
 	//threadManager.StartThread(server_wifi);
 
-	Serial.println("Start WebSocket_Wifi-Driver");
+	Serial.println(F("Start WebSocket_Wifi-Driver"));
 	threadManager.StartThread(webSocket_server_wifi);
 #endif
 
 	Serial.flush();
-	Serial.println("Initialize...");
+	Serial.println(F("Initialize..."));
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01)
 	dash_mqqt_wifi_module->ExecInit();
@@ -292,7 +292,7 @@ void loop() {
 	if ((millis() - start) > 30 * 1000) {
 		digitalWrite(2, LOW);
 		delay(100);
-		Serial.println("EnterDeepSleep...");
+		Serial.println(F("EnterDeepSleep...");
 		WiFi.forceSleepBegin(); // Wlan aus
 		ESP.deepSleep(0, WAKE_RFCAL); //gehe schlafen
 	}

@@ -13,57 +13,57 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 
 
 void Luxmeter_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Luxmeter";
-	__descriptor->descr = "Luxmeter stellt die Steuerung des Lichtsensors bereit es erlaubt die Kontrolle &uuml;ber die Ausleseparameter und stellt Live - Werte sowie Diagramme bereit";
+	__descriptor->name = F("Luxmeter");
+	__descriptor->descr = F("Luxmeter stellt die Steuerung des Lichtsensors bereit es erlaubt die Kontrolle &uuml;ber die Ausleseparameter und stellt Live - Werte sowie Diagramme bereit");
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY, "update rate", select, "select rate you want the value be updated");
+	Ctrl_Elem *ctrl_elem_rate = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY, F("update rate"), select, F("select rate you want the value be updated"));
 	ctrl_elem_rate->published = true;
 
-	Atomic<int> *atomic_1000 = new Atomic<int>(0, 1000, "ms");
-	Atomic<int> *atomic_2000 = new Atomic<int>(1, 2000, "ms");
-	Atomic<int> *atomic_5000 = new Atomic<int>(2, 5000, "ms");
-	Atomic<int> *atomic_10000 = new Atomic<int>(3, 10000, "ms");
+	Atomic<int> *atomic_1000 = new Atomic<int>(0, 1000, F("ms"));
+	Atomic<int> *atomic_2000 = new Atomic<int>(1, 2000, F("ms"));
+	Atomic<int> *atomic_5000 = new Atomic<int>(2, 5000, F("ms"));
+	Atomic<int> *atomic_10000 = new Atomic<int>(3, 10000, F("ms"));
 
 	ctrl_elem_rate->AddAtomic(atomic_1000);
 	ctrl_elem_rate->AddAtomic(atomic_2000);
 	ctrl_elem_rate->AddAtomic(atomic_5000);
 	ctrl_elem_rate->AddAtomic(atomic_10000);
 
-	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, "Integrationtime", select, "set the time the sensor collect light");
+	Ctrl_Elem *ctrl_elem_integr = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, F("Integrationtime"), select, F("set the time the sensor collect light"));
 	ctrl_elem_integr->published = false;
 
-	Atomic<String> *atomic_13ms = new Atomic<String>(0, "13", "ms");
-	Atomic<String> *atomic_101ms = new Atomic<String>(1, "101", "ms");
-	Atomic<String> *atomic_402ms = new Atomic<String>(2, "402", "ms");
+	Atomic<String> *atomic_13ms = new Atomic<String>(0, F("13"), F("ms"));
+	Atomic<String> *atomic_101ms = new Atomic<String>(1, F("101"), F("ms"));
+	Atomic<String> *atomic_402ms = new Atomic<String>(2, F("402"), F("ms"));
 
 	ctrl_elem_integr->AddAtomic(atomic_13ms);
 	ctrl_elem_integr->AddAtomic(atomic_101ms);
 	ctrl_elem_integr->AddAtomic(atomic_402ms);
 
-	Ctrl_Elem *ctrl_elem_gain = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_GAIN, "Gain", select, "select the Gain for make values better fit");
+	Ctrl_Elem *ctrl_elem_gain = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_SET_GAIN, F("Gain"), select, F("select the Gain for make values better fit"));
 	ctrl_elem_gain->published = true;
 
-	Atomic<String> *atomic_auto = new Atomic<String>(0, "Auto");
-	Atomic<String> *atomic_1x = new Atomic<String>(1, "1X");
-	Atomic<String> *atomic_16x = new Atomic<String>(2, "16X");
+	Atomic<String> *atomic_auto = new Atomic<String>(0, F("Auto"));
+	Atomic<String> *atomic_1x = new Atomic<String>(1, F("1X"));
+	Atomic<String> *atomic_16x = new Atomic<String>(2, F("16X"));
 
 	ctrl_elem_gain->AddAtomic(atomic_auto);
 	ctrl_elem_gain->AddAtomic(atomic_1x);
 	ctrl_elem_gain->AddAtomic(atomic_16x);
 
-	Ctrl_Elem *ctrl_elem_autorange = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE, "Auto Range", select, "Autorange on or Off");
+	Ctrl_Elem *ctrl_elem_autorange = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE, F("Auto Range"), select, F("Autorange on or Off"));
 	ctrl_elem_autorange->published = true;
 
-	Atomic<String> *atomic_autorange_off = new Atomic<String>(0, "Off");
-	Atomic<String> *atomic_autorange_on = new Atomic<String>(1, "On");
+	Atomic<String> *atomic_autorange_off = new Atomic<String>(0, F("Off"));
+	Atomic<String> *atomic_autorange_on = new Atomic<String>(1, F("On"));
 	ctrl_elem_autorange->AddAtomic(atomic_autorange_on);
 	ctrl_elem_autorange->AddAtomic(atomic_autorange_off);
 
-	Ctrl_Elem *ctrl_elem_lux = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_EXTERN_LUX_VALUE, "Meassured Lux-Value", value, "the value of the ambient light");
+	Ctrl_Elem *ctrl_elem_lux = new Ctrl_Elem(LUXMETER_DEVICE_DRIVER_EXTERN_LUX_VALUE, F("Meassured Lux-Value"), value, F("the value of the ambient light"));
 	ctrl_elem_lux->published = true;
 
-	Atomic<float> *atomic_lux = new Atomic<float>(0, &lastLux, "Lux");
+	Atomic<float> *atomic_lux = new Atomic<float>(0, &lastLux, F("Lux"));
 	ctrl_elem_lux->AddAtomic(atomic_lux);
 
 	__descriptor->Add_Descriptor_Element(ctrl_elem_rate);
@@ -75,16 +75,15 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 
 void Luxmeter_Device_Driver::DoAfterInit()
 {
-	Serial.println("Luxmeter_Device_Driver::DoAfterInit()");
 	if (!tsl->begin()) {
-		Serial.println("------------------------------------");
-		Serial.println("Luxsensor not initialised");
-		Serial.println("maybe wrong adress of i2c");
-		Serial.println("");
+		Serial.println(F("------------------------------------"));
+		Serial.println(F("Luxsensor not initialised"));
+		Serial.println(F("maybe wrong adress of i2c"));
+		Serial.println(F(""));
 	}
 	else {
 		DisplaySensorDetails();
-		Serial.println("Luxmeter-Driver initialized!");
+		Serial.println(F("Luxmeter-Driver initialized!"));
 		/* You can also manually set the gain or enable auto-gain support */
 		// tsl.setGain(TSL2561_GAIN_1X);      /* No gain ... use in bright light to avoid sensor saturation */
 		// tsl.setGain(TSL2561_GAIN_16X);     /* 16x gain ... use in low light to boost sensitivity */
@@ -92,11 +91,11 @@ void Luxmeter_Device_Driver::DoAfterInit()
 
 		Set_Integration_Time(TSL2561_INTEGRATIONTIME_13MS);
 		/* Update these values depending on what you've set above! */
-		Serial.println("------------------------------------");
-		Serial.print("Gain:         "); Serial.println("Auto");
-		Serial.print("Timing:       "); Serial.println("402 ms");
-		Serial.println("------------------------------------");
-		Serial.println("");
+		Serial.println(F("------------------------------------"));
+		Serial.print(F("Gain:         ")); Serial.println(F("Auto"));
+		Serial.print(F("Timing:       ")); Serial.println(F("402 ms"));
+		Serial.println(F("------------------------------------"));
+		Serial.println(F(""));
 
 	}
 	accuracy_delay = 1000;
@@ -158,7 +157,7 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 				FloatMessage* message = new FloatMessage(DriverId, lastLux);
 				if (!parentModule->SendAsyncThreadMessage(message))
 				{
-					Serial.println(">> message buffer overflow <<");
+					Serial.println(F(">> message buffer overflow <<"));
 				}
 			}
 		}
@@ -166,7 +165,7 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		{
 			/* If event.light = 0 lux the sensor is probably saturated
 			and no reliable data could be generated! */
-			Serial.println("Sensor overload");
+			Serial.println(F("Sensor overload"));
 		}
 	}
 }
@@ -176,15 +175,15 @@ void Luxmeter_Device_Driver::DisplaySensorDetails(void)
 {
 	sensor_t sensor;
 	tsl->getSensor(&sensor);
-	Serial.println("------------------------------------");
-	Serial.print("Sensor:       "); Serial.println(sensor.name);
-	Serial.print("Driver Ver:   "); Serial.println(sensor.version);
-	Serial.print("Unique ID:    "); Serial.println(sensor.sensor_id);
-	Serial.print("Max Value:    "); Serial.print(sensor.max_value); Serial.println(" lux");
-	Serial.print("Min Value:    "); Serial.print(sensor.min_value); Serial.println(" lux");
-	Serial.print("Resolution:   "); Serial.print(sensor.resolution); Serial.println(" lux");
-	Serial.println("------------------------------------");
-	Serial.println("");
+	Serial.println(F("------------------------------------"));
+	Serial.print(F("Sensor:       ")); Serial.println(sensor.name);
+	Serial.print(F("Driver Ver:   ")); Serial.println(sensor.version);
+	Serial.print(F("Unique ID:    ")); Serial.println(sensor.sensor_id);
+	Serial.print(F("Max Value:    ")); Serial.print(sensor.max_value); Serial.println(F(" lux"));
+	Serial.print(F("Min Value:    ")); Serial.print(sensor.min_value); Serial.println(F(" lux"));
+	Serial.print(F("Resolution:   ")); Serial.print(sensor.resolution); Serial.println(F(" lux"));
+	Serial.println(F("------------------------------------"));
+	Serial.println(F(""));
 }
 
 

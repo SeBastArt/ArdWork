@@ -29,7 +29,6 @@ private:
 	unsigned int actAnimation;
 	static HslColor mainColor;
 	uint8_t __brightness;
-	bool __auto_brightness;
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
 	static NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>* strip;
@@ -76,8 +75,8 @@ public:
 	void Exec_Animation_Fire();
 	void Exec_Animation_Next();
 	void Exec_Animation_Prev();
-	void Exec_Animation_Color(uint8_t R, uint8_t G, uint8_t B);
-	void Exec_Set_Brightness(uint8_t _brightness);
+	void Exec_Animation_Color(int R, int G, int B);
+	void Exec_Set_Brightness(int _brightness);
 };
 
 #endif

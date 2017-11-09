@@ -15,37 +15,40 @@ Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, String _ssid, Stri
 	__isAP = false;
 	__ssid = "";
 	__password = "";
-	hostname = "ESP";
+	hostname = F("ESP");
 	conn_delta = 0;
 	conn_delay = 500;
 	__dnsServer = nullptr;
 }
 
 void Wifi_Device_Driver::Build_Descriptor() {
-	__descriptor->name = "Wifi";
-	__descriptor->descr = "Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit";
+	__descriptor->name = F("Wifi");
+	__descriptor->descr = F("Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit");
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(WIFI_DEVICE_DRIVER_SET_SSID, "SSID", text, "SSID aendern");
+	Ctrl_Elem *ctrl_elem_SSID = new Ctrl_Elem(WIFI_DEVICE_DRIVER_SET_SSID, F("SSID"), text, F("SSID aendern"));
 
-	Atomic<String> *atomic_SSID = new Atomic<String>(0, "SSID");
+	Atomic<String> *atomic_SSID = new Atomic<String>(0, F("SSID"));
 	ctrl_elem_SSID->AddAtomic(atomic_SSID);
 	ctrl_elem_SSID->published = true;
 
-	Ctrl_Elem *ctrl_elem_pass = new Ctrl_Elem(WIFI_DEVICE_DRIVER_SET_PASSWORD, "Passwort", pass, "Passwort aendern");
+	Ctrl_Elem *ctrl_elem_pass = new Ctrl_Elem(WIFI_DEVICE_DRIVER_SET_PASSWORD, F("Passwort"), pass, F("Passwort aendern"));
 
-	Atomic<String> *atomic_pass = new Atomic<String>(0, "Passwort");
+	Atomic<String> *atomic_pass = new Atomic<String>(0, F("Passwort"));
 	ctrl_elem_pass->AddAtomic(atomic_pass);
 	ctrl_elem_pass->published = true;
 
-	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(WIFI_DEVICE_DRIVER_SET_MODE, "Wifi Mode", select, "Aendern des Wifi-Modes zwischen AccessPoint und client");
-	Atomic<String> *atomic_ap = new Atomic<String>(0, "STA");
-	Atomic<String> *atomic_sta = new Atomic<String>(1, "AP");
+	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(WIFI_DEVICE_DRIVER_SET_MODE, F("Wifi Mode"), select, F("Aendern des Wifi-Modes zwischen AccessPoint und client"));
+	Atomic<String> *atomic_ap = new Atomic<String>(0, F("STA"));
+	Atomic<String> *atomic_sta = new Atomic<String>(1, F("AP"));
 	ctrl_elem_mode->AddAtomic(atomic_ap);
 	ctrl_elem_mode->AddAtomic(atomic_sta);
 	ctrl_elem_mode->published = true;
 
-	Ctrl_Elem *ctrl_elem_reconnect = new Ctrl_Elem(WIFI_DEVICE_DRIVER_RECONNECT, "Reconnect", button, "Reconnect to Wifi");
+	Ctrl_Elem *ctrl_elem_reconnect = new Ctrl_Elem(WIFI_DEVICE_DRIVER_RECONNECT, F("Reconnect"), button_group, F("here you can reestablish the wifi connection as AP or STA"));
+	Atomic<String> *atomic_reconnect = new Atomic<String>(2, F("Reconnect"));
+	ctrl_elem_reconnect->AddAtomic(atomic_reconnect);
+	
 	ctrl_elem_reconnect->published = true;
 
 	__descriptor->Add_Descriptor_Element(ctrl_elem_SSID);
@@ -57,7 +60,7 @@ void Wifi_Device_Driver::Build_Descriptor() {
 
 void Wifi_Device_Driver::DoAfterInit()
 {
-	Serial.println("WiFi_Module_Driver initialized!");
+	Serial.println(F("WiFi_Module_Driver initialized!"));
 	__connection_try = 0;
 
 	__isAP = false;
@@ -65,15 +68,16 @@ void Wifi_Device_Driver::DoAfterInit()
 	__connection_try = 0;
 	__fallbackAP = false;
 
-	_filesystem.OpenFile("/config.json");
-	__ssid = _filesystem.Json_GetvalueFromKey("WifiSsid");
-	__password = _filesystem.Json_GetvalueFromKey("password");
-	__isAP = _filesystem.Json_GetvalueFromKey("isAP").equals("1");
+	_filesystem.OpenFile(F("/config.json"));
+	__ssid = _filesystem.Json_GetvalueFromKey(F("WifiSsid"));
+	__password = _filesystem.Json_GetvalueFromKey(F("password"));
+	__isAP = _filesystem.Json_GetvalueFromKey(F("isAP")).equals(F("1"));
 	_filesystem.CloseFile();
 
 	// Add service to MDNS
-	MDNS.addService("http", "tcp", 80);
-	MDNS.addService("ws", "tcp", 81);
+	MDNS.begin(String(parentModule->GetDescriptor()->name).c_str());
+	MDNS.addService(F("http"), F("tcp"), 80);
+	MDNS.addService(F("ws"), F("tcp"), 81);
 
 	if (__isAP) {
 		ProvideAP();
@@ -253,7 +257,6 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
 void Wifi_Device_Driver::Exec_Set_SSID(String _ssid) {
 	Int_Thread_Msg *message = new Int_Thread_Msg(WIFI_DEVICE_DRIVER_SET_SSID);
-	Serial.println("Exec_Set_SSID");
 	message->AddParam(_ssid);
 	PostMessage(&message);
 }
