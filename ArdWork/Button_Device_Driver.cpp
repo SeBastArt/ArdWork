@@ -13,12 +13,12 @@ void Button_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = F("a simple button");
 	__descriptor->published = false;
 
-	Ctrl_Elem *ctrl_elem_button = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, F("virtual Button"), button_group, F("You can press it, if you want"));
-	Atomic<String> *atomic_press = new Atomic<String>(0, F("Press"));
+	/*Ctrl_Elem *ctrl_elem_button = new Ctrl_Elem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, F("virtual Button"), button_group, F("You can press it, if you want"));
+	Atomic<String> *atomic_press = new Atomic<String>(0, "Press");
 	ctrl_elem_button->AddAtomic(atomic_press);
 	ctrl_elem_button->published = true;
 
-	__descriptor->Add_Descriptor_Element(ctrl_elem_button);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_button);*/
 }
 
 void Button_Device_Driver::DoAfterInit()
@@ -176,3 +176,4 @@ void Button_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 	}
 }
+

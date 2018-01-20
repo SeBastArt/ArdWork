@@ -71,3 +71,4 @@ private:
     uint32_t ProcessThreads(uint32_t deltaTime);
     void RemoveStoppedThreads();
 };
+

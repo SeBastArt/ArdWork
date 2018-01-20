@@ -34,3 +34,4 @@ static unsigned int const OLED_DISPLAY_DRIVER_LAST_MESSAGE = OLED_DISPLAY_DRIVER
 
 
 #endif
+

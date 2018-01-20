@@ -11,7 +11,7 @@ Display_Device_Driver::Display_Device_Driver(Module_Driver* module, uint8_t prio
 
 void Display_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 {
-	int messageID = message.GetID();
+	int messageID = message.id;
 	switch (messageID)
 	{
 	case DISPLAY_DRIVER_CLEAR:
@@ -26,35 +26,35 @@ void Display_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	break;
 	case DISPLAY_DRIVER_SET_CURSOR:
 	{
-		int x_pos = message.GetIntParamByIndex(1);
-		int y_pos = message.GetIntParamByIndex(2);
+		int x_pos = message.GetIntParamByIndex(0);
+		int y_pos = message.GetIntParamByIndex(1);
 		DoSetCursor(x_pos, y_pos);
 	}
 	break;
 	case DISPLAY_DRIVER_DRAW_CHAR:
 	{
-		unsigned char c = message.GetCharParamByIndex(1);
+		unsigned char c = message.GetCharParamByIndex(0);
 		DoDrawChar(c);
 	}
 	break;
 	case DISPLAY_DRIVER_DRAW_STRING:
 	{
-		String text = message.GetStringParamByIndex(1);
+		String text = message.GetStringParamByIndex(0);
 		DoDrawString(text);
 	}
 	break;
 	
 	case DISPLAY_DRIVER_START_SCROLLING_RIGHT:
 	{
-		int start = message.GetIntParamByIndex(1);
-		int end = message.GetIntParamByIndex(2);
+		int start = message.GetIntParamByIndex(0);
+		int end = message.GetIntParamByIndex(1);
 		DoStartScrollRight(start, end);
 	}
 	break;
 	case DISPLAY_DRIVER_START_SCROLLING_LEFT:
 	{
-		int start = message.GetIntParamByIndex(1);
-		int end = message.GetIntParamByIndex(2);
+		int start = message.GetIntParamByIndex(0);
+		int end = message.GetIntParamByIndex(1);
 		DoStartScrollLeft(start, end);
 	}
 	case DISPLAY_DRIVER_STOP_SCROLL:
@@ -121,3 +121,4 @@ void Display_Device_Driver::Exec_Display_StopScroll()
 	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_STOP_SCROLL);
 	PostMessage(&message);
 }
+

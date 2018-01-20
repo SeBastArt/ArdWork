@@ -5,6 +5,8 @@
 #include "Module_Driver.h"
 #include "Device_Driver.h"
 
+//#define DEBUG
+
 extern "C" {
 #include "user_interface.h"
 }
@@ -28,19 +30,21 @@ Module_Driver::Module_Driver(uint8_t priority) :
 
 Module_Driver::~Module_Driver()
 {
-	__descriptor_list->Clear();
 	device_list->Clear();
 	queue.Clear();
 }
 
 void Module_Driver::Build_Descriptor() {
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::Build_Descriptor");
+#endif //  DEBUG
 	__descriptor->name = F("Module");
 	__descriptor->descr = F("the main module");
 	__descriptor->published = true;
 
 	Build_Module_Discriptor();
 
-	Ctrl_Elem *ctrl_elem_debug = new Ctrl_Elem(MODULE_DRIVER_SET_DEBUG_MODE_EXTERN, F("Debug Mode"), select, F("Debug Mode On or Off"));
+	/*Ctrl_Elem *ctrl_elem_debug = new Ctrl_Elem(MODULE_DRIVER_SET_DEBUG_MODE, F("Debug Mode"), select, F("Debug Mode On or Off"));
 	ctrl_elem_debug->published = true;
 
 	Atomic<String> *atomic_debug_off = new Atomic<String>(0, F("Off"));
@@ -48,19 +52,21 @@ void Module_Driver::Build_Descriptor() {
 	ctrl_elem_debug->AddAtomic(atomic_debug_off);
 	ctrl_elem_debug->AddAtomic(atomic_debug_on);
 
-	__descriptor->Add_Descriptor_Element(ctrl_elem_debug);
-
+	__descriptor->Add_Descriptor_Element(ctrl_elem_debug);*/
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::Build_Descriptor");
+#endif //  DEBUG
 }
 
 void Module_Driver::AddDevice(Device_Driver* device)
 {
 
-	if ((device)->DriverType == MQQT_WIFI_DEVICE_DRIVER_TYPE) {
+	/*if ((device)->DriverType == MQQT_WIFI_DEVICE_DRIVER_TYPE) {
 		AddObserver((Mqqt_Wifi_Device_Driver*)(device));
 	}
 	if ((device)->DriverType == WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE) {
 		AddObserver((WebSocket_Wifi_Device_Driver*)(device));
-	}
+	}*/
 	device_list->PushBack(device);
 }
 
@@ -214,26 +220,57 @@ Uart_GRBW_Led_Device_Driver *Module_Driver::Get_Uart_GRBW_Led_DevDrv(uint8_t _in
 	return result;
 }
 
-
-Driver *Module_Driver::GetDeviceById(int Id)
+bool Module_Driver::HasDeviceWithId(int _id)
 {
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::HasDeviceWithId");
+#endif //  DEBUG
+	bool return_value = false;
+
+	if (DriverId == _id) {
+		return_value = true;
+	}
+	else {
+		for (int i = 0; i < device_list->Size(); i++) {
+			if ((*device_list)[i]->DriverId == _id) {
+				return_value = true;
+			}
+		}
+	}
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::HasDeviceWithId");
+#endif //  DEBUG
+	return return_value;
+}
+
+
+Driver *Module_Driver::GetDeviceById(int _id)
+{
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::GetDeviceById");
+#endif //  DEBUG
 	Driver* result = nullptr;
 
-	if (DriverId == Id) {
+	if (DriverId == _id) {
 		result = this;
 	}
 	else {
 		for (int i = 0; i < device_list->Size(); i++) {
-			if ((*device_list)[i]->DriverId == Id) {
+			if ((*device_list)[i]->DriverId == _id) {
 				result = (*device_list)[i];
 			}
 		}
 	}
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::GetDeviceById");
+#endif //  DEBUG
 	return result;
 }
 
 bool Module_Driver::PopMessage(ThreadMessage** message) {
-	//
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::PopMessage");
+#endif //  DEBUG
 	bool messagePopped = false;
 
 	noInterrupts();
@@ -247,37 +284,44 @@ bool Module_Driver::PopMessage(ThreadMessage** message) {
 		}
 	}
 	interrupts();
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::PopMessage");
+#endif //  DEBUG
 	return messagePopped;
 }
 
 void Module_Driver::DoMessage(Int_Thread_Msg message) {
-
-	int messageID = message.GetID();
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::DoMessage");
+#endif //  DEBUG
+	int messageID = message.id;
 	switch (messageID)
 	{
 	case MODULE_DRIVER_SET_DEBUG_MODE:
 	{
-		bool state = message.GetBoolParamByIndex(1);
-		Set_Debug_Mode(state);
-	}
-	break;
-	case MODULE_DRIVER_SET_DEBUG_MODE_EXTERN:
-	{
-		bool state = message.GetBoolParamByIndex(1);
+		bool state = message.GetBoolParamByIndex(0);
 		Set_Debug_Mode(state);
 	}
 	break;
 	}
 
 	DoModuleMessage(message);
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::DoMessage");
+#endif //  DEBUG
 }
 
 void Module_Driver::DoInit() {
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::DoInit");
+#endif //  DEBUG
 	for (int i = 0; i < device_list->Size(); i++) {
 		(*device_list)[i]->ExecInit();
 	}
 	DoAfterInit();
-
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::DoInit");
+#endif //  DEBUG
 }
 
 void Module_Driver::DoShutdown() {
@@ -291,30 +335,36 @@ void Module_Driver::DoSuspend() {
 		(*device_list)[i]->ExecSuspend();
 	}
 }
-Descriptor_List* Module_Driver::GetDescriptrorList()
-{
-	UpdateControls();
-	return __descriptor_list;
-}
 
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::DoUpdate");
+#endif //  DEBUG
 	ThreadMessage *pMessage;
-	NotifyObservers(GetDescriptrorList());
+	
 	if (PopMessage(&pMessage))
 	{
 		switch ((pMessage)->Class) {
-		case MessageClass_Communication:
+		case MessageClass_Extern:
 		{
-			CommunicationMessage* pCommunication = (CommunicationMessage*)(pMessage);
-			Driver* device = nullptr;
-			device = GetDeviceById(pCommunication->__Id);
-			if (device != nullptr) {
-				device->Exec_Command(pCommunication->__CmdId, pCommunication->__Value);
+#ifdef  DEBUG
+			Serial.println("Start Module_Driver::DoUpdate MessageClass_Extern");
+#endif //  DEBUG
+			ExternMessage* pExtern = (ExternMessage*)(pMessage);
+			if (HasDeviceWithId(pExtern->__Id)) {
+				Driver* device = GetDeviceById(pExtern->__Id);
+				device->Exec_Command(pExtern->__CmdId, pExtern->__Value);
 			}
+#ifdef  DEBUG
+			Serial.println("Ende Module_Driver::DoUpdate MessageClass_Extern");
+#endif //  DEBUG
 			break;
 		}
 		}
+#ifdef  DEBUG
+		Serial.println("Fire Module_Driver::DoUpdate DoThreadMessage");
+#endif //  DEBUG
 		DoThreadMessage(pMessage);
 
 		if (pMessage != NULL) {
@@ -322,10 +372,16 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			pMessage = NULL;
 		}
 	}
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::DoUpdate");
+#endif //  DEBUG
 }
 
 
 bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr) {
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::SendAsyncThreadMessage");
+#endif //  DEBUG
 	bool result = false;
 	if (!withinIsr)
 	{
@@ -339,19 +395,23 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 	{
 		interrupts();
 	}
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::SendAsyncThreadMessage");
+#endif //  DEBUG
 	return result;
 }
 
-void Module_Driver::UpdateControls()
-{
-	__descriptor_list->Clear();
-	if (isdebug) {
-		for (int i = 0; i < device_list->Size(); i++) {
-			__descriptor_list->Add_Descriptor((*device_list)[i]->GetDescriptor());
-		}
-	}
-	__descriptor_list->Add_Descriptor(GetDescriptor());
-}
+//void Module_Driver::UpdateControls()
+//{
+//	__descriptor_list->Clear();
+//	for (int i = 0; i < device_list->Size(); i++) {
+//		Descriptor *temp = (*device_list)[i]->GetDescriptor();
+//		if (isdebug || temp->published) {
+//			__descriptor_list->Add_Descriptor((*device_list)[i]->GetDescriptor());
+//		}
+//	}
+//	__descriptor_list->Add_Descriptor(GetDescriptor());
+//}
 
 void Module_Driver::Set_Debug_Mode(bool _state)
 {

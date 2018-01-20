@@ -11,7 +11,6 @@
 
 #include "Thread/Thread.h"
 #include "m_Vector.h"
-//#include "Int_Thread_Msg_Sys.h"
 #include "Base_Consts.h"
 #include "IO_Pin.h"
 
@@ -31,4 +30,5 @@ private:
 	 Base_Controller(uint8_t priority = THREAD_PRIORITY_NORMAL);
 };
 #endif
+
 

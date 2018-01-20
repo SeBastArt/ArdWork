@@ -21,14 +21,11 @@ void Temperature_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = "Measure the temperatur of the environment";
 	__descriptor->published = false;
 
-	Ctrl_Elem *ctrl_elem = new Ctrl_Elem(0, "Temperatur", value, "actual temperature");
-	ctrl_elem->published = true;
+	Value_CtrlElem *ctrlElem_temp = new Value_CtrlElem(TEMPERATURE_DEVICE_DRIVER_SI_TEMPERATURE, &act_temp, F("Temperatur"), F("actual temperature"));
+	ctrlElem_temp->published = true;
+	ctrlElem_temp->unit = F("Â°C");
 
-	//Atomic<float> *atomic_temperature = new Atomic<float>(0, act_temp, "°C");
-
-	//ctrl_elem->AddAtomic(atomic_temperature);
-
-	__descriptor->Add_Descriptor_Element(ctrl_elem);
+	__descriptor->Add_Descriptor_Element(ctrlElem_temp);
 }
 
 void Temperature_Device_Driver::DoAfterInit()
@@ -49,7 +46,7 @@ void Temperature_Device_Driver::DoBeforeSuspend() {
 }
 
 void Temperature_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
-	int messageID = message.GetID();
+	int messageID = message.id;
 	switch (messageID)
 	{
 	case TEMPERATURE_DEVICE_DRIVER_SI_FAHRENHEIT:
@@ -64,7 +61,7 @@ void Temperature_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
 	break;
 	case TEMPERATURE_DEVICE_DRIVER_SET_ACCURACY:
 	{
-		int _accuracy = message.GetIntParamByIndex(1);
+		int _accuracy = message.GetIntParamByIndex(0);
 		Set_Accuracy_Time_Ms(_accuracy);
 	}
 	break;
@@ -126,6 +123,7 @@ float Temperature_Device_Driver::Get_Temperature() {
 float Temperature_Device_Driver::Get_Humidity() {
 	return act_hum;
 }
+
 
 
 

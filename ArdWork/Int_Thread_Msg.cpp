@@ -4,61 +4,57 @@
 
 #include "Int_Thread_Msg.h"
 
-Int_Thread_Msg::Int_Thread_Msg(uint32 ID) {
-	ParamString = "";
-	ParamString += ID;
-	ParamString += ":";
+Int_Thread_Msg::Int_Thread_Msg(uint32 _id) {
+	__id = _id;
+	__param_count = 0;
 }
 
 void Int_Thread_Msg::AddParam(bool boolean)
 {
-	ParamString += boolean;
-	ParamString += ":";
+	__str_param += boolean;
+	__str_param += ":";
+	__param_count++;
 }
 
 void Int_Thread_Msg::AddParam(int intNumber) {
-	ParamString += intNumber;
-	ParamString += ":";
+	__str_param += intNumber;
+	__str_param += ":";
+	__param_count++;
 }
 
 void Int_Thread_Msg::AddParam(unsigned char c) {
-	ParamString += char(c);
-	ParamString += ":";
+	__str_param += char(c);
+	__str_param += ":";
+	__param_count++;
 }
 
 void Int_Thread_Msg::AddParam(String text) {
-	ParamString += text;
-	ParamString += ":";
+	__str_param += text;
+	__str_param += ":";
+	__param_count++;
 }
 
 void Int_Thread_Msg::AddParam(float floatNumber) {
-	ParamString += floatNumber;
-	ParamString += ":";
-}
-
-int Int_Thread_Msg::GetID() {
-	int i = 0;
-	String ParamStr;
-	ParamStr = GetStringPartByNr(ParamString, ':', 0);
-	i = ParamStr.toInt();
-	return i;
+	__str_param += floatNumber;
+	__str_param += ":";
+	__param_count++;
 }
 
 uint8_t Int_Thread_Msg::GetUint8ParamByIndex(int index) {
 	String ParamStr;
-	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	ParamStr = GetStringPartByNr(__str_param, ':', index);
 	return (uint8_t)ParamStr.toInt();
 }
 
 int Int_Thread_Msg::GetIntParamByIndex(int index) {
 	String ParamStr;
-	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	ParamStr = GetStringPartByNr(__str_param, ':', index);
 	return ParamStr.toInt();
 }
 bool Int_Thread_Msg::GetBoolParamByIndex(int index) {
 	String ParamStr;
 	bool tempResult = false;
-	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	ParamStr = GetStringPartByNr(__str_param, ':', index);
 	if (ParamStr.toInt() > 0) {
 		tempResult = true;
 	}
@@ -71,20 +67,20 @@ bool Int_Thread_Msg::GetBoolParamByIndex(int index) {
 float Int_Thread_Msg::GetFloatParamByIndex(int index)
 {
 	String ParamStr;
-	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	ParamStr = GetStringPartByNr(__str_param, ':', index);
 	return ParamStr.toFloat();
 }
 
 String Int_Thread_Msg::GetStringParamByIndex(int index) {
 	String ParamStr;
-	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	ParamStr = GetStringPartByNr(__str_param, ':', index);
 	return ParamStr;
 }
 
 uint8_t Int_Thread_Msg::GetCharParamByIndex(int index) {
 	String ParamStr;
 	unsigned char result;
-	ParamStr = GetStringPartByNr(ParamString, ':', index);
+	ParamStr = GetStringPartByNr(__str_param, ':', index);
 	result = (unsigned char)*(ParamStr.c_str());
 	return result;
 }
@@ -121,4 +117,5 @@ String Int_Thread_Msg::GetStringPartByNr(String data, char separator, int index)
 	//return text if this is the last part
 	return dataPart;
 }
+
 

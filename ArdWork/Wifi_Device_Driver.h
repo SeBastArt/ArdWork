@@ -21,35 +21,36 @@
 #include "Device_Driver.h"
 #include "Wifi_Device_Driver_Consts.h"
 #include "Led_Device_Driver.h"
-#include "Comm_Device_Driver.h"     
+//#include "Comm_Device_Driver.h"     
 #include "Filesystem.h"
 
 
 
-class Wifi_Device_Driver : public Device_Driver, public Comm_Device_Driver
+class Wifi_Device_Driver : public Device_Driver//, public Comm_Device_Driver
 {
 public:
-	Wifi_Device_Driver(Module_Driver* module, String _ssid, String _password, Led_Device_Driver *_statusLED = nullptr , uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = nullptr , uint8_t priority = THREAD_PRIORITY_NORMAL);
 	
 private:
-	FileSystem _filesystem;
-	IPAddress localhost;
 	String __ssid;
 	String __password;
 	uint8_t __connection_try;
 	uint32_t conn_delta;
 	uint32_t conn_delay;
 	DNSServer *__dnsServer;
+	bool __isMSDN;
 	void SetSSID(String _ssid);
 	void SetPassword(String _password);
-	void SetMode(int _mode);
+	void SetMode(uint8_t _mode);
+	void ResetConnection();
 	void ConnectToWifi();
-	void SaveConnectionParameters();
 	void SetupOTA();
+	void StartMSDNServices();
 protected:
-	bool __isConnected;
-	bool __isAP;
-	bool __fallbackAP;
+	bool __WiFi_isConnected;
+	bool __AP_isConnected;
+	bool __run_isAp;
+	int __isAP;
 	String hostname;
 	static Led_Device_Driver *statusLED;
 	void Build_Descriptor();
@@ -73,4 +74,5 @@ public:
 
 
 #endif
+
 

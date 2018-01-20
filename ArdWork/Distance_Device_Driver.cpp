@@ -25,7 +25,7 @@ void Distance_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = F("estimate the distance to a target");
 	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_dist = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE, F("Distance"), value, F("measure the distance to a target via ultrasonic"));
+	/*Ctrl_Elem *ctrl_elem_dist = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE, F("Distance"), value, F("measure the distance to a target via ultrasonic"));
 	ctrl_elem_dist->published = true;
 	Atomic<float> *atomic_distance = new Atomic<float>(0, &__distance, CM_STRING);
 	ctrl_elem_dist->AddAtomic(atomic_distance);
@@ -45,7 +45,7 @@ void Distance_Device_Driver::Build_Descriptor() {
 
 	__descriptor->Add_Descriptor_Element(ctrl_elem_unit);
 	__descriptor->Add_Descriptor_Element(ctrl_elem_timeout);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_dist);
+	__descriptor->Add_Descriptor_Element(ctrl_elem_dist);*/
 }
 
 
@@ -62,18 +62,18 @@ void Distance_Device_Driver::DoBeforeSuspend() {
 }
 
 void Distance_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
-	int messageID = message.GetID();
+	int messageID = message.id;
 	switch (messageID)
 	{
 	case DISTANCE_DEVICE_DRIVER_SET_UNIT:
 	{
-		uint16 unit = message.GetIntParamByIndex(1);
+		uint16 unit = message.GetIntParamByIndex(0);
 		Set_Unit((dist_unit)unit);
 	}
 	break;
 	case DISTANCE_DEVICE_DRIVER_SET_TIMEOUT:
 	{
-		int timeout = message.GetIntParamByIndex(1);
+		int timeout = message.GetIntParamByIndex(0);
 		Set_Timeout(timeout);
 	}
 	break;
@@ -111,10 +111,10 @@ void Distance_Device_Driver::Set_Unit(dist_unit _unit)
 {
 	__unit = _unit;
 	if (__unit == dist_unit::cm) {
-		__descriptor->GetCtrlElemByIndex(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE)->GetAtomicByIndex(0)->unit = CM_STRING;
+		__descriptor->GetCtrlElemByIndex(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE)->unit = CM_STRING;
 	}
 	else {
-		__descriptor->GetCtrlElemByIndex(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE)->GetAtomicByIndex(0)->unit = INCH_STRING;
+		__descriptor->GetCtrlElemByIndex(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE)->unit = INCH_STRING;
 	}
 }
 
@@ -154,3 +154,4 @@ void Distance_Device_Driver::Exec_Set_Timeout(int _timeout)
 	message->AddParam(_timeout);
 	PostMessage(&message);
 }
+

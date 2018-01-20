@@ -6,8 +6,8 @@
 
 String Mqqt_Wifi_Device_Driver::mqtt_message = ""; // initializer
 
-Mqqt_Wifi_Device_Driver::Mqqt_Wifi_Device_Driver(Module_Driver * module, String _ssid, String _password, Led_Device_Driver * _statusLED, uint8_t priority) : 
-	Wifi_Device_Driver(module, _ssid, _password, _statusLED, priority)
+Mqqt_Wifi_Device_Driver::Mqqt_Wifi_Device_Driver(Module_Driver * module, Led_Device_Driver * _statusLED, uint8_t priority) : 
+	Wifi_Device_Driver(module, _statusLED, priority)
 {
 	__DriverType = MQQT_WIFI_DEVICE_DRIVER_TYPE;
 
@@ -139,3 +139,4 @@ void Mqqt_Wifi_Device_Driver::CheckComm(uint32_t deltaTime) {
 	}
 
 }
+

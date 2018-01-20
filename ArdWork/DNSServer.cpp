@@ -2,7 +2,7 @@
 #include <lwip/def.h>
 #include <Arduino.h>
 
-#define DEBUG
+//#define DEBUG
 #define DEBUG_OUTPUT Serial
 
 DNSServer::DNSServer()
@@ -138,7 +138,7 @@ void DNSServer::replyWithIP()
 
 
 
-#ifdef DEBUG
+#ifdef  DEBUG
 	DEBUG_OUTPUT.print("DNS responds: ");
 	DEBUG_OUTPUT.print(_resolvedIP[0]);
 	DEBUG_OUTPUT.print(".");
@@ -162,3 +162,4 @@ void DNSServer::replyWithCustomCode()
 	_udp.write(_buffer, sizeof(DNSHeader));
 	_udp.endPacket();
 }
+

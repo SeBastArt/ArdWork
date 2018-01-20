@@ -26,6 +26,10 @@ public:
 	
  private:
 	 float lastLux;
+	 int sv_integrationTime = 0;
+	 int sv_auto_range = 0;
+	 int sv_gain = 0;
+	 int sv_acc_rate = 0;
 	 void DoAfterInit();
 	 void DoBeforeShutdown();
 	 void DoBeforeSuspend();
@@ -41,8 +45,8 @@ private:
 protected:
 	void Set_Accuracy_Delay(uint16 _milliseconds);
 	void Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime);
-	void Set_Set_Gain(tsl2561Gain_t _gain);
-	void Set_Set_Enable_AutoRange(bool _autoRange);
+	void Set_Gain(tsl2561Gain_t _gain);
+	void Set_Enable_AutoRange(bool _autoRange);
 public:
 	void Exec_Set_Accuracy_Delay(uint16 _milliseconds);
 	void Exec_Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime);
@@ -51,4 +55,5 @@ public:
 };
 
 #endif
+
 

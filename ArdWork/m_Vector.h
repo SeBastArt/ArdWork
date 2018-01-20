@@ -267,3 +267,4 @@ private:
 };
 
 #endif // VECTOR_H
+

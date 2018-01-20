@@ -8,3 +8,4 @@ static int const BASE_CONTROLLER_TYPE = BASE_TYPE + 200000;
 static int const BASE_CONTROLLER_LAST_MESSAGE = BASE_CONTROLLER_TYPE;
 
 #endif
+

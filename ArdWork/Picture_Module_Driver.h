@@ -17,13 +17,16 @@ public:
 	Picture_Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
 
 private:
-	bool __autoBrightness;
-	uint8_t __brightness;
+	int __sv_autoBrightness = 0;
+	float __sv_relBrightness = 100;
+	Color __sv_color = { 55, 111, 222 };
+	int __absBrightness;
 	void Pattern_Next();
 	void Pattern_Prev();
 	void Pattern_Off();
-	void SwitchPattern(uint8_t _brightness);
-	void SetBrightness(uint8_t _brightness);
+	void SwitchPattern(uint8_t _control);
+	void SetStripBrightness();
+	void SetRelBrightness(uint8_t _relBrightness);
 	void Set_Auto_Brightness(bool _state);
 	void Set_Pattern_Color(int _r, int _g, int _b);
 
@@ -42,4 +45,5 @@ public:
 };
 
 #endif
+
 

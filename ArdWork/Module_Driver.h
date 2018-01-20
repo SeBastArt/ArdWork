@@ -24,14 +24,14 @@ class Mqqt_Wifi_Device_Driver;
 class Temperature_Device_Driver;
 class WebSocket_Wifi_Device_Driver;
 
-class Module_Driver : public Driver, public Observee
+class Module_Driver : public Driver//, public Observee
 {
 private:
 	bool isdebug;
 	Vector<ThreadMessage*> queue;
 
 	void DoUpdate(uint32_t deltaTime);
-	void UpdateControls();
+	//void UpdateControls();
 protected:
 	Vector <Driver*> *device_list;
 
@@ -45,7 +45,9 @@ protected:
 	Uart_RGB_Led_Device_Driver * Get_Uart_RGB_Led_DevDrv(uint8_t _index);
 	Uart_GRBW_Led_Device_Driver * Get_Uart_GRBW_Led_DevDrv(uint8_t _index);
 	WebSocket_Wifi_Device_Driver * Get_WebSocket_Wifi_DevDrv(uint8_t _index);
-	
+
+	//bool GetDeviceById(int _id, Driver * _device);
+	bool HasDeviceWithId(int _id);
 	Driver *GetDeviceById(int Id);
 
 	void DoMessage(Int_Thread_Msg message);
@@ -53,7 +55,7 @@ protected:
 	void DoShutdown();
 	void DoSuspend();
 	void Build_Descriptor();
-	Descriptor_List * GetDescriptrorList();
+	//Descriptor_List * GetDescriptrorList();
 	bool PopMessage(ThreadMessage** message);
 
 	void Set_Debug_Mode(bool _state);
@@ -76,3 +78,4 @@ public:
 };
 
 #endif
+

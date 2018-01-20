@@ -8,28 +8,38 @@
 #else
 	#include "WProgram.h"
 #endif
+#include "Base_Consts.h"
 
 class Int_Thread_Msg
 {
 private:
-	String ParamString;
+	uint32 __id;
+	uint8_t __param_count;
+	String __str_param;
 	String GetStringPartByNr(String data, char separator, int index);
+	uint32 GetID() const { return __id; }
+	uint8_t GetParamCount() const { return __param_count; }
+	String GetParamString()const { return __str_param; }
 public:
-	Int_Thread_Msg(uint32 ID);
+	Int_Thread_Msg(uint32 _id);
 	void AddParam(bool boolean);
 	void AddParam(int intNumber);
 	void AddParam(unsigned char c);
 	void AddParam(String text);
 	void AddParam(float floatNumber);
-	int GetID();
 	uint8_t GetUint8ParamByIndex(int index);
 	int GetIntParamByIndex(int index);
 	float GetFloatParamByIndex(int index);
 	bool GetBoolParamByIndex(int index);
 	unsigned char GetCharParamByIndex(int index);
 	String GetStringParamByIndex(int index);
+
+	Property<uint32, Int_Thread_Msg> id{ this, nullptr, &Int_Thread_Msg::GetID };
+	Property<uint8_t, Int_Thread_Msg> param_count{ this, nullptr, &Int_Thread_Msg::GetParamCount };
+	Property<String, Int_Thread_Msg> param_string{ this, nullptr, &Int_Thread_Msg::GetParamString };
 };
 
 
 #endif
+
 

@@ -5,8 +5,8 @@
 #include "WEBset.h" // Hier ist die HTML-Webseite als Array abgelegt
 
 #define LEDpin 1 // LED zum Blinken. Bei ESP-07 Pin 2. Bei ESP-01 Pin 1
-// #define seriell; // Einschalter für serielle Ausgabe
-IPAddress apIP(192, 168, 178, 1); // IP-Adresse für Setup
+// #define seriell; // Einschalter fÃ¼r serielle Ausgabe
+IPAddress apIP(192, 168, 178, 1); // IP-Adresse fÃ¼r Setup
 
 ADC_MODE(ADC_VCC); // ADC an das Stromversorgung
 int z = 0; //Aktuelle EEPROM-Adresse zum lesen
@@ -83,19 +83,19 @@ weiter:
 	while (WiFi.status() != WL_CONNECTED)
 	{
 		timout++;
-		if (timout > 60) // Wenn Anmeldung nicht möglich
+		if (timout > 60) // Wenn Anmeldung nicht mÃ¶glich
 		{
 			WiFi.forceSleepBegin(); // Sender OFF um Strom zu sparen
 #if defined seriell
 			Serial.print("Netzwerk nicht gefunden");
 #else
 			pinMode(LEDpin, OUTPUT);
-			digitalWrite(LEDpin, 0); // LED ON für 5 Sekunden
+			digitalWrite(LEDpin, 0); // LED ON fÃ¼r 5 Sekunden
 			delay(5000);
 			digitalWrite(LEDpin, 1);
 
 #endif
-			WiFi.forceSleepWake(); // Sender ON, sonst beim nächsten aufwachen geht WiFi nicht
+			WiFi.forceSleepWake(); // Sender ON, sonst beim nÃ¤chsten aufwachen geht WiFi nicht
 			ESPm.deepSleep(0, WAKE_RFCAL);
 			delay(100);
 		} // End timeout
@@ -105,7 +105,7 @@ weiter:
 		digitalWrite(LEDpin, 0);
 		delay(5000);
 		digitalWrite(LEDpin, 1);
-		WiFi.forceSleepWake(); // Wlan ON für neue Zyklus
+		WiFi.forceSleepWake(); // Wlan ON fÃ¼r neue Zyklus
 		ESPm.deepSleep(0, WAKE_RFCAL); //gehe schlafen
 
 	}
@@ -118,3 +118,4 @@ void loop()
 {
 	yield();
 }
+

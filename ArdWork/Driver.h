@@ -18,11 +18,13 @@
 class Driver : public Thread, public Int_Thread_Msg_Sys
 {
 private:
+	uint8_t __msg_queue_length;
 	int __DriverId;
-	
+	void CheckForMsg();
 	int GetDriverId() const { return __DriverId; }
-	unsigned int GetDriverType() const { return __DriverType;}
+	unsigned int GetDriverType() const { return __DriverType; }
 protected:
+	static Descriptor_List *__descriptor_list;
 	unsigned int __DriverType;
 	Descriptor *__descriptor;
 	static int driver_count;
@@ -44,9 +46,11 @@ protected:
 	virtual void DoShutdown() = 0;
 	virtual void DoSuspend() = 0;
 public:
+	
 	Driver(uint8_t priority);
 	Property<int, Driver> DriverId{ this,nullptr,&Driver::GetDriverId };
 	Property<unsigned int, Driver> DriverType{ this,nullptr,&Driver::GetDriverType };
+
 	void ExecInit();
 	void ExecShutdown();
 	void ExecSuspend();
@@ -63,4 +67,5 @@ public:
 };
 
 #endif
+
 

@@ -10,3 +10,4 @@ static unsigned int const DRIVER_SUSPEND = DRIVER_TYPE + 3;
 static unsigned int const DRIVER_LAST_MESSAGE = DRIVER_SUSPEND;
 
 #endif
+

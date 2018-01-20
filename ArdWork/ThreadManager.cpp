@@ -308,3 +308,4 @@ void ThreadManager::RemoveStoppedThreads()
         pIterate = pNext; // iterate to the next
     }
 }
+

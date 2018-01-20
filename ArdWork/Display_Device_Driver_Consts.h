@@ -21,3 +21,4 @@ static unsigned int const DISPLAY_DRIVER_STOP_SCROLL = DISPLAY_DEVICE_DRIVER_TYP
 static unsigned int const DISPLAY_DRIVER_LAST_MESSAGE = DISPLAY_DRIVER_STOP_SCROLL;
 
 #endif
+

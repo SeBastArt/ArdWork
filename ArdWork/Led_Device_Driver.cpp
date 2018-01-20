@@ -11,35 +11,22 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 void Led_Device_Driver::Build_Descriptor() {
 	__descriptor->name = F("LED");
 	__descriptor->descr = F("a simple LED");
-	__descriptor->published = false;
+	__descriptor->published = true;
 
-	Ctrl_Elem *ctrl_elem_mode = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_MODE, F("LED-Mode"), select, F("Select the Mode of the LED"));
+	Select_CtrlElem *ctrlElem_mode = new Select_CtrlElem(LED_DEVICE_DRIVER_LED_SET_MODE, &__sv_mode, F("LED-Mode"), F("Select the Mode of the LED"));
+	ctrlElem_mode->AddMember("On");
+	ctrlElem_mode->AddMember("OFF");
+	ctrlElem_mode->AddMember("Blink");
+	ctrlElem_mode->AddMember("Pulse");
 
-	Atomic<String> *atomic_mode_on = new Atomic<String>(0, F("On"), "");
-	Atomic<String> *atomic_mode_off = new Atomic<String>(1, F("OFF"), "");
-	Atomic<String> *atomic_mode_blink = new Atomic<String>(2, F("Blink"), "");
-	Atomic<String> *atomic_mode_pulse = new Atomic<String>(3, F("Pulse"), "");
+	Value_CtrlElem *ctrlElem_delay = new Value_CtrlElem(LED_DEVICE_DRIVER_LED_SET_DELAY, &__sv_delay, true, F("Delay"), F("Blink Delay is the delay between status change On/Off"));
+	ctrlElem_delay->unit = F("ms");
 
-	ctrl_elem_mode->AddAtomic(atomic_mode_on);
-	ctrl_elem_mode->AddAtomic(atomic_mode_off);
-	ctrl_elem_mode->AddAtomic(atomic_mode_blink);
-	ctrl_elem_mode->AddAtomic(atomic_mode_pulse);
-	ctrl_elem_mode->published = true;
+	Value_CtrlElem *ctrlElem_pulse_count = new Value_CtrlElem(LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT, &__sv_pulse_count, true, F("Pulse count"), F("change the count how often die led is blinking during pulse"));
 
-	Ctrl_Elem *ctrl_elem_delay = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_DELAY, F("Delay"), text, F("Blink Delay is the delay between status change On/Off"));
-	Atomic<String> *atomic_delay = new Atomic<String>(0, F("Delay"));
-	ctrl_elem_delay->AddAtomic(atomic_delay);
-	ctrl_elem_delay->published = true;
-
-	Ctrl_Elem *ctrl_elem_pulse_count = new Ctrl_Elem(LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT, F("Pulse count"), text, F("change the count how often die led is blinking during pulse"));
-	Atomic<String> *atomic_pulse_count = new Atomic<String>(0, F("Pulse Count"));
-	ctrl_elem_pulse_count->AddAtomic(atomic_pulse_count);
-	ctrl_elem_pulse_count->published = true;
-
-	__descriptor->Add_Descriptor_Element(ctrl_elem_mode);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_delay);
-	__descriptor->Add_Descriptor_Element(ctrl_elem_pulse_count);
-
+	__descriptor->Add_Descriptor_Element(ctrlElem_mode);
+	__descriptor->Add_Descriptor_Element(ctrlElem_delay);
+	__descriptor->Add_Descriptor_Element(ctrlElem_pulse_count);
 }
 
 void Led_Device_Driver::SetPullUp(bool _hasPullUp)
@@ -53,13 +40,13 @@ void Led_Device_Driver::DoAfterInit()
 	__pin->IsActive = true;
 	Set_IO_Pin_Low();
 	__blink_flag = false;
-	__delay = 500;
+	__sv_delay = 500;
 	__blink_delta = 0;
-	
+
 	__pulse_flag = false;
 	__pulse_delta = 0;
 	__pulse_counter = 0;
-	__pulse_count = 5;
+	__sv_pulse_count = 5;
 
 	Serial.println(F("Led-Driver initialized!"));
 }
@@ -101,6 +88,7 @@ void Led_Device_Driver::Exec_Set_Led_Pulse(int count, int delay) {
 	PostMessage(&message);
 }
 
+
 int Led_Device_Driver::GetPinNumber()
 {
 	return __pin->PinNumber();
@@ -109,7 +97,7 @@ int Led_Device_Driver::GetPinNumber()
 
 void Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 {
-	int messageID = message.GetID();
+	int messageID = message.id;
 	switch (messageID)
 	{
 	case LED_DEVICE_DRIVER_LED_ON:
@@ -124,32 +112,32 @@ void Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 	break;
 	case LED_DEVICE_DRIVER_LED_BLINK:
 	{
-		int blink_delay = message.GetIntParamByIndex(1);
+		int blink_delay = message.GetIntParamByIndex(0);
 		Set_Led_Blink(blink_delay);
 	}
 	break;
 	case LED_DEVICE_DRIVER_LED_PULSE:
 	{
-		int pulse_count = message.GetIntParamByIndex(1);
-		int pulse_delay = message.GetIntParamByIndex(2);
+		int pulse_count = message.GetIntParamByIndex(0);
+		int pulse_delay = message.GetIntParamByIndex(1);
 		Set_Led_Pulse(pulse_count, pulse_delay);
 	}
 	break;
 	case LED_DEVICE_DRIVER_LED_SET_DELAY:
 	{
-		int delay = message.GetIntParamByIndex(1);
+		int delay = message.GetIntParamByIndex(0);
 		Set_Led_Delay(delay);
 	}
 	break;
 	case LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT:
 	{
-		int pulse_count = message.GetIntParamByIndex(1);
+		int pulse_count = message.GetIntParamByIndex(0);
 		Set_Led_Pulse_Count(pulse_count);
 	}
 	break;
 	case LED_DEVICE_DRIVER_LED_SET_MODE:
 	{
-		int mode = message.GetIntParamByIndex(1);
+		int mode = message.GetIntParamByIndex(0);
 		Set_Led_Mode(mode);
 	}
 	}
@@ -157,18 +145,21 @@ void Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 
 void Led_Device_Driver::Set_Led_Delay(int _delay) {
 	if ((_delay >= 200) && (_delay < 60000)) {
-		__delay = _delay;
+		__sv_delay = _delay;
 	}
 }
 
 void Led_Device_Driver::Set_Led_Pulse_Count(int _pulse_count) {
 	if ((_pulse_count > 0) && (_pulse_count < 1000)) {
-		__pulse_count = _pulse_count;
+		__sv_pulse_count = _pulse_count;
 	}
 }
 
 void Led_Device_Driver::Set_Led_Mode(uint8_t _mode) {
-	switch (_mode)
+
+	__sv_mode = _mode;
+
+	switch (__sv_mode)
 	{
 	case 0:
 	{
@@ -182,12 +173,12 @@ void Led_Device_Driver::Set_Led_Mode(uint8_t _mode) {
 	break;
 	case 2:
 	{
-		Set_Led_Blink(__delay);
+		Set_Led_Blink(__sv_delay);
 	}
 	break;
 	case 3:
 	{
-		Set_Led_Pulse(__pulse_count, __delay);
+		Set_Led_Pulse(__sv_pulse_count, __sv_delay);
 	}
 	break;
 	}
@@ -195,9 +186,9 @@ void Led_Device_Driver::Set_Led_Mode(uint8_t _mode) {
 
 void Led_Device_Driver::Pulse(uint32_t deltaTime) {
 	__pulse_delta += deltaTime;
-	if (__pulse_delta > __delay) {
+	if (__pulse_delta > __sv_delay) {
 		__pulse_delta = 0;
-		if (__pulse_counter < __pulse_count) {
+		if (__pulse_counter < __sv_pulse_count) {
 			if (__ledStatus == true) {
 				Set_IO_Pin_Low();
 			}
@@ -217,7 +208,7 @@ void Led_Device_Driver::Pulse(uint32_t deltaTime) {
 
 void Led_Device_Driver::Blink(uint32_t deltaTime) {
 	__blink_delta += deltaTime;
-	if (__blink_delta > __delay) {
+	if (__blink_delta > __sv_delay) {
 		__blink_delta = 0;
 		if (__ledStatus == true) {
 			Set_IO_Pin_Low();
@@ -266,8 +257,8 @@ void Led_Device_Driver::Set_IO_Pin_Low()
 void Led_Device_Driver::Set_Led_Pulse(int count, int delay)
 {
 	if (!__pulse_flag) {
-		__delay = delay;
-		__pulse_count = count;
+		__sv_delay = delay;
+		__sv_pulse_count = count;
 		__pulse_counter = 0;
 		__pulse_flag = true;
 		__blink_flag = false;
@@ -278,7 +269,7 @@ void Led_Device_Driver::Set_Led_Pulse(int count, int delay)
 
 void Led_Device_Driver::Set_Led_Blink(int delay)
 {
-	__delay = delay;
+	__sv_delay = delay;
 	if (__blink_flag == false) {
 		__blink_flag = true;
 		__pulse_flag = false;
@@ -286,3 +277,4 @@ void Led_Device_Driver::Set_Led_Blink(int delay)
 		Set_IO_Pin_Low();
 	}
 }
+

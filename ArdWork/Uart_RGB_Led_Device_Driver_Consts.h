@@ -13,20 +13,19 @@ static unsigned int const UART_RGB_LED_DEVICE_NEXT = UART_RGB_LED_DEVICE_TYPE + 
 static unsigned int const UART_RGB_LED_DEVICE_PREV = UART_RGB_LED_DEVICE_TYPE + 7;
 static unsigned int const UART_RGB_LED_DEVICE_COLOR = UART_RGB_LED_DEVICE_TYPE + 8;
 static unsigned int const UART_RGB_LED_DEVICE_BRIGHTNESS = UART_RGB_LED_DEVICE_TYPE + 9;
+static unsigned int const UART_RGB_LED_COLOR_HEX = UART_RGB_LED_DEVICE_TYPE + 10;
+static unsigned int const UART_RGB_LED_PATTERN = UART_RGB_LED_DEVICE_TYPE + 11;
 
-static unsigned int const RGB_ANIMATION_FIRST = UART_RGB_LED_DEVICE_TYPE + 50;
+static unsigned int const RGB_ANIMATION_FIRST = UART_RGB_LED_DEVICE_TYPE + 20;
 static unsigned int const RGB_ANIMATION_CYLON = RGB_ANIMATION_FIRST ;
 static unsigned int const RGB_ANIMATION_RANDOM = RGB_ANIMATION_FIRST + 1;
 static unsigned int const RGB_ANIMATION_FIRE = RGB_ANIMATION_FIRST + 2;
 static unsigned int const RGB_ANIMATION_SHINE = RGB_ANIMATION_FIRST + 3;
 static unsigned int const RGB_ANIMATION_LAST = RGB_ANIMATION_SHINE;
 static unsigned int const RGB_ANIMATION_COUNT = RGB_ANIMATION_LAST - RGB_ANIMATION_FIRST + 1;
-static unsigned int const RGB_ANIMATION_OFF = RGB_ANIMATION_FIRST + 70;
+static unsigned int const RGB_ANIMATION_OFF = RGB_ANIMATION_FIRST + 20;
 
-//Extern Communication
-static unsigned int const UART_RGB_LED_SET_PATTERN_EXTERN = UART_RGB_LED_DEVICE_TYPE + 80;
-static unsigned int const UART_RGB_LED_SET_COLOR_EXTERN = UART_RGB_LED_DEVICE_TYPE + 81;
-static unsigned int const UART_RGB_LED_SET_BRIGHTNESS_EXTERN = UART_RGB_LED_DEVICE_TYPE + 82;
-static unsigned int const Uart_RGB_Led_Device_Driver_LAST_MESSAGE = UART_RGB_LED_SET_BRIGHTNESS_EXTERN;
+static unsigned int const Uart_RGB_Led_Device_Driver_LAST_MESSAGE = RGB_ANIMATION_OFF;
 
 #endif
+

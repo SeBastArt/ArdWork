@@ -13,16 +13,17 @@
 #include "m_Vector.h"
 #include "Publisher.h"
 
-class Comm_Device_Driver : public Observer
-{
-private:
-	Comm_Device_Driver(const Comm_Device_Driver& yRef) = delete;
-	Comm_Device_Driver& operator=(const Comm_Device_Driver& yRef) = delete;
-protected:
-	Descriptor_List *__descriptor_list;
-public:
-	Comm_Device_Driver() { __descriptor_list = new Descriptor_List;};
-	virtual void Notify(Descriptor_List *_descriptor_list) { __descriptor_list = _descriptor_list; };
-};
+//class Comm_Device_Driver : public Observer
+//{
+//private:
+//	Comm_Device_Driver(const Comm_Device_Driver& yRef) = delete;
+//	Comm_Device_Driver& operator=(const Comm_Device_Driver& yRef) = delete;
+//protected:
+//	Descriptor_List *__descriptor_list;
+//public:
+//	Comm_Device_Driver() { __descriptor_list = new Descriptor_List;};
+//	virtual void Notify(Descriptor_List *_descriptor_list) { __descriptor_list = _descriptor_list; };
+//};
 
 #endif
+

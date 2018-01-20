@@ -16,3 +16,4 @@ static unsigned int const LED_DEVICE_DRIVER_LED_SET_DELAY = LED_DEVICE_DRIVER_TY
 static unsigned int const LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT = LED_DEVICE_DRIVER_TYPE + 103;
 
 #endif
+

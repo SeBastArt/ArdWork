@@ -10,6 +10,8 @@
 #include "FS.h"
 
 
+
+
 class FileSystem
 {
 private:
@@ -37,9 +39,9 @@ public:
 			Serial.println("Config file size is too large");
 			return false;
 		}
-		FileIsOpen = true;
 		s_file = actFile.readString();
-		Serial.println("open config file done");
+		FileIsOpen = true;
+		actFile.close();
 		return true;
 	}
 	bool CloseFile() {
@@ -56,7 +58,6 @@ public:
 			return false;
 		}
 		json.printTo(actFile);
-		json.printTo(Serial);
 		actFile.close();
 		return true;
 	}
@@ -67,8 +68,6 @@ public:
 			Serial.println("Failed to open config file for writing");
 			return false;
 		}
-		Serial.print("SaveToFile: ");
-		Serial.println(text.c_str());
 		actFile.println(text.c_str());
 		actFile.close();
 		return true;
@@ -105,4 +104,5 @@ public:
 
 
 #endif
+
 

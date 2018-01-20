@@ -41,125 +41,125 @@ void OLED_Display_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
 void OLED_Display_Device_Driver::DoCustomDisplayMessage(Int_Thread_Msg message)
 {
-	int messageID = message.GetID();
+	int messageID = message.id;
 	switch (messageID)
 	{
 	case OLED_DISPLAY_DRIVER_DRAW_PIXEL:
 	{
 		uint16_t x_pos; uint16_t y_pos; uint16_t color;
-		x_pos = message.GetIntParamByIndex(1);
-		y_pos = message.GetIntParamByIndex(2);
-		color = message.GetIntParamByIndex(3);
+		x_pos = message.GetIntParamByIndex(0);
+		y_pos = message.GetIntParamByIndex(1);
+		color = message.GetIntParamByIndex(2);
 		DoDrawPixel(x_pos, y_pos, color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_DRAW_CIRCLE:
 	{
-		uint16_t x0 = message.GetIntParamByIndex(1);
-		uint16_t  y0 = message.GetIntParamByIndex(2);
-		int16_t r = message.GetIntParamByIndex(3);
-		uint16_t color = message.GetIntParamByIndex(4);
+		uint16_t x0 = message.GetIntParamByIndex(0);
+		uint16_t  y0 = message.GetIntParamByIndex(1);
+		int16_t r = message.GetIntParamByIndex(2);
+		uint16_t color = message.GetIntParamByIndex(3);
 		DoDrawCircle(x0, y0, r, color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_DRAW_FILLED_CIRCLE:
 	{
-		uint16_t x0 = message.GetIntParamByIndex(1);
-		uint16_t  y0 = message.GetIntParamByIndex(2);
-		int16_t r = message.GetIntParamByIndex(3);
-		uint16_t color = message.GetIntParamByIndex(4);
+		uint16_t x0 = message.GetIntParamByIndex(0);
+		uint16_t  y0 = message.GetIntParamByIndex(1);
+		int16_t r = message.GetIntParamByIndex(2);
+		uint16_t color = message.GetIntParamByIndex(3);
 		DoDrawFilledCircle(x0, y0, r, color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_DRAW_TRIANGLE:
 	{
-		uint16_t x0 = message.GetIntParamByIndex(1);
-		uint16_t y0 = message.GetIntParamByIndex(2);
-		uint16_t x1 = message.GetIntParamByIndex(3);
-		uint16_t y1 = message.GetIntParamByIndex(4);
-		uint16_t x2 = message.GetIntParamByIndex(5);
-		uint16_t y2 = message.GetIntParamByIndex(6);
-		uint16_t color = message.GetIntParamByIndex(7);
+		uint16_t x0 = message.GetIntParamByIndex(0);
+		uint16_t y0 = message.GetIntParamByIndex(1);
+		uint16_t x1 = message.GetIntParamByIndex(2);
+		uint16_t y1 = message.GetIntParamByIndex(3);
+		uint16_t x2 = message.GetIntParamByIndex(4);
+		uint16_t y2 = message.GetIntParamByIndex(5);
+		uint16_t color = message.GetIntParamByIndex(6);
 		DoDrawTriangle(x0, y0, x1, y1, x2, y2, color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_DRAW_FILLED_TRIANGLE:
 	{
-		uint16_t x0 = message.GetIntParamByIndex(1);
-		uint16_t y0 = message.GetIntParamByIndex(2);
-		uint16_t x1 = message.GetIntParamByIndex(3);
-		uint16_t y1 = message.GetIntParamByIndex(4);
-		uint16_t x2 = message.GetIntParamByIndex(5);
-		uint16_t y2 = message.GetIntParamByIndex(6);
-		uint16_t color = message.GetIntParamByIndex(7);
+		uint16_t x0 = message.GetIntParamByIndex(0);
+		uint16_t y0 = message.GetIntParamByIndex(1);
+		uint16_t x1 = message.GetIntParamByIndex(2);
+		uint16_t y1 = message.GetIntParamByIndex(3);
+		uint16_t x2 = message.GetIntParamByIndex(4);
+		uint16_t y2 = message.GetIntParamByIndex(5);
+		uint16_t color = message.GetIntParamByIndex(6);
 		DoDrawFilledTriangle(x0, y0, x1, y1, x2, y2, color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_DRAW_ROUND_RECT:
 	{
-		uint16_t x0 = message.GetIntParamByIndex(1);
-		uint16_t y0 = message.GetIntParamByIndex(2);
-		uint16_t w = message.GetIntParamByIndex(3);
-		uint16_t h = message.GetIntParamByIndex(4);
-		uint16_t radius = message.GetIntParamByIndex(5);
-		uint16_t color = message.GetIntParamByIndex(6);
+		uint16_t x0 = message.GetIntParamByIndex(0);
+		uint16_t y0 = message.GetIntParamByIndex(1);
+		uint16_t w = message.GetIntParamByIndex(2);
+		uint16_t h = message.GetIntParamByIndex(3);
+		uint16_t radius = message.GetIntParamByIndex(4);
+		uint16_t color = message.GetIntParamByIndex(5);
 		DoDrawRoundRect(x0, y0, w, h, radius, color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_DRAW_FILLED_ROUND_RECT:
 	{
-		uint16_t x0 = message.GetIntParamByIndex(1);
-		uint16_t y0 = message.GetIntParamByIndex(2);
-		uint16_t w = message.GetIntParamByIndex(3);
-		uint16_t h = message.GetIntParamByIndex(4);
-		uint16_t radius = message.GetIntParamByIndex(5);
-		uint16_t color = message.GetIntParamByIndex(6);
+		uint16_t x0 = message.GetIntParamByIndex(0);
+		uint16_t y0 = message.GetIntParamByIndex(1);
+		uint16_t w = message.GetIntParamByIndex(2);
+		uint16_t h = message.GetIntParamByIndex(3);
+		uint16_t radius = message.GetIntParamByIndex(4);
+		uint16_t color = message.GetIntParamByIndex(5);
 		DoDrawFilledRoundRect(x0, y0, w, h, radius, color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_DRAW_BITMAP:
 	{
-		uint16_t x = message.GetIntParamByIndex(1);
-		uint16_t y = message.GetIntParamByIndex(2);
-		uint8_t bitmap = message.GetIntParamByIndex(3);
-		uint16_t w = message.GetIntParamByIndex(4);
-		uint16_t h = message.GetIntParamByIndex(5);
-		uint16_t color = message.GetIntParamByIndex(6);
+		uint16_t x = message.GetIntParamByIndex(0);
+		uint16_t y = message.GetIntParamByIndex(1);
+		uint8_t bitmap = message.GetIntParamByIndex(2);
+		uint16_t w = message.GetIntParamByIndex(3);
+		uint16_t h = message.GetIntParamByIndex(4);
+		uint16_t color = message.GetIntParamByIndex(5);
 		DoDrawBitmap(x, y, &bitmap, w, h, color);
 	}
 	break;
 	case DISPLAY_DRIVER_DRAW_CHAR_COMPLETE:
 	{
-		uint16_t x = message.GetIntParamByIndex(1);
-		uint16_t y = message.GetIntParamByIndex(2);
-		unsigned char c = message.GetCharParamByIndex(3);
-		uint16_t color = message.GetIntParamByIndex(4);
-		uint16_t bg_colorh = message.GetIntParamByIndex(5);
-		uint16_t size = message.GetIntParamByIndex(6);
+		uint16_t x = message.GetIntParamByIndex(0);
+		uint16_t y = message.GetIntParamByIndex(1);
+		unsigned char c = message.GetCharParamByIndex(2);
+		uint16_t color = message.GetIntParamByIndex(3);
+		uint16_t bg_colorh = message.GetIntParamByIndex(4);
+		uint16_t size = message.GetIntParamByIndex(5);
 		DoDrawChar(x, y, c, color, bg_colorh, size);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_SET_TEXT_COLOR:
 	{
-		uint16_t color = message.GetIntParamByIndex(1);
+		uint16_t color = message.GetIntParamByIndex(0);
 		DoSetTextColor(color);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_SET_TEXT_SIZE:
 	{
-		uint8_t size = message.GetIntParamByIndex(1);
+		uint8_t size = message.GetIntParamByIndex(0);
 		DoSetTextSize(size);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_SET_TEXT_WRAP:
 	{
-		boolean w = message.GetIntParamByIndex(1);
+		boolean w = message.GetIntParamByIndex(0);
 		DoSetTextSize(w);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_SET_ROTATION:
 	{
-		uint8_t r = message.GetIntParamByIndex(1);
+		uint8_t r = message.GetIntParamByIndex(0);
 		DoSetRotation(r);
 	}
 	break;
@@ -171,15 +171,15 @@ void OLED_Display_Device_Driver::DoCustomDisplayMessage(Int_Thread_Msg message)
 	break;
 	case OLED_DISPLAY_DRIVER_START_SCROLL_DIAG_RIGHT:
 	{
-		uint8_t start = message.GetIntParamByIndex(1);
-		uint8_t end = message.GetIntParamByIndex(1);
+		uint8_t start = message.GetIntParamByIndex(0);
+		uint8_t end = message.GetIntParamByIndex(0);
 		DoStartScrollDiagRight(start, end);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_START_SCROLL_DIAG_LEFT:
 	{
-		uint8_t start = message.GetIntParamByIndex(1);
-		uint8_t end = message.GetIntParamByIndex(1);
+		uint8_t start = message.GetIntParamByIndex(0);
+		uint8_t end = message.GetIntParamByIndex(0);
 		DoStartScrollDiagLeft(start, end);
 	}
 	break;
@@ -475,6 +475,7 @@ void OLED_Display_Device_Driver::Exec_Display_StartScrollDiagLeft(uint8_t start,
 	message->AddParam(stop);
 	PostMessage(&message);
 }
+
 
 
 

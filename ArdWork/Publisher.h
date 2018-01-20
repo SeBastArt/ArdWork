@@ -2,133 +2,219 @@
 #define _PUBLISHER_h
 
 #include "Arduino.h"
-#include <sstream>
 #include "m_Vector.h"
 #include "Base_Consts.h"
+#include "Filesystem.h"
+#include "ArduinoJson.h"
+#include "Driver.h"
 
+//#define DEBUG
+//#define LOAD_SAVE_DEBUG
 
-
-enum func_type
+struct Color
 {
-	text,
+	int R;
+	int G;
+	int B;
+};
+
+static String FloatToStr(float _value, uint8_t _digits) {
+	int int_val = round(_value);
+	unsigned count = 0;
+	//Abfrage der Stellen
+	do ++count; while (int_val /= 10);
+	char val_text[10];
+	dtostrf(_value, count + _digits, _digits, val_text);
+	return String(val_text);
+}
+
+static FileSystem filesystem;
+
+enum ctrl_type
+{
+	none,
+	input,
 	pass,
 	color,
 	value,
-	edtvalue,
 	select,
-	button_group
+	group
 };
 
-class Atomic_Base
+class CtrlElem
 {
 private:
-	int __id;
-	String __unit;
-	int GetId() const { return __id; }
-	String GetUnit() const { return __unit; }
-	void SetUnit(String _unit) { __unit = _unit; }
-public:
-	Atomic_Base(int _Id, String _unit) { __id = _Id; __unit = _unit; }
-	virtual  ~Atomic_Base() {}
-
-	Property<int, Atomic_Base> id{ this, nullptr, &Atomic_Base::GetId };
-	Property<String, Atomic_Base> unit{ this, &Atomic_Base::SetUnit, &Atomic_Base::GetUnit };
-};
-
-class Atomic_Impl : public Atomic_Base
-{
-public:
-	Atomic_Impl(int _id, String _unit) : Atomic_Base(_id, _unit) {}
-	virtual String ValueToString() const = 0;
-};
-
-template <class T>
-class Atomic : public Atomic_Impl
-{
-private:
-	T __value;
-	T *__reference;
-	bool hasRef;
-	T GetValue() const { return __value; }
-	void SetValue(T _value) { __value = _value; };
-public:
-	Atomic(int _id, T _value, String _unit = "") : Atomic_Impl(_id, _unit) { __value = _value;  hasRef = false;	}
-	Atomic(int _id, T *_reference, String _unit = "") : Atomic_Impl(_id, _unit) { __reference = _reference; hasRef = true; }
-	virtual  ~Atomic() {}
-	virtual String ValueToString() const { 
-		String return_value;
-		if (hasRef) {
-			return_value = String(*__reference);
-		}
-		else {
-			return_value = __value;
-		}
-		return return_value; 
-	}
-	Property<T, Atomic> value{ this,  &Atomic::SetValue, &Atomic::GetValue };
-};
-
-class Ctrl_Elem
-{
-private:
-	Vector<Atomic_Base*> *__vec_atomic;
-	func_type __type;
 	int __id;
 	String __name;
-	String __descr;
-	uint8_t __atomic_count;
+	String __description;
+	String __unit;
 	bool __published;
 
-	bool GetPublished() const { return __published; }
-	String GetName() const { return __name; }
-	String GetDescr() const { return __descr; }
 	int GetId() const { return __id; }
-	func_type GetType() const { return __type; }
+	String GetName() const { return __name; }
+	String GetDescrirption() const { return __description; }
+	void SetUnit(String _unit) { __unit = _unit; }
+	String GetUnit() const { return __unit; }
+	ctrl_type GetType() const { return __type; }
+	bool GetPublished() const { return __published; }
 	void SetPublished(bool _published) { __published = _published; }
-	uint8_t GetAtomicCount() const { return __atomic_count; }
+protected:
+	void *__supervisor;
+	ctrl_type __type;
 public:
-	Ctrl_Elem(int _id, String _name, func_type _type, String _descr = "Control Element Description") :
+	CtrlElem(int _id, void* _supervisor = nullptr, String _name = "Control Element Name", String _description = "Control Element Description") :
 		__id(_id),
+		__supervisor(_supervisor),
 		__name(_name),
-		__type(_type),
-		__descr(_descr),
-		__atomic_count(0)
+		__description(_description)
 	{
-		__vec_atomic = new Vector<Atomic_Base*>;
-		__published = false;
+		__type = none;
+		__unit = "";
+		__published = true;
+	};
+
+	virtual String ToString() = 0;
+
+	Property<int, CtrlElem> id{ this, nullptr, &CtrlElem::GetId };
+	Property<String, CtrlElem> name{ this, nullptr, &CtrlElem::GetName };
+	Property<ctrl_type, CtrlElem> type{ this, nullptr, &CtrlElem::GetType };
+	Property<String, CtrlElem> unit{ this, &CtrlElem::SetUnit, &CtrlElem::GetUnit };
+	Property<String, CtrlElem> description{ this, nullptr, &CtrlElem::GetDescrirption };
+	Property<bool, CtrlElem> published{ this, &CtrlElem::SetPublished, &CtrlElem::GetPublished };
+};
+
+class Select_CtrlElem : public CtrlElem
+{
+private:
+	class StringContainer
+	{
+	private:
+		String __value;
+
+	public:
+		StringContainer(String _input) { __value = _input; }
+		String ToString() { return __value; }
+	};
+
+	Vector<StringContainer*> *__string_container;
+public:
+	Select_CtrlElem(int _id, void* _supervisor, String _name = "Select Control Element", String _descr = "Description") :
+		CtrlElem(_id, _supervisor, _name, _descr)
+	{
+		__type = select;
+		__string_container = new Vector<StringContainer*>;
+	};
+
+	void AddMember(String _option) {
+		StringContainer *temp = new StringContainer(_option);
+		__string_container->PushBack(temp);
 	}
 
-	virtual ~Ctrl_Elem() {
-		delete __vec_atomic;
+	uint8_t MembersCount() {
+		return __string_container->Size();
 	}
 
-	void AddAtomic(Atomic_Base *atomic) {
-		__vec_atomic->PushBack(atomic);
-		__atomic_count++;
+	String GetMember(uint8_t _index) {
+		String return_value = "miss_hit_Select_CtrlElem";
+		if ((_index > -1) && (_index < __string_container->Size()))
+			return_value = ((StringContainer*)(*__string_container)[_index])->ToString();
+		return return_value;
 	}
 
-	Atomic_Base *GetAtomicByIndex(uint8_t _index) {
-		if ((index >= 0) && (_index < __atomic_count)) {
-			return (*__vec_atomic)[_index];
-		}
-		else {
-			return nullptr;
-		}
+	String ToString() {
+		return String(*reinterpret_cast<int*>(__supervisor));
 	}
 
-	Property<int, Ctrl_Elem> id{ this, nullptr, &Ctrl_Elem::GetId };
-	Property<String, Ctrl_Elem> name{ this, nullptr, &Ctrl_Elem::GetName };
-	Property<func_type, Ctrl_Elem> type{ this, nullptr, &Ctrl_Elem::GetType };
-	Property<String, Ctrl_Elem> descr{ this, nullptr, &Ctrl_Elem::GetDescr };
-	Property<uint8_t, Ctrl_Elem> atomic_count{ this, nullptr, &Ctrl_Elem::GetAtomicCount };
-	Property<bool, Ctrl_Elem> published{ this, &Ctrl_Elem::SetPublished, &Ctrl_Elem::GetPublished };
+};
+
+
+class Group_CtrlElem : public Select_CtrlElem
+{
+public:
+	Group_CtrlElem(int _id, String _name = "Group Control Element", String _descr = "Description") :
+		Select_CtrlElem(_id, nullptr, _name, _descr)
+	{
+		__type = group;
+	}
+
+	String ToString() {
+		return "";
+	}
+};
+
+class Input_CtrlElem :public CtrlElem
+{
+public:
+	Input_CtrlElem(int _id, String* _supervisor, String _name = "Text Control Element", String _descr = "Description") :
+		CtrlElem(_id, (void*)_supervisor, _name, _descr)
+	{
+		__type = input;
+	};
+
+	String ToString() {
+		return String(*((String*)__supervisor)) + unit;
+	};
+};
+
+
+class Password_CtrlElem :public CtrlElem
+{
+public:
+	Password_CtrlElem(int _id, String* _supervisor, String _name = "Password Control Element", String _descr = "Description") :
+		CtrlElem(_id, (void*)_supervisor, _name, _descr)
+	{
+		__type = pass;
+	};
+
+	String ToString() {
+		return String(*((String*)__supervisor)) + unit;
+	};
+};
+
+class Color_CtrlElem :public CtrlElem
+{
+public:
+	Color_CtrlElem(int _id, void* _supervisor, String _name = "Color Control Element", String _descr = "Description") :
+		CtrlElem(_id, _supervisor, _name, _descr)
+	{
+		__type = color;
+	};
+
+	String ToString() {
+		Color v_color = *reinterpret_cast<Color*>(__supervisor);
+		char buf[12];
+		String result_string;
+		result_string = String(itoa(v_color.R, buf, 16)) + String(itoa(v_color.G, buf, 16)) + String(itoa(v_color.B, buf, 16));
+		return result_string;
+	};
+};
+
+
+class Value_CtrlElem :public CtrlElem
+{
+private:
+	bool __editable;
+public:
+	Value_CtrlElem(int _id, float* _supervisor, bool _editable, String _name = "Value Control Element", String _descr = "Description") :
+		CtrlElem(_id, (void*)_supervisor, _name, _descr),
+		__editable(_editable)
+	{
+		__type = value;
+	};
+
+	bool IsEditable() { return __editable; }
+
+	String ToString() {
+		String temp = FloatToStr(*((float*)__supervisor), 0);
+		return temp;
+	};
 };
 
 
 class Descriptor
 {
 private:
-	Vector<Ctrl_Elem*> *__vec_ctrl_elem;
+	Vector<CtrlElem*> *__vec_ctrlelem;
 	int __id;
 	String __name;
 	String __descr;
@@ -150,18 +236,42 @@ public:
 		__descr("Driver Description"),
 		__ctrl_elem_count(0),
 		__published(false) {
-		__vec_ctrl_elem = new Vector<Ctrl_Elem*>;
+		__vec_ctrlelem = new Vector<CtrlElem*>;
 	};
-	virtual ~Descriptor() { delete  __vec_ctrl_elem; }
+	virtual ~Descriptor() { delete  __vec_ctrlelem; }
 
-	Ctrl_Elem *GetCtrlElemByIndex(uint8_t _index) {
-		if ((index >= 0) && (_index < __ctrl_elem_count))
-			return (*__vec_ctrl_elem)[_index];
-		else
-			return nullptr;
+	CtrlElem *GetCtrlElemByIndex(uint8_t _index) {
+		CtrlElem* return_value = nullptr;
+		if ((index >= 0) && (_index < __ctrl_elem_count)) {
+			return_value = (*__vec_ctrlelem)[_index];
+		}
+		return return_value;
 	}
-	void Add_Descriptor_Element(Ctrl_Elem *_ctrl_elem) {
-		__vec_ctrl_elem->PushBack(_ctrl_elem);
+
+	bool GetCtrlElemByIndex(uint8_t _index, CtrlElem *_elem) {
+		bool return_value = false;
+		if ((index >= 0) && (_index < __ctrl_elem_count)) {
+			_elem = (*__vec_ctrlelem)[_index];
+			return_value = true;
+		}
+		return return_value;
+	}
+
+	bool GetCtrlElemById(int _id, CtrlElem *_elem) {
+		bool return_value = false;
+		for (size_t i = 0; i < __ctrl_elem_count; i++) {
+			CtrlElem * t_ctrlelem = (*__vec_ctrlelem)[i];
+			if (t_ctrlelem->id == _id) {
+				_elem = (*__vec_ctrlelem)[i];
+				return_value = true;
+				break;
+			}
+		}
+		return return_value;
+	}
+
+	void Add_Descriptor_Element(CtrlElem *_ctrl_elem) {
+		__vec_ctrlelem->PushBack(_ctrl_elem);
 		__ctrl_elem_count++;
 	}
 
@@ -171,6 +281,7 @@ public:
 	Property<uint8_t, Descriptor> ctrl_count{ this, nullptr, &Descriptor::GetCtrlElemCount };
 	Property<bool, Descriptor> published{ this, &Descriptor::SetPublished, &Descriptor::GetPublished };
 };
+
 
 class Descriptor_List
 {
@@ -190,22 +301,194 @@ public:
 		__elem_count++;
 	}
 
+	void Load(int _driverID, void(*fw_Exec_Command)(void*, int, String), void* context) {
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("Start Descriptor_List::Load");
+#endif //  LOAD_SAVE_DEBUG
+		DynamicJsonBuffer jsonBuffer;
+		String file_text;
+
+		filesystem.OpenFile("/testfile.json");
+		file_text = filesystem.FileAsString();
+		JsonObject& root = jsonBuffer.parseObject(file_text);
+		filesystem.CloseFile();
+
+		if (!root.success()) {
+			Serial.println("parseObject() failed");
+			return;
+		}
+
+		JsonArray& arr_descriptors = root["Descriptors"];
+		Descriptor *ptr_descriptor;
+		for (auto obj_descriptor : arr_descriptors) {
+			for (size_t i = 0; i < __elem_count; i++) {
+				Descriptor * ptr_descriptor = (*__vec_descriptor_elem)[i];
+				if (_driverID == (int)obj_descriptor["id"]) {
+					JsonArray& arr_controls = obj_descriptor["Controls"];
+					for (auto obj_control : arr_controls) {
+						int device_id = obj_descriptor["id"];
+						int contrl_id = obj_control["id"];
+						int contrl_type = obj_control["type"];
+						String value = obj_control["value"];
+						if ((contrl_id > 0) && !value.equals("") && (contrl_type != group))
+							fw_Exec_Command(context, contrl_id, value);
+					}
+				}
+			}
+		}
+
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("Loaded!");
+		root.prettyPrintTo(Serial);
+#endif //  LOAD_SAVE_DEBUG	
+
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("Ende Descriptor_List::Load");
+#endif //  LOAD_SAVE_DEBUG
+	}
+
+
+	void Save() {
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("Start Descriptor_List::Save");
+#endif //  LOAD_SAVE_DEBUG
+		DynamicJsonBuffer jsonBuffer;
+
+
+		String file_text;
+
+		filesystem.OpenFile("/testfile.json");
+		file_text = filesystem.FileAsString();
+		JsonObject& root = jsonBuffer.parseObject(file_text);
+		filesystem.CloseFile();
+
+		if (!root.success()) {
+			JsonObject& root = jsonBuffer.createObject();
+			JsonArray& arr_descriptors = root.createNestedArray("Descriptors");
+			for (size_t i = 0; i < __vec_descriptor_elem->Size(); i++)
+			{
+				JsonObject& descriptor = arr_descriptors.createNestedObject();
+				descriptor["id"] = (int)(*__vec_descriptor_elem)[i]->id;
+				JsonArray& arr_controls = descriptor.createNestedArray("Controls");
+				for (size_t j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++)
+				{
+					JsonObject& obj_control = arr_controls.createNestedObject();
+
+#ifdef  LOAD_SAVE_DEBUG
+					Serial.print(" Save - ");
+					Serial.print("CtrlIndex: ");
+					Serial.print(j);
+					Serial.print(" - Id: ");
+					Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id);
+					Serial.print(" - Type: ");
+					Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type);
+					Serial.print(" - Value: ");
+					Serial.println((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString());
+#endif //  LOAD_SAVE_DEBUG	
+
+					obj_control["id"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id;
+					obj_control["type"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type;
+					obj_control["value"] = (String)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
+				}
+			}
+		}
+		else {
+			JsonArray& arr_descriptors = root["Descriptors"];
+			Descriptor *ptr_descriptor;
+			
+			for (size_t i = 0; i < __elem_count; i++) {
+				Descriptor * ptr_descriptor = (*__vec_descriptor_elem)[i];
+				bool found = false;
+				for (auto obj_descriptor : arr_descriptors) {
+					if (ptr_descriptor->id == (int)obj_descriptor["id"]) {
+						found = true;
+						JsonArray& arr_controls = obj_descriptor["Controls"];
+						for (auto obj_control : arr_controls) {
+							for (size_t j = 0; j < ptr_descriptor->ctrl_count; j++) {
+								CtrlElem * ptr_control = (*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j);
+								if (ptr_control->id == (int)obj_control["id"]) {
+									obj_control["type"] = (int)ptr_control->type;
+									obj_control["value"] = (String)ptr_control->ToString();
+								}
+							}
+						}
+					}
+				}
+				if (!found) {
+					JsonObject& descriptor = arr_descriptors.createNestedObject();
+					descriptor["id"] = (int)ptr_descriptor->id;
+					JsonArray& arr_controls = descriptor.createNestedArray("Controls");
+					for (size_t j = 0; j < ptr_descriptor->ctrl_count; j++)
+					{
+						JsonObject& obj_control = arr_controls.createNestedObject();
+
+#ifdef  LOAD_SAVE_DEBUG
+						Serial.print(" Add - ");
+						Serial.print("DescriptorIndey: "); Serial.print(ptr_descriptor->id);
+						Serial.print("CtrlIndex: "); Serial.print(j);
+						Serial.print(" - Id: "); Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id);
+						Serial.print(" - Type: "); Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type);
+						Serial.print(" - Value: "); Serial.println((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString());	
+#endif //  LOAD_SAVE_DEBUG
+						obj_control["id"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id;
+						obj_control["type"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type;
+						obj_control["value"] = (String)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
+					}
+
+				}
+			}
+		}
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("Saved!");
+		root.prettyPrintTo(Serial);
+#endif //  LOAD_SAVE_DEBUG	
+
+		String text;
+		root.printTo(text);
+		filesystem.SaveToFile("/testfile.json", text);
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("Ende Descriptor_List::Save");
+#endif //  LOAD_SAVE_DEBUG
+	}
+
 	void Clear() {
 		__vec_descriptor_elem->Clear();
 		__elem_count = 0;
 	}
 
-	Descriptor *GetElemByIndex(int _index) {
-		if ((index >= 0) && (_index < __elem_count))
-			return (*__vec_descriptor_elem)[_index];
-		else
-			return nullptr;
+	bool GetElemByIndex(int _index, Descriptor * _descriptor) {
+		bool return_value = false;
+		if ((index >= 0) && (_index < __elem_count)) {
+			_descriptor = (*__vec_descriptor_elem)[_index];
+			return_value = true;
+		}
+		return return_value;
 	}
 
+	Descriptor *GetElemByIndex(int _index) {
+		Descriptor * return_value = nullptr;
+		if ((index >= 0) && (_index < __elem_count)) {
+			return_value = (*__vec_descriptor_elem)[_index];
+		}
+		return return_value;
+	}
+
+	bool GetElemById(int _id, Descriptor * _descriptor) {
+		bool return_value = false;
+		for (size_t i = 0; i < __elem_count; i++) {
+			Descriptor * t_descr = (*__vec_descriptor_elem)[i];
+			if (t_descr->id == _id) {
+				_descriptor = (*__vec_descriptor_elem)[i];
+				return_value = true;
+				break;
+			}
+		}
+		return return_value;
+	}
 	Property<uint8_t, Descriptor_List> count{ this, nullptr, &Descriptor_List::GetElemCount };
 };
 
-static Descriptor_List *__descriptor_list = new Descriptor_List;
+
 
 //-----------------------------------------------------
 // Observer Class			
@@ -249,6 +532,7 @@ public:
 			return false;
 		}
 	};
+
 	bool NotifyObservers(Descriptor_List *_descriptor_list) {
 		for (int i = 0; i < m_ObserverVec->Size(); i++) {
 			(*m_ObserverVec)[i]->Notify(_descriptor_list);
