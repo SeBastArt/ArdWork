@@ -52,7 +52,6 @@ private:
 
 public:
 	WebSocket_Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = nullptr, uint8_t priority = THREAD_PRIORITY_NORMAL);
-	void UpdateControls();
 
 //herited
 protected:

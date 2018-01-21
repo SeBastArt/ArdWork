@@ -70,19 +70,37 @@ void Wifi_Device_Driver::DoAfterInit()
 
 void Wifi_Device_Driver::SetSSID(String _ssid)
 {
+#ifdef  DEBUG
+	Serial.println("Start Wifi_Device_Driver::SetSSID");
+#endif //  DEBUG
 	__ssid = _ssid;
+#ifdef  DEBUG
+	Serial.println("Ende Wifi_Device_Driver::SetSSID");
+#endif //  DEBUG
 }
 
 void Wifi_Device_Driver::SetPassword(String _password)
 {
+#ifdef  DEBUG
+	Serial.println("Start Wifi_Device_Driver::SetPassword");
+#endif //  DEBUG
 	__password = _password;
+#ifdef  DEBUG
+	Serial.println("Ende Wifi_Device_Driver::SetPassword");
+#endif //  DEBUG
 }
 
 void  Wifi_Device_Driver::SetMode(uint8_t _mode) {
+#ifdef  DEBUG
+	Serial.println("Start Wifi_Device_Driver::SetMode");
+#endif //  DEBUG
 	__isAP = _mode;
 	if (!__WiFi_isConnected && !__AP_isConnected) {
 		__run_isAp = _mode;
 	}
+#ifdef  DEBUG
+	Serial.println("Ende Wifi_Device_Driver::SetMode");
+#endif //  DEBUG
 }
 
 void  Wifi_Device_Driver::ResetConnection() {
@@ -100,40 +118,46 @@ void Wifi_Device_Driver::DoBeforeSuspend()
 
 void Wifi_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 {
-#ifdef  DEBUG
-	Serial.println("Start Wifi_Device_Driver::DoDeviceMessage");
-#endif //  DEBUG
 	int messageID = message.id;
 	switch (messageID)
 	{
 	case WIFI_DEVICE_DRIVER_SET_SSID:
 	{
+#ifdef  DEBUG
+		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_SET_SSID");
+#endif //  DEBUG
 		String ssid = message.GetStringParamByIndex(0);
 		SetSSID(ssid);
 	}
 	break;
 	case WIFI_DEVICE_DRIVER_SET_PASSWORD:
 	{
+#ifdef  DEBUG
+		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_SET_PASSWORD");
+#endif //  DEBUG
 		String password = message.GetStringParamByIndex(0);
 		SetPassword(password);
 	}
 	break;
 	case WIFI_DEVICE_DRIVER_SET_MODE:
 	{
+#ifdef  DEBUG
+		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_SET_MODE");
+#endif //  DEBUG
 		int mode = message.GetIntParamByIndex(0);
 		SetMode(mode);
 	}
 	break;
 	case WIFI_DEVICE_DRIVER_RECONNECT:
 	{
+#ifdef  DEBUG
+		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_RECONNECT");
+#endif //  DEBUG
 		ResetConnection();
 	}
 	break;
 	}
-#ifdef  DEBUG
-	Serial.println("Ende Wifi_Device_Driver::DoDeviceMessage");
-#endif //  DEBUG
-	}
+}
 
 void Wifi_Device_Driver::ProvideAP() {
 #ifdef  DEBUG
@@ -159,7 +183,10 @@ void Wifi_Device_Driver::ProvideAP() {
 
 	Serial.print("AccessPoint SSID: ["); Serial.print(ssid); Serial.print("]");
 	IPAddress myIP = WiFi.softAPIP();
-	Serial.print(" IP-address: "); Serial.println("[" + String(myIP) + "]");
+	Serial.print(" IP-address: ");
+	Serial.print("[");
+	Serial.print(myIP);
+	Serial.println("]");
 	__AP_isConnected = true;
 	StartMSDNServices();
 #ifdef  DEBUG
@@ -202,7 +229,7 @@ void Wifi_Device_Driver::ConnectToWifi() {
 
 void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #ifdef  DEBUG
-	Serial.println("Start Wifi_Device_Driver::DoUpdate");
+	//Serial.println("Start Wifi_Device_Driver::DoUpdate");
 #endif //  DEBUG
 	if ((WiFi.status() != WL_CONNECTED) && !__AP_isConnected) {
 		if (__WiFi_isConnected == true) {
@@ -227,11 +254,11 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 				__run_isAp = true;
 				Serial.println("Fallback to AccessPoint: ");
 			}
-			}
+		}
 		else {
 			ProvideAP();
 		}
-		}
+	}
 	else {
 		if (!__WiFi_isConnected && !__run_isAp) {
 			Serial.print("Connected to: ");
@@ -250,9 +277,9 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 	}
 #ifdef  DEBUG
-	Serial.println("Ende Wifi_Device_Driver::DoUpdate");
+	//Serial.println("Ende Wifi_Device_Driver::DoUpdate");
 #endif //  DEBUG
-	}
+}
 
 void Wifi_Device_Driver::Exec_Set_SSID(String _ssid) {
 	Int_Thread_Msg *message = new Int_Thread_Msg(WIFI_DEVICE_DRIVER_SET_SSID);

@@ -28,7 +28,7 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 #endif //  DEBUG
 	__descriptor->name = F("Luxmeter");
 	__descriptor->descr = F("Luxmeter stellt die Steuerung des Lichtsensors bereit es erlaubt die Kontrolle &uuml;ber die Ausleseparameter und stellt Live - Werte sowie Diagramme bereit");
-	__descriptor->published = true;
+	__descriptor->published = false;
 
 #ifdef  DEBUG
 	Serial.println("Start Select_CtrlElem *ctrlElem_autorange");
@@ -95,29 +95,33 @@ void Luxmeter_Device_Driver::DoAfterInit()
 	Serial.println("Start Luxmeter_Device_Driver::DoAfterInit");
 #endif //  DEBUG
 	if (!tsl->begin()) {
+#ifdef  DEBUG
 		Serial.println(F("------------------------------------"));
 		Serial.println(F("Luxsensor not initialised"));
 		Serial.println(F("maybe wrong adress of i2c"));
 		Serial.println(F(""));
+#endif //  DEBUG
 	}
 	else {
+#ifdef  DEBUG
 		DisplaySensorDetails();
 		Serial.println(F("Luxmeter-Driver initialized!"));
 		/* You can also manually set the gain or enable auto-gain support */
 		// tsl.setGain(TSL2561_GAIN_1X);      /* No gain ... use in bright light to avoid sensor saturation */
 		// tsl.setGain(TSL2561_GAIN_16X);     /* 16x gain ... use in low light to boost sensitivity */
-
+#endif //  DEBUG
 		Set_Enable_AutoRange(true);
 		tsl->enableAutoRange(true);            /* Auto-gain ... switches automatically between 1x and 16x */
 
 		Set_Integration_Time(TSL2561_INTEGRATIONTIME_13MS);
+#ifdef  DEBUG
 		/* Update these values depending on what you've set above! */
 		Serial.println(F("------------------------------------"));
 		Serial.print(F("Gain:         ")); Serial.println(F("Auto"));
 		Serial.print(F("Timing:       ")); Serial.println(F("402 ms"));
 		Serial.println(F("------------------------------------"));
 		Serial.println(F(""));
-
+#endif //  DEBUG
 	}
 	accuracy_delay = 1000;
 	accuracy_delta = 0;
@@ -136,40 +140,46 @@ void Luxmeter_Device_Driver::DoBeforeSuspend() {
 }
 
 void Luxmeter_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
-#ifdef  DEBUG
-	Serial.println("Start Luxmeter_Device_Driver::DoDeviceMessage");
-#endif //  DEBUG
 	int messageID = message.id;
 	switch (messageID)
 	{
 	case LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Luxmeter_Device_Driver::DoDeviceMessage - LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY");
+#endif //  DEBUG
 		uint16 _milliseconds = message.GetIntParamByIndex(0);
 		Set_Accuracy_Delay(_milliseconds);
 	}
 	break;
 	case LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Luxmeter_Device_Driver::DoDeviceMessage - LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME");
+#endif //  DEBUG
 		uint16 _integrationTime = message.GetIntParamByIndex(0);
 		Set_Integration_Time((tsl2561IntegrationTime_t)_integrationTime);
 	}
 	break;
 	case LUXMETER_DEVICE_DRIVER_SET_GAIN:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Luxmeter_Device_Driver::DoDeviceMessage - LUXMETER_DEVICE_DRIVER_SET_GAIN");
+#endif //  DEBUG
 		uint16 _gain = message.GetIntParamByIndex(0);
 		Set_Gain((tsl2561Gain_t)_gain);
 	}
 	break;
 	case LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Luxmeter_Device_Driver::DoDeviceMessage - LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE");
+#endif //  DEBUG
 		bool _autoRange = message.GetBoolParamByIndex(0);
 		Set_Enable_AutoRange(_autoRange);
 	}
 	break;
 	}
-#ifdef  DEBUG
-	Serial.println("Ende Luxmeter_Device_Driver::DoDeviceMessage");
-#endif //  DEBUG
 }
 
 void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {

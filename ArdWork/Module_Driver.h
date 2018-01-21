@@ -27,11 +27,10 @@ class WebSocket_Wifi_Device_Driver;
 class Module_Driver : public Driver//, public Observee
 {
 private:
-	bool isdebug;
+	int __isdebug;
 	Vector<ThreadMessage*> queue;
 
 	void DoUpdate(uint32_t deltaTime);
-	//void UpdateControls();
 protected:
 	Vector <Driver*> *device_list;
 

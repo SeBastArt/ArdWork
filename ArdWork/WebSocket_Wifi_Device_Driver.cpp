@@ -104,14 +104,6 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 #endif //  DEBUG
 }
 
-
-
-
-void WebSocket_Wifi_Device_Driver::UpdateControls() {
-
-}
-
-
 void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 #ifdef  DEBUG
 	//Serial.println("Start WebSocket_Wifi_Device_Driver::UpdateComm");
@@ -193,16 +185,6 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 		client.println("<html>");
 		SendHeader(&client);
 		client.println("<body>");
-		/*if (__isAP) {
-			String thisName = __descriptor->name;
-			for (uint8_t i = 0; i < __descriptor_list->count; i++)
-				if (!thisName.equals(__descriptor_list->GetElemByIndex(i)->name)) {
-					if (__fallbackAP)
-						__descriptor_list->GetElemByIndex(i)->published = false;
-				}
-				else
-					__descriptor_list->GetElemByIndex(i)->published = true;
-		}*/
 		if (__descriptor_list->count > 0) {
 			client.println("<div class=\"container\">");
 			client.println("<h2 class=\"head-line\">Bilderrahmen Steuerung</h2>");

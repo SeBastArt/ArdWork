@@ -22,6 +22,7 @@ Driver::Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) :
 	__DriverId = driver_count;
 	__DriverType = -1;
 	__msg_queue_length = 0;
+	__isPublished = false;
 #ifdef  DEBUG
 	Serial.print("Ende Constructor Driver");
 #endif //  DEBUG
@@ -55,9 +56,6 @@ void Driver::Exec_Command(int _cmdId, String _value)
 }
 
 void Driver::OnUpdate(uint32_t deltaTime) {
-#ifdef  DEBUG
-	//Serial.println("Start Driver::OnUpdate");
-#endif //  DEBUG
 	unsigned long  start = micros();
 	if (!message_queue.Empty()) {
 		for (unsigned i = 0; i < message_queue.Size(); i++) {
@@ -71,6 +69,9 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 			{
 			case DRIVER_SUSPEND:
 			{
+#ifdef  DEBUG
+				Serial.println("Start Driver::OnUpdate DRIVER_SUSPEND");
+#endif //  DEBUG
 				DoSuspend();
 				break;
 			}
@@ -81,7 +82,12 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 #endif //  DEBUG
 				DoInit();
 				Build_Descriptor();
+				__isPublished = __descriptor->published;
 				__descriptor_list->Add_Descriptor(__descriptor);
+#ifdef  DEBUG
+				Serial.print("Initialize Driver with ID: ");
+				Serial.println(DriverId);
+#endif //  DEBUG
 				__descriptor_list->Load(DriverId, &fw_Exec_Command, this);
 #ifdef  DEBUG
 				Serial.println("Ende Driver::OnUpdate DRIVER_INIT");
@@ -90,11 +96,17 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 			}
 			case DRIVER_SHUTDOWN:
 			{
+#ifdef  DEBUG
+				Serial.println("Start Driver::OnUpdate DRIVER_SHUTDOWN");
+#endif //  DEBUG
 				DoShutdown();
 				break;
 			}		
 			default:
 			{
+#ifdef  DEBUG
+				Serial.println("Start Driver::OnUpdate default");
+#endif //  DEBUG
 				DoMessage(*message_queue[i]);
 				CheckForMsg();
 			}
@@ -104,9 +116,6 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 		message_queue.Clear();
 	}
 	DoUpdate(deltaTime);
-#ifdef  DEBUG
-	//Serial.println("Ende Driver::OnUpdate");
-#endif //  DEBUG
 }
 
 
@@ -115,7 +124,6 @@ void Driver::CheckForMsg() {
 	Serial.print("Driver::OnUpdate Save CheckForMsg: ");
 	Serial.println(this->DriverId);
 #endif //  DEBUG
-	
 	if (__msg_queue_length > 0) {
 		__msg_queue_length--;
 		if (__msg_queue_length <= 0) {
@@ -177,4 +185,9 @@ bool Driver::isBusy() const
 bool Driver::isInactive() const
 {
 	return is_Inactive;
+}
+
+bool Driver::isPublished()
+{
+	return __isPublished;
 }

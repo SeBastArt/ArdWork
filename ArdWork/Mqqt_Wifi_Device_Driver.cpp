@@ -54,10 +54,6 @@ void Mqqt_Wifi_Device_Driver::SendMessage(String msg)
 	msg_list.PushBack(_msg);
 }
 
-void Mqqt_Wifi_Device_Driver::UpdateControls()
-{
-}
-
 void Mqqt_Wifi_Device_Driver::SetOutTopic(String topic) {
 	Serial.print(F("Set Mqqt-Server PublicTopic to: "));
 	Serial.println(topic);

@@ -146,7 +146,7 @@ void setup() {
 
 #ifdef PICTURE_NodeMCU_GBR
 	//Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 24);
-	//Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28);
+	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28);
 	//Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(LED_BUILTIN), true);
 	//Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(D3), true);
 	//Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D5"), true);
@@ -197,7 +197,7 @@ void setup() {
 	//mqqt_wifi->SetMQQTBroker("192.168.178.33");
 	//picture_module->AddDevice(button);
 	//picture_module->AddDevice(led);
-	//picture_module->AddDevice(strip);
+	picture_module->AddDevice(strip);
 	//picture_module->AddDevice(mqqt_wifi);
 	picture_module->AddDevice(webSocket_server_wifi);
 	picture_module->AddDevice(luxmeter);
@@ -222,39 +222,18 @@ void setup() {
 
 
 #if defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	//Serial.println(F("Start ESP8266-NodeMCU-Controller"));
 	//threadManager.StartThread(esp8266_NodeMCU_controller);
-
-	/*Serial.println(F("Start Uart_RGB_Led_DevDrv");
-	threadManager.StartThread(rgb_mqqt_wifi_module);*/
-
-	Serial.println(F("Start Picture_Module_Driver"));
 	threadManager.StartThread(picture_module);
-
-	//Serial.println(F("Start UART_Rgb_Led-Driver"));
-	//threadManager.StartThread(strip);
-
-	Serial.println(F("Start Luxmeter-Driver"));
+	threadManager.StartThread(strip);
 	threadManager.StartThread(luxmeter);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) || defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	//Serial.println(F("Start Wifi-Status LED-Driver");
 	//threadManager.StartThread(wifi_status_led);
-
-	//Serial.println(F("Start LED-Driver");
 	//threadManager.StartThread(led);
-
-	//Serial.println(F("Start Button-Driver"));
 	//threadManager.StartThread(button);
-
-	//Serial.println(F("Start MQQT_Wifi-Driver");
 	//threadManager.StartThread(mqqt_wifi);
-
-	//Serial.println(F("Start WebServer_Wifi-Driver");
 	//threadManager.StartThread(server_wifi);
-
-	//Serial.println(F("Start WebSocket_Wifi-Driver"));
 	threadManager.StartThread(webSocket_server_wifi);
 #endif
 

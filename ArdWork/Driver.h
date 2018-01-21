@@ -20,6 +20,7 @@ class Driver : public Thread, public Int_Thread_Msg_Sys
 private:
 	uint8_t __msg_queue_length;
 	int __DriverId;
+	bool __isPublished;
 	void CheckForMsg();
 	int GetDriverId() const { return __DriverId; }
 	unsigned int GetDriverType() const { return __DriverType; }
@@ -61,7 +62,7 @@ public:
 	bool isIdle() const;
 	bool isBusy() const;
 	bool isInactive() const;
-
+	bool isPublished();
 	Descriptor *GetDescriptor();
 	void Exec_Command(int _cmdId, String _command);
 };

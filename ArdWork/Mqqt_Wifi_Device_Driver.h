@@ -17,7 +17,6 @@ class Mqqt_Wifi_Device_Driver : public Wifi_Device_Driver
 {
 public:
 	Mqqt_Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = NULL, uint8_t priority = THREAD_PRIORITY_NORMAL);
-	void UpdateControls();
 private:
 	uint8 connRetry;
 	String outTopic;

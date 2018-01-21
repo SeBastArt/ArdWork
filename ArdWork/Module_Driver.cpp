@@ -24,7 +24,7 @@ extern "C" {
 
 Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
-	isdebug = false;
+	__isdebug = false;
 	device_list = new Vector <Driver*>;
 }
 
@@ -44,15 +44,11 @@ void Module_Driver::Build_Descriptor() {
 
 	Build_Module_Discriptor();
 
-	/*Ctrl_Elem *ctrl_elem_debug = new Ctrl_Elem(MODULE_DRIVER_SET_DEBUG_MODE, F("Debug Mode"), select, F("Debug Mode On or Off"));
-	ctrl_elem_debug->published = true;
+	Select_CtrlElem *ctrlElem_debug = new Select_CtrlElem(MODULE_DRIVER_SET_DEBUG_MODE, &__isdebug, F("Debug Mode"), F("Debug Mode On or Off - need a reload of HtmlPage"));
+	ctrlElem_debug->AddMember("Off");
+	ctrlElem_debug->AddMember("On");
 
-	Atomic<String> *atomic_debug_off = new Atomic<String>(0, F("Off"));
-	Atomic<String> *atomic_debug_on = new Atomic<String>(1, F("On"));
-	ctrl_elem_debug->AddAtomic(atomic_debug_off);
-	ctrl_elem_debug->AddAtomic(atomic_debug_on);
-
-	__descriptor->Add_Descriptor_Element(ctrl_elem_debug);*/
+	__descriptor->Add_Descriptor_Element(ctrlElem_debug);
 #ifdef  DEBUG
 	Serial.println("Ende Module_Driver::Build_Descriptor");
 #endif //  DEBUG
@@ -60,13 +56,6 @@ void Module_Driver::Build_Descriptor() {
 
 void Module_Driver::AddDevice(Device_Driver* device)
 {
-
-	/*if ((device)->DriverType == MQQT_WIFI_DEVICE_DRIVER_TYPE) {
-		AddObserver((Mqqt_Wifi_Device_Driver*)(device));
-	}
-	if ((device)->DriverType == WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE) {
-		AddObserver((WebSocket_Wifi_Device_Driver*)(device));
-	}*/
 	device_list->PushBack(device);
 }
 
@@ -300,6 +289,7 @@ void Module_Driver::DoMessage(Int_Thread_Msg message) {
 	case MODULE_DRIVER_SET_DEBUG_MODE:
 	{
 		bool state = message.GetBoolParamByIndex(0);
+		__isdebug = (int)state;
 		Set_Debug_Mode(state);
 	}
 	break;
@@ -334,6 +324,30 @@ void Module_Driver::DoSuspend() {
 	for (int i = 0; i < device_list->Size(); i++) {
 		(*device_list)[i]->ExecSuspend();
 	}
+}
+
+
+void Module_Driver::Set_Debug_Mode(bool _state)
+{
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::Set_Debug_Mode");
+#endif //  DEBUG
+	if (_state) {
+		for (uint8_t i = 0; i < __descriptor_list->count; i++)
+			__descriptor_list->GetElemByIndex(i)->published = true;
+	}
+	else {
+		for (uint8_t i = 0; i < __descriptor_list->count; i++) {
+			Driver *device = (*device_list)[i];
+			Descriptor *descriptor;
+			if (__descriptor_list->GetElemById(device->DriverId, descriptor)) {
+				descriptor->published = device->isPublished();
+			}
+		}
+	}
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::Set_Debug_Mode");
+#endif //  DEBUG
 }
 
 
@@ -401,22 +415,6 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 	return result;
 }
 
-//void Module_Driver::UpdateControls()
-//{
-//	__descriptor_list->Clear();
-//	for (int i = 0; i < device_list->Size(); i++) {
-//		Descriptor *temp = (*device_list)[i]->GetDescriptor();
-//		if (isdebug || temp->published) {
-//			__descriptor_list->Add_Descriptor((*device_list)[i]->GetDescriptor());
-//		}
-//	}
-//	__descriptor_list->Add_Descriptor(GetDescriptor());
-//}
-
-void Module_Driver::Set_Debug_Mode(bool _state)
-{
-	isdebug = _state;
-}
 
 void Module_Driver::Exec_Set_Debug_Mode(bool _state)
 {

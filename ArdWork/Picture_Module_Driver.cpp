@@ -91,18 +91,19 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 		if (pButton->State == THREAD_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
-				//Pattern_Next();
+				Pattern_Next();
 			}
 		}
 		else if (pButton->State == THREAD_MSG_BUTTONSTATE_RELEASED)
 		{
-			//if (pButton->Id == ((Button_Device_Driver *)Selected_Button_Device)->GetButtonPinID()) {
-			//}
+			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
+				//
+			}
 		}
 		else if (pButton->State == THREAD_MSG_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
-				//Pattern_Off();
+				Pattern_Off();
 			}
 		}
 		break;
@@ -115,51 +116,69 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 
 void Picture_Module_Driver::DoModuleMessage(Int_Thread_Msg message)
 {
-#ifdef  DEBUG
-	Serial.println("Start Picture_Module_Driver::DoModuleMessage");
-#endif //  DEBUG
 	int messageID = message.id;
 	switch (messageID)
 	{
 	case PICTURE_MODULE_DRIVER_PATTERN_NEXT:
 	{
-		//Pattern_Next();
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_NEXT");
+#endif //  DEBUG
+		Pattern_Next();
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_PREV:
 	{
-		//Pattern_Prev();
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_PREV");
+#endif //  DEBUG
+		Pattern_Prev();
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_OFF:
 	{
-		//Pattern_Off();
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_OFF");
+#endif //  DEBUG
+		Pattern_Off();
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_SWITCH:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_SWITCH");
+#endif //  DEBUG
 		uint8_t direction = message.GetIntParamByIndex(0);
-		//SwitchPattern(direction);
+		SwitchPattern(direction);
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_AUTO_BRIGHTNESS:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_AUTO_BRIGHTNESS");
+#endif //  DEBUG
 		bool state = message.GetIntParamByIndex(0);
-		//Set_Auto_Brightness(state);
+		Set_Auto_Brightness(state);
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS");
+#endif //  DEBUG
 		int brightness = message.GetIntParamByIndex(0);
-		//SetRelBrightness(brightness);
+		SetRelBrightness(brightness);
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_COLOR:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_COLOR");
+#endif //  DEBUG
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(0).c_str(), NULL, 16);
-		__sv_color.R = (uint8_t)(rgb >> 16);
-		__sv_color.G = (uint8_t)(rgb >> 8);
-		__sv_color.B = (uint8_t)(rgb >> 0);
+		__sv_color.R = (uint8_t)((rgb >> 16) & 0xFF);
+		__sv_color.G = (uint8_t)((rgb >> 8) & 0xFF);
+		__sv_color.B = (uint8_t)((rgb >> 0) & 0xFF);
 		Set_Pattern_Color(__sv_color.R, __sv_color.R, __sv_color.R);
 	}
 	break;
