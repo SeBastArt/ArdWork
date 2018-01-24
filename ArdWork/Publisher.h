@@ -314,7 +314,7 @@ public:
 		filesystem.CloseFile();
 
 		if (!root.success()) {
-			Serial.println("parseObject() failed");
+			Serial.println("parseObject - failed");
 			return;
 		}
 
@@ -332,10 +332,10 @@ public:
 						String value = obj_control["value"];
 
 #ifdef  LOAD_SAVE_DEBUG
-						Serial.print(" Load - ");
+						Serial.print(" Load -> ");
 						Serial.print(" - DeviceId: ");
 						Serial.print(device_id);
-						Serial.print("CtrlId: ");
+						Serial.print(" - CtrlId: ");
 						Serial.print(contrl_id);
 						Serial.print(" - Type: ");
 						Serial.print(contrl_type);
@@ -562,9 +562,9 @@ public:
 	bool GetElemById(int _id, Descriptor * _descriptor) {
 		bool return_value = false;
 		for (size_t i = 0; i < __elem_count; i++) {
-			Descriptor * t_descr = (*__vec_descriptor_elem)[i];
+			Descriptor *t_descr = (*__vec_descriptor_elem)[i];
 			if (t_descr->id == _id) {
-				_descriptor = (*__vec_descriptor_elem)[i];
+				t_descr = (*__vec_descriptor_elem)[i];
 				return_value = true;
 				break;
 			}

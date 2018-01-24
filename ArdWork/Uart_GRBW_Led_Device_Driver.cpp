@@ -47,14 +47,14 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = F("GRBW-Stripe stellt die Steuerung der GRBW-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben");
 	__descriptor->published = false;
 
-	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(UART_GRBW_LED_PATTERN, &sv_pattern, F("Pattern"), F("Choose a pattern for the ambilight"));
+	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(UART_GRBW_LED_DEVICE_PATTERN, &sv_pattern, F("Pattern"), F("Choose a pattern for the ambilight"));
 	ctrlElem_pattern->AddMember("Cyclon");
 	ctrlElem_pattern->AddMember("Random");
 	ctrlElem_pattern->AddMember("Fire");
 	ctrlElem_pattern->AddMember("Shine");
 	ctrlElem_pattern->AddMember("Off");
 
-	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(UART_GRBW_LED_COLOR_HEX, &sv_color, F("Color"), F("The main color for the ambient light pattern"));
+	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(UART_GRBW_LED_DEVICE_COLOR_HEX, &sv_color, F("Color"), F("Set the main color of the pattern"));
 
 	Value_CtrlElem *ctrlElem_brightess = new Value_CtrlElem(UART_GRBW_LED_DEVICE_BRIGHTNESS, &sv_relBrightness, true, F("brightness"), F("the brightness for the ambient light from 1% to 200%"));
 	ctrlElem_brightess->unit = "%";
@@ -126,14 +126,11 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		Animation_Prev();
 	}
 	break;
-	case UART_GRBW_LED_DEVICE_COLOR:
+	case UART_GRBW_LED_DEVICE_COLOR_RGB:
 	{
 		int R = message.GetIntParamByIndex(0);
 		int G = message.GetIntParamByIndex(1);
 		int B = message.GetIntParamByIndex(2);
-		sv_color.R = R;
-		sv_color.G = G;
-		sv_color.B = B;
 		Animation_Color(R, G, B);
 	}
 	break;
@@ -143,15 +140,18 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 		SetBrightness(brightness);
 	}
 	break;
-	case UART_GRBW_LED_PATTERN:
+	case UART_GRBW_LED_DEVICE_PATTERN:
 	{
 		unsigned int animation_number = message.GetIntParamByIndex(0);
 		Animation_Number(animation_number);
 	}
 	break;
-	case UART_GRBW_LED_COLOR_HEX:
+	case UART_GRBW_LED_DEVICE_COLOR_HEX:
 	{
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(0).c_str(), NULL, 16);
+		sv_color.R = (uint8_t)((rgb >> 16) & 0xFF);
+		sv_color.G = (uint8_t)((rgb >> 8) & 0xFF);
+		sv_color.B = (uint8_t)((rgb >> 0) & 0xFF);
 		Animation_Color((uint8_t)((rgb >> 16) & 0xFF), (uint8_t)((rgb >> 8) & 0xFF), (uint8_t)((rgb >> 0) & 0xFF));
 	}
 	break;
@@ -438,7 +438,7 @@ void Uart_GRBW_Led_Device_Driver::Exec_Animation_Prev() {
 
 void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(int R, int G, int B)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_COLOR);
+	Int_Thread_Msg *message = new Int_Thread_Msg(UART_GRBW_LED_DEVICE_COLOR_RGB);
 	message->AddParam(R);
 	message->AddParam(G);
 	message->AddParam(B);

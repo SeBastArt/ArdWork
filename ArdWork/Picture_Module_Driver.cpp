@@ -71,12 +71,12 @@ void Picture_Module_Driver::DoAfterInit()
 
 void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 {
-#ifdef  DEBUG
-	Serial.println("Start Picture_Module_Driver::DoThreadMessage");
-#endif //  DEBUG
 	switch ((message)->Class) {
 	case MessageClass_Float:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoThreadMessage - MessageClass_Float");
+#endif //  DEBUG
 		FloatMessage* pFMessage = (FloatMessage*)(message);
 		if (pFMessage->__id == Get_Luxmeter_DevDrv(0)->DriverId) {
 			__absBrightness = pFMessage->__absValue;
@@ -87,6 +87,9 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 
 	case MessageClass_Button:
 	{
+#ifdef  DEBUG
+		Serial.println("Start Picture_Module_Driver::DoThreadMessage - MessageClass_Button");
+#endif //  DEBUG
 		ButtonMessage* pButton = (ButtonMessage*)(message);
 		if (pButton->State == THREAD_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
@@ -109,9 +112,6 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 		break;
 	}
 	}
-#ifdef  DEBUG
-	Serial.println("Ende Picture_Module_Driver::DoThreadMessage");
-#endif //  DEBUG
 }
 
 void Picture_Module_Driver::DoModuleMessage(Int_Thread_Msg message)
@@ -179,7 +179,7 @@ void Picture_Module_Driver::DoModuleMessage(Int_Thread_Msg message)
 		__sv_color.R = (uint8_t)((rgb >> 16) & 0xFF);
 		__sv_color.G = (uint8_t)((rgb >> 8) & 0xFF);
 		__sv_color.B = (uint8_t)((rgb >> 0) & 0xFF);
-		Set_Pattern_Color(__sv_color.R, __sv_color.R, __sv_color.R);
+		Set_Pattern_Color(__sv_color.R, __sv_color.G, __sv_color.B);
 	}
 	break;
 	}

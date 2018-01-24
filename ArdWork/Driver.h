@@ -18,13 +18,12 @@
 class Driver : public Thread, public Int_Thread_Msg_Sys
 {
 private:
-	uint8_t __msg_queue_length;
 	int __DriverId;
 	bool __isPublished;
-	void CheckForMsg();
 	int GetDriverId() const { return __DriverId; }
 	unsigned int GetDriverType() const { return __DriverType; }
 protected:
+	bool __canBeLoad;
 	static Descriptor_List *__descriptor_list;
 	unsigned int __DriverType;
 	Descriptor *__descriptor;

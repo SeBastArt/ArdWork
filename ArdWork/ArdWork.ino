@@ -261,5 +261,4 @@ void loop() {
 	}
 #endif // SLEEP
 	threadManager.Loop();
-
 }

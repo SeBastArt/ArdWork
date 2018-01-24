@@ -26,7 +26,7 @@ class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
 private:
 	int sv_pattern = 0;
-	Color sv_color = { 100,0,0 };
+	Color sv_color = { 255, 255, 255 };
 	float sv_relBrightness = 100;
 	static uint8_t pixelCount;
 	unsigned int actAnimation;

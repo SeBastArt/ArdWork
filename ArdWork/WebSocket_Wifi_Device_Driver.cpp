@@ -430,7 +430,11 @@ void WebSocket_Wifi_Device_Driver::GenerateMultiOption(WiFiClient *client, CtrlE
 	Serial.println("Start WebSocket_Wifi_Device_Driver::GenerateMultiOption");
 #endif //  DEBUG
 	for (uint8_t I = 0; I < ((Select_CtrlElem*)_ctrl_elem)->MembersCount(); I++) {
-		client->print("					<option value=\"");
+		client->print("					<option");
+		int t = ((Select_CtrlElem*)_ctrl_elem)->ToString().toInt();
+		if (((Select_CtrlElem*)_ctrl_elem)->ToString().toInt() == I)
+			client->print(" selected ");
+		client->print("	value=\"");
 		client->print(String(I));
 		client->print("\">");
 		client->print(((Select_CtrlElem*)_ctrl_elem)->GetMember(I));
