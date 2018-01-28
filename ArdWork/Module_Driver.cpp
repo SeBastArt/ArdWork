@@ -261,11 +261,11 @@ Driver *Module_Driver::GetDeviceById(int _id)
 	return result;
 }
 
-bool Module_Driver::PopMessage(ThreadMessage** message) {
+bool Module_Driver::PopMessage(TaskMessage** message) {
 	bool messagePopped = false;
 
 	noInterrupts();
-	ThreadMessage* temp_message;
+	TaskMessage* temp_message;
 	if (!queue.Empty()) {
 		temp_message = queue.Front();
 		*message = temp_message;
@@ -278,7 +278,7 @@ bool Module_Driver::PopMessage(ThreadMessage** message) {
 	return messagePopped;
 }
 
-void Module_Driver::DoMessage(Int_Thread_Msg message) {
+void Module_Driver::DoMessage(Int_Task_Msg message) {
 	int messageID = message.id;
 	switch (messageID)
 	{
@@ -315,7 +315,6 @@ void Module_Driver::DoInit() {
 	for (int i = 0; i < device_list->Size(); i++) {
 		(*device_list)[i]->ExecInit();
 	}
-	DoAfterInit();
 #ifdef  DEBUG
 	Serial.println("Ende Module_Driver::DoInit");
 #endif //  DEBUG
@@ -362,7 +361,7 @@ void Module_Driver::Set_Debug_Mode(bool _state)
 
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
-	ThreadMessage *pMessage;
+	TaskMessage *pMessage;
 
 	if (PopMessage(&pMessage))
 	{
@@ -384,9 +383,9 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 		}
 #ifdef  DEBUG
-		Serial.println("Fire Module_Driver::DoUpdate DoThreadMessage");
+		Serial.println("Fire Module_Driver::DoUpdate DoTaskMessage");
 #endif //  DEBUG
-		DoThreadMessage(pMessage);
+		DoTaskMessage(pMessage);
 
 		if (pMessage != NULL) {
 			delete pMessage; //objekt löschen 
@@ -396,9 +395,9 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 }
 
 
-bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIsr) {
+bool Module_Driver::SendAsyncTaskMessage(TaskMessage* message, bool withinIsr) {
 #ifdef  DEBUG
-	Serial.println("Start Module_Driver::SendAsyncThreadMessage");
+	Serial.println("Start Module_Driver::SendAsyncTaskMessage");
 #endif //  DEBUG
 	bool result = false;
 	if (!withinIsr)
@@ -414,7 +413,7 @@ bool Module_Driver::SendAsyncThreadMessage(ThreadMessage* message, bool withinIs
 		interrupts();
 	}
 #ifdef  DEBUG
-	Serial.println("Ende Module_Driver::SendAsyncThreadMessage");
+	Serial.println("Ende Module_Driver::SendAsyncTaskMessage");
 #endif //  DEBUG
 	return result;
 }
@@ -425,7 +424,7 @@ void Module_Driver::Exec_Set_Debug_Mode(bool _state)
 #ifdef  DEBUG
 	Serial.println("Start Module_Driver::Exec_Set_Debug_Mode");
 #endif //  DEBUG
-	Int_Thread_Msg *message = new Int_Thread_Msg(MODULE_DRIVER_SET_DEBUG_MODE);
+	Int_Task_Msg *message = new Int_Task_Msg(MODULE_DRIVER_SET_DEBUG_MODE);
 	message->AddParam(_state);
 	PostMessage(&message);
 #ifdef  DEBUG

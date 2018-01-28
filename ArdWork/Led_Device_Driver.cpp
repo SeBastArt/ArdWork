@@ -35,8 +35,9 @@ void Led_Device_Driver::SetPullUp(bool _hasPullUp)
 }
 
 
-void Led_Device_Driver::DoAfterInit()
+void Led_Device_Driver::DoInit()
 {
+	Device_Driver::DoInit();
 	__pin->IsActive = true;
 	Set_IO_Pin_Low();
 	__blink_flag = false;
@@ -65,24 +66,24 @@ void Led_Device_Driver::DoBeforeSuspend()
 
 
 void Led_Device_Driver::Exec_Set_Led_On() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_ON);
+	Int_Task_Msg *message = new Int_Task_Msg(LED_DEVICE_DRIVER_LED_ON);
 	PostMessage(&message);
 }
 
 
 void Led_Device_Driver::Exec_Set_Led_Off() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_OFF);
+	Int_Task_Msg *message = new Int_Task_Msg(LED_DEVICE_DRIVER_LED_OFF);
 	PostMessage(&message);
 }
 
 void Led_Device_Driver::Exec_Set_Led_Blink(int delay) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_BLINK);
+	Int_Task_Msg *message = new Int_Task_Msg(LED_DEVICE_DRIVER_LED_BLINK);
 	message->AddParam(delay);
 	PostMessage(&message);
 }
 
 void Led_Device_Driver::Exec_Set_Led_Pulse(int count, int delay) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LED_DEVICE_DRIVER_LED_PULSE);
+	Int_Task_Msg *message = new Int_Task_Msg(LED_DEVICE_DRIVER_LED_PULSE);
 	message->AddParam(count);
 	message->AddParam(delay);
 	PostMessage(&message);
@@ -95,7 +96,7 @@ int Led_Device_Driver::GetPinNumber()
 }
 
 
-void Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
+void Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 {
 	int messageID = message.id;
 	switch (messageID)

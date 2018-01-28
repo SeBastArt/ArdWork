@@ -14,7 +14,7 @@
 class Picture_Module_Driver : public Module_Driver
 {
 public:
-	Picture_Module_Driver(uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Picture_Module_Driver(uint8_t priority = TASK_PRIORITY_NORMAL);
 
 private:
 	int __sv_autoBrightness = 0;
@@ -33,10 +33,10 @@ private:
 protected:
 	void DoBeforeSuspend();
 	void DoBeforeShutdown();
-	void DoAfterInit();
-	void DoModuleMessage(Int_Thread_Msg message);
+	void DoInit() override;
+	void DoModuleMessage(Int_Task_Msg message);
 
-	void DoThreadMessage(ThreadMessage *message);
+	void DoTaskMessage(TaskMessage *message);
 	void Build_Module_Discriptor();
 public:
 	void Exec_Pattern_Next();

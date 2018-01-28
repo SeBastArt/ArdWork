@@ -9,12 +9,12 @@
 	#include "WProgram.h"
 #endif
 
-#include "Thread/Thread.h"
+#include "Task.h"
 #include "m_Vector.h"
 #include "Base_Consts.h"
 #include "IO_Pin.h"
 
-class Base_Controller : public Thread
+class Base_Controller : public Task
 {
 private:
 	bool OnStart();
@@ -27,7 +27,7 @@ private:
  public:
 	 IO_Pin* Pin(uint8_t number);
 	 IO_Pin* Pin(String name);
-	 Base_Controller(uint8_t priority = THREAD_PRIORITY_NORMAL);
+	 Base_Controller(uint8_t priority = TASK_PRIORITY_NORMAL);
 };
 #endif
 

@@ -28,8 +28,9 @@ void Temperature_Device_Driver::Build_Descriptor() {
 	__descriptor->Add_Descriptor_Element(ctrlElem_temp);
 }
 
-void Temperature_Device_Driver::DoAfterInit()
+void Temperature_Device_Driver::DoInit()
 {
+	Device_Driver::DoInit();
 	act_temp = 20.0;
 	act_hum = 50.0;
 	accuracy_delay = 2000;
@@ -45,7 +46,7 @@ void Temperature_Device_Driver::DoBeforeSuspend() {
 	//
 }
 
-void Temperature_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
+void Temperature_Device_Driver::DoDeviceMessage(Int_Task_Msg message) {
 	int messageID = message.id;
 	switch (messageID)
 	{
@@ -100,17 +101,17 @@ void Temperature_Device_Driver::Set_Accuracy_Time_Ms(uint16_t time) {
 
 
 void Temperature_Device_Driver::Exec_Set_SI_To_Fahrenheit() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(TEMPERATURE_DEVICE_DRIVER_SI_FAHRENHEIT);
+	Int_Task_Msg *message = new Int_Task_Msg(TEMPERATURE_DEVICE_DRIVER_SI_FAHRENHEIT);
 	PostMessage(&message);
 }
 
 void Temperature_Device_Driver::Exec_Set_SI_To_Celsius() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(TEMPERATURE_DEVICE_DRIVER_SI_CELSIUS);
+	Int_Task_Msg *message = new Int_Task_Msg(TEMPERATURE_DEVICE_DRIVER_SI_CELSIUS);
 	PostMessage(&message);
 }
 
 void Temperature_Device_Driver::Exec_Set_Accuracy_Time_Ms(uint16_t time) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(TEMPERATURE_DEVICE_DRIVER_SET_ACCURACY);
+	Int_Task_Msg *message = new Int_Task_Msg(TEMPERATURE_DEVICE_DRIVER_SET_ACCURACY);
 	message->AddParam(time);
 	PostMessage(&message);
 }

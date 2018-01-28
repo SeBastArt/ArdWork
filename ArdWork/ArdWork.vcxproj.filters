@@ -133,9 +133,6 @@
     <Filter Include="Header Files\Helper">
       <UniqueIdentifier>{6d18e8c2-7225-46ef-9d12-e42f07c16cc5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Helper\Thread">
-      <UniqueIdentifier>{54791a40-9a19-42f8-ab6c-decb0d5d2622}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Helper\Message_System">
       <UniqueIdentifier>{6b40e92b-f5be-493f-a2b6-8060ac3e137b}</UniqueIdentifier>
     </Filter>
@@ -170,12 +167,6 @@
     </ClInclude>
     <ClInclude Include="Module_Driver_Consts.h">
       <Filter>Header Files\Driver\Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="Int_Thread_Msg.h">
-      <Filter>Header Files\Helper\Message_System</Filter>
-    </ClInclude>
-    <ClInclude Include="Int_Thread_Msg_Sys.h">
-      <Filter>Header Files\Helper\Message_System</Filter>
     </ClInclude>
     <ClInclude Include="Button_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Button</Filter>
@@ -270,12 +261,6 @@
     <ClInclude Include="Comm_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi</Filter>
     </ClInclude>
-    <ClInclude Include="Thread\Thread.h">
-      <Filter>Header Files\Helper\Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="Thread\ThreadManager.h">
-      <Filter>Header Files\Helper\Thread</Filter>
-    </ClInclude>
     <ClInclude Include="Base_Consts.h">
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
@@ -314,6 +299,12 @@
     </ClInclude>
     <ClInclude Include="Publisher.h">
       <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Int_Task_Msg.h">
+      <Filter>Header Files\Helper\Message_System</Filter>
+    </ClInclude>
+    <ClInclude Include="Int_Task_Msg_Sys.h">
+      <Filter>Header Files\Helper\Message_System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -380,12 +371,6 @@
     <ClCompile Include="Mqqt_Wifi_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Mqqt_Wifi_Device_Driver</Filter>
     </ClCompile>
-    <ClCompile Include="Int_Thread_Msg.cpp">
-      <Filter>Header Files\Helper\Message_System</Filter>
-    </ClCompile>
-    <ClCompile Include="Thread\ThreadManager.cpp">
-      <Filter>Header Files\Helper\Thread</Filter>
-    </ClCompile>
     <ClCompile Include="WebSocket_Wifi_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebSocket_Wifi_Device_Driver</Filter>
     </ClCompile>
@@ -394,6 +379,9 @@
     </ClCompile>
     <ClCompile Include="DNSServer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Int_Task_Msg.cpp">
+      <Filter>Header Files\Helper\Message_System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,18 +4,20 @@
 #define _DRIVER_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+#include "Arduino.h"
 #else
 #include "WProgram.h"
 #endif
 
-#include "Thread/Thread.h"
+#include <Task.h>
+
 #include "Driver_Consts.h"
-#include "Int_Thread_Msg_Sys.h"
+#include "Int_Task_Msg_Sys.h"
 #include "Base_Consts.h"
 #include "Publisher.h"
 
-class Driver : public Thread, public Int_Thread_Msg_Sys
+
+class Driver : public Task, public Int_Task_Msg_Sys
 {
 private:
 	int __DriverId;
@@ -39,7 +41,7 @@ protected:
 	void OnStop();
 	void OnUpdate(uint32_t deltaTime);
 
-	virtual void DoMessage(Int_Thread_Msg message) = 0;
+	virtual void DoMessage(Int_Task_Msg message) = 0;
 	virtual void DoUpdate(uint32_t deltaTime) = 0;
 	virtual void DoInit() = 0;
 	virtual void Build_Descriptor() = 0;

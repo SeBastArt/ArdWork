@@ -9,7 +9,7 @@ Display_Device_Driver::Display_Device_Driver(Module_Driver* module, uint8_t prio
 	__DriverType = DISPLAY_DEVICE_DRIVER_TYPE;
 }
 
-void Display_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
+void Display_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 {
 	int messageID = message.id;
 	switch (messageID)
@@ -68,19 +68,19 @@ void Display_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
 
 
 void Display_Device_Driver::Exec_Display_Clear() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_CLEAR);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_CLEAR);
 	PostMessage(&message);
 }
 
 void Display_Device_Driver::Exec_Display_Flush() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_FLUSH);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_FLUSH);
 	PostMessage(&message);
 }
 
 
 void Display_Device_Driver::Exec_Display_SetCursor(int16_t x, int16_t y)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_FLUSH);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_FLUSH);
 	message->AddParam(x);
 	message->AddParam(y);
 	PostMessage(&message);
@@ -88,21 +88,21 @@ void Display_Device_Driver::Exec_Display_SetCursor(int16_t x, int16_t y)
 
 void Display_Device_Driver::Exec_Display_DrawChar(unsigned char c)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_DRAW_CHAR);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_DRAW_CHAR);
 	message->AddParam(c);
 	PostMessage(&message);
 }
 
 void Display_Device_Driver::Exec_Display_DrawString(String text)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_DRAW_STRING);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_DRAW_STRING);
 	message->AddParam(text);
 	PostMessage(&message);
 }
 
 void Display_Device_Driver::Exec_Display_StartScrollRight(uint8_t start, uint8_t stop)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_START_SCROLLING_RIGHT);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_START_SCROLLING_RIGHT);
 	message->AddParam(start);
 	message->AddParam(stop);
 	PostMessage(&message);
@@ -110,7 +110,7 @@ void Display_Device_Driver::Exec_Display_StartScrollRight(uint8_t start, uint8_t
 
 void Display_Device_Driver::Exec_Display_StartScrollLeft(uint8_t start, uint8_t stop)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_START_SCROLLING_LEFT);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_START_SCROLLING_LEFT);
 	message->AddParam(start);
 	message->AddParam(stop);
 	PostMessage(&message);
@@ -118,7 +118,7 @@ void Display_Device_Driver::Exec_Display_StartScrollLeft(uint8_t start, uint8_t 
 
 void Display_Device_Driver::Exec_Display_StopScroll()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_STOP_SCROLL);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_STOP_SCROLL);
 	PostMessage(&message);
 }
 

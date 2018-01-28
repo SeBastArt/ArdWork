@@ -89,11 +89,12 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 #endif //  DEBUG
 }
 
-void Luxmeter_Device_Driver::DoAfterInit()
+void Luxmeter_Device_Driver::DoInit()
 {
 #ifdef  DEBUG
 	Serial.println("Start Luxmeter_Device_Driver::DoAfterInit");
 #endif //  DEBUG
+	Device_Driver::DoInit();
 	if (!tsl->begin()) {
 #ifdef  DEBUG
 		Serial.println(F("------------------------------------"));
@@ -139,7 +140,7 @@ void Luxmeter_Device_Driver::DoBeforeSuspend() {
 	//
 }
 
-void Luxmeter_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
+void Luxmeter_Device_Driver::DoDeviceMessage(Int_Task_Msg message) {
 	int messageID = message.id;
 	switch (messageID)
 	{
@@ -198,9 +199,9 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 				lastLux = event.light;
 				FloatMessage* message = new FloatMessage(DriverId, lastLux);
 #ifdef  DEBUG
-				Serial.println("Luxmeter_Device_Driver::DoUpdate SendAsyncThreadMessage");
+				Serial.println("Luxmeter_Device_Driver::DoUpdate SendAsyncTaskMessage");
 #endif //  DEBUG
-				if (!parentModule->SendAsyncThreadMessage(message))
+				if (!parentModule->SendAsyncTaskMessage(message))
 				{
 					Serial.println(F(">> message buffer overflow <<"));
 				}
@@ -303,25 +304,25 @@ void Luxmeter_Device_Driver::Set_Enable_AutoRange(bool _autoRange) {
 }
 
 void Luxmeter_Device_Driver::Exec_Set_Accuracy_Delay(uint16 _milliseconds) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY);
+	Int_Task_Msg *message = new Int_Task_Msg(LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY);
 	message->AddParam(_milliseconds);
 	PostMessage(&message);
 }
 
 void Luxmeter_Device_Driver::Exec_Set_Integration_Time(tsl2561IntegrationTime_t _integrationTime) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME);
+	Int_Task_Msg *message = new Int_Task_Msg(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME);
 	message->AddParam(_integrationTime);
 	PostMessage(&message);
 }
 
 void Luxmeter_Device_Driver::Exec_Set_Gain(tsl2561Gain_t _gain) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_SET_GAIN);
+	Int_Task_Msg *message = new Int_Task_Msg(LUXMETER_DEVICE_DRIVER_SET_GAIN);
 	message->AddParam(_gain);
 	PostMessage(&message);
 }
 
 void Luxmeter_Device_Driver::Exec_Set_Enable_AutoRange(bool _autoRange) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE);
+	Int_Task_Msg *message = new Int_Task_Msg(LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE);
 	message->AddParam(_autoRange);
 	PostMessage(&message);
 }

@@ -19,14 +19,14 @@
 class OLED_Display_Device_Driver : public Display_Device_Driver
 {
 public:
-	OLED_Display_Device_Driver(Module_Driver* module, uint8_t _reset_pin, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	OLED_Display_Device_Driver(Module_Driver* module, uint8_t _reset_pin, uint8_t priority = TASK_PRIORITY_NORMAL);
 
 //Divice Driver
 private:
-	void DoAfterInit();
+	void DoInit() override;
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
-	void DoCustomDisplayMessage(Int_Thread_Msg message);
+	void DoCustomDisplayMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void Build_Descriptor();
 

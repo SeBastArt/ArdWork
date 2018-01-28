@@ -134,9 +134,9 @@ void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 	if (__event_msg._filled) {
 		ExternMessage* message = new ExternMessage(__event_msg._deviceId, __event_msg._cmdId, __event_msg._value);
 #ifdef  DEBUG
-		Serial.println("WebSocket_Wifi_Device_Driver::UpdateComm SendAsyncThreadMessage");
+		Serial.println("WebSocket_Wifi_Device_Driver::UpdateComm SendAsyncTaskMessage");
 #endif //  DEBUG
-		if (!parentModule->SendAsyncThreadMessage(message))
+		if (!parentModule->SendAsyncTaskMessage(message))
 		{
 			Serial.println(">> message buffer overflow <<");
 		}

@@ -9,8 +9,8 @@
 int Driver::driver_count = 1000;
 Descriptor_List *Driver::__descriptor_list = new Descriptor_List;
 
-Driver::Driver(uint8_t priority = THREAD_PRIORITY_NORMAL) :
-	Thread(MsToThreadTime(priority))
+Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
+	Task(MsToTaskTime(priority))
 {
 #ifdef  DEBUG
 	Serial.print("Start Constructor Driver with ID: ");
@@ -46,7 +46,7 @@ void Driver::Exec_Command(int _cmdId, String _value)
 	Serial.print("Start Driver::Exec_Command for DeviceID: ");
 	Serial.println(this->DriverId);
 #endif //  DEBUG
-	Int_Thread_Msg *message = new Int_Thread_Msg(_cmdId);
+	Int_Task_Msg *message = new Int_Task_Msg(_cmdId);
 	message->AddParam(_value);
 	PostMessage(&message);
 #ifdef  DEBUG
@@ -123,7 +123,7 @@ void Driver::ExecInit() {
 #ifdef  DEBUG
 	Serial.println("Start Driver::ExecInit");
 #endif //  DEBUG
-	Int_Thread_Msg *message = new Int_Thread_Msg(DRIVER_INIT);
+	Int_Task_Msg *message = new Int_Task_Msg(DRIVER_INIT);
 	PostMessage(&message);
 #ifdef  DEBUG
 	Serial.println("Ende Driver::ExecInit");
@@ -131,12 +131,12 @@ void Driver::ExecInit() {
 }
 
 void Driver::ExecShutdown() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DRIVER_SHUTDOWN);
+	Int_Task_Msg *message = new Int_Task_Msg(DRIVER_SHUTDOWN);
 	PostMessage(&message);
 }
 
 void Driver::ExecSuspend() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DRIVER_SUSPEND);
+	Int_Task_Msg *message = new Int_Task_Msg(DRIVER_SUSPEND);
 	PostMessage(&message);
 }
 

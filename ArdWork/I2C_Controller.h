@@ -21,7 +21,7 @@ class I2C_Controller: public Base_Controller
 	 byte ExpanderRead(uint8_t i2caddr);
 	 void ExpanderWrite(uint8_t i2caddr, byte data);
  public:
-	 I2C_Controller(uint32_t adress, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	 I2C_Controller(uint32_t adress, uint8_t priority = TASK_PRIORITY_NORMAL);
 };
 
 #endif

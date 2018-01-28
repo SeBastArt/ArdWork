@@ -49,15 +49,15 @@ private:
 	
 	static Vector <GRBWAnimationState*> animationState_list;
 public:
-	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
-	void DoAfterInit();
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
-	void DoDeviceMessage(Int_Thread_Msg message);
+	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void Build_Descriptor();
-
+protected:
+	void DoInit() override;
 protected:
 	void Animation_Off();
 	void Animation_Shine();

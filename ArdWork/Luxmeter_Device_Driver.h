@@ -22,7 +22,7 @@ const float EPSILON = 5.0;
 class Luxmeter_Device_Driver : public Device_Driver
 {
 public:
-	Luxmeter_Device_Driver(Module_Driver* module, uint8_t adress = TSL2561_ADDR_FLOAT, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Luxmeter_Device_Driver(Module_Driver* module, uint8_t adress = TSL2561_ADDR_FLOAT, uint8_t priority = TASK_PRIORITY_NORMAL);
 	
  private:
 	 float lastLux;
@@ -30,10 +30,10 @@ public:
 	 int sv_auto_range = 0;
 	 int sv_gain = 0;
 	 int sv_acc_rate = 0;
-	 void DoAfterInit();
+	 void DoInit() override;
 	 void DoBeforeShutdown();
 	 void DoBeforeSuspend();
-	 void DoDeviceMessage(Int_Thread_Msg message);
+	 void DoDeviceMessage(Int_Task_Msg message);
 	 void DoUpdate(uint32_t deltaTime);
 	 void Build_Descriptor();
 private:

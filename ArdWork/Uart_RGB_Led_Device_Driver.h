@@ -46,12 +46,12 @@ private:
 
 	static Vector <RGBAnimationState*> animationState_list;
 public:
-	Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
-	void DoAfterInit();
+	void DoInit() override;
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
-	void DoDeviceMessage(Int_Thread_Msg message);
+	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void Build_Descriptor();
 

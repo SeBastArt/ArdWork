@@ -17,8 +17,9 @@ void OLED_Display_Device_Driver::Build_Descriptor() {
 	__descriptor->descr = F("a monochrome Display");
 }
 
-void OLED_Display_Device_Driver::DoAfterInit()
+void OLED_Display_Device_Driver::DoInit()
 {
+	Device_Driver::DoInit();
 	__display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
 	DoClear();
 	Serial.println(F("OLED-Driver initialized!"));
@@ -39,7 +40,7 @@ void OLED_Display_Device_Driver::DoUpdate(uint32_t deltaTime) {
 }
 
 
-void OLED_Display_Device_Driver::DoCustomDisplayMessage(Int_Thread_Msg message)
+void OLED_Display_Device_Driver::DoCustomDisplayMessage(Int_Task_Msg message)
 {
 	int messageID = message.id;
 	switch (messageID)
@@ -312,12 +313,12 @@ void OLED_Display_Device_Driver::DoStopScroll()
 
 void OLED_Display_Device_Driver::Exec_Display_Invert(uint8_t i)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_INVERT);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_INVERT);
 	PostMessage(&message);
 }
 
 void OLED_Display_Device_Driver::Exec_Display_DrawPixel(uint16_t x_pos, uint16_t y_pos, uint16_t color) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_PIXEL);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_PIXEL);
 	message->AddParam(x_pos);
 	message->AddParam(y_pos);
 	message->AddParam(color);
@@ -326,7 +327,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawPixel(uint16_t x_pos, uint16_t
 
 void OLED_Display_Device_Driver::Exec_Display_DrawCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_CIRCLE);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_CIRCLE);
 	message->AddParam(x0);
 	message->AddParam(y0);
 	message->AddParam(r);
@@ -336,7 +337,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawCircle(int16_t x0, int16_t y0,
 
 void OLED_Display_Device_Driver::Exec_Display_DrawFilledCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_FILLED_CIRCLE);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_FILLED_CIRCLE);
 	message->AddParam(x0);
 	message->AddParam(y0);
 	message->AddParam(r);
@@ -346,7 +347,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawFilledCircle(int16_t x0, int16
 
 void OLED_Display_Device_Driver::Exec_Display_DrawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_TRIANGLE);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_TRIANGLE);
 	message->AddParam(x0);
 	message->AddParam(y0);
 	message->AddParam(x1);
@@ -359,7 +360,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawTriangle(int16_t x0, int16_t y
 
 void OLED_Display_Device_Driver::Exec_Display_DrawFilledTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_FILLED_TRIANGLE);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_FILLED_TRIANGLE);
 	message->AddParam(x0);
 	message->AddParam(y0);
 	message->AddParam(x1);
@@ -372,7 +373,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawFilledTriangle(int16_t x0, int
 
 void OLED_Display_Device_Driver::Exec_Display_DrawRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h, int16_t radius, uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_ROUND_RECT);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_ROUND_RECT);
 	message->AddParam(x0);
 	message->AddParam(y0);
 	message->AddParam(w);
@@ -384,7 +385,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawRoundRect(int16_t x0, int16_t 
 
 void OLED_Display_Device_Driver::Exec_Display_DrawFilledRoundRect(int16_t x0, int16_t y0, int16_t w, int16_t h, int16_t radius, uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_FILLED_ROUND_RECT);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_FILLED_ROUND_RECT);
 	message->AddParam(x0);
 	message->AddParam(y0);
 	message->AddParam(w);
@@ -396,7 +397,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawFilledRoundRect(int16_t x0, in
 
 void OLED_Display_Device_Driver::Exec_Display_DrawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_DRAW_BITMAP);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_DRAW_BITMAP);
 	message->AddParam(x);
 	message->AddParam(y);
 	message->AddParam(*bitmap);
@@ -409,7 +410,7 @@ void OLED_Display_Device_Driver::Exec_Display_DrawBitmap(int16_t x, int16_t y, u
 
 void OLED_Display_Device_Driver::Exec_Display_DrawChar(int16_t x, int16_t y, const char* c, uint16_t color, uint8_t size)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_DRAW_CHAR_COMPLETE);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_DRAW_CHAR_COMPLETE);
 	message->AddParam(x);
 	message->AddParam(y);
 	message->AddParam(c);
@@ -420,49 +421,49 @@ void OLED_Display_Device_Driver::Exec_Display_DrawChar(int16_t x, int16_t y, con
 
 void OLED_Display_Device_Driver::Exec_Display_DrawChar(unsigned char c)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISPLAY_DRIVER_DRAW_CHAR);
+	Int_Task_Msg *message = new Int_Task_Msg(DISPLAY_DRIVER_DRAW_CHAR);
 	message->AddParam(c);
 	PostMessage(&message);
 }
 
 void OLED_Display_Device_Driver::Exec_Display_SetTextColor(uint16_t color)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_SET_TEXT_COLOR);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_SET_TEXT_COLOR);
 	message->AddParam(color);
 	PostMessage(&message);
 }
 
 void OLED_Display_Device_Driver::Exec_Display_SetTextSize(uint8_t size)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_SET_TEXT_SIZE);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_SET_TEXT_SIZE);
 	message->AddParam(size);
 	PostMessage(&message);
 }
 
 void OLED_Display_Device_Driver::Exec_Display_SetTextWrap(boolean wrap)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_SET_TEXT_WRAP);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_SET_TEXT_WRAP);
 	message->AddParam(wrap);
 	PostMessage(&message);
 }
 
 void OLED_Display_Device_Driver::Exec_Display_SetRotation(uint8_t rotaion)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_SET_ROTATION);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_SET_ROTATION);
 	message->AddParam(rotaion);
 	PostMessage(&message);
 }
 
 void OLED_Display_Device_Driver::Exec_Display_SetFont(const GFXfont * font)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_SET_FONT);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_SET_FONT);
 	PostMessage(&message);
 }
 
 
 void OLED_Display_Device_Driver::Exec_Display_StartScrollDiagRight(uint8_t start, uint8_t stop)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_START_SCROLL_DIAG_RIGHT);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_START_SCROLL_DIAG_RIGHT);
 	message->AddParam(start);
 	message->AddParam(stop);
 	PostMessage(&message);
@@ -470,7 +471,7 @@ void OLED_Display_Device_Driver::Exec_Display_StartScrollDiagRight(uint8_t start
 
 void OLED_Display_Device_Driver::Exec_Display_StartScrollDiagLeft(uint8_t start, uint8_t stop)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(OLED_DISPLAY_DRIVER_START_SCROLL_DIAG_LEFT);
+	Int_Task_Msg *message = new Int_Task_Msg(OLED_DISPLAY_DRIVER_START_SCROLL_DIAG_LEFT);
 	message->AddParam(start);
 	message->AddParam(stop);
 	PostMessage(&message);

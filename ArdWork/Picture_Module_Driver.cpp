@@ -65,17 +65,18 @@ void Picture_Module_Driver::DoBeforeShutdown()
 {
 }
 
-void Picture_Module_Driver::DoAfterInit()
+void Picture_Module_Driver::DoInit()
 {
+	Module_Driver::DoInit();
 }
 
-void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
+void Picture_Module_Driver::DoTaskMessage(TaskMessage * message)
 {
 	switch ((message)->Class) {
 	case MessageClass_Float:
 	{
 #ifdef  DEBUG
-		Serial.println("Start Picture_Module_Driver::DoThreadMessage - MessageClass_Float");
+		Serial.println("Start Picture_Module_Driver::DoTaskMessage - MessageClass_Float");
 #endif //  DEBUG
 		FloatMessage* pFMessage = (FloatMessage*)(message);
 		if (pFMessage->__id == Get_Luxmeter_DevDrv(0)->DriverId) {
@@ -88,22 +89,22 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 	case MessageClass_Button:
 	{
 #ifdef  DEBUG
-		Serial.println("Start Picture_Module_Driver::DoThreadMessage - MessageClass_Button");
+		Serial.println("Start Picture_Module_Driver::DoTaskMessage - MessageClass_Button");
 #endif //  DEBUG
 		ButtonMessage* pButton = (ButtonMessage*)(message);
-		if (pButton->State == THREAD_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
+		if (pButton->State == TASK_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
 				Pattern_Next();
 			}
 		}
-		else if (pButton->State == THREAD_MSG_BUTTONSTATE_RELEASED)
+		else if (pButton->State == TASK_MSG_BUTTONSTATE_RELEASED)
 		{
 			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
 				//
 			}
 		}
-		else if (pButton->State == THREAD_MSG_BUTTONSTATE_AUTOREPEAT)
+		else if (pButton->State == TASK_MSG_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
 				Pattern_Off();
@@ -114,7 +115,7 @@ void Picture_Module_Driver::DoThreadMessage(ThreadMessage * message)
 	}
 }
 
-void Picture_Module_Driver::DoModuleMessage(Int_Thread_Msg message)
+void Picture_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 {
 	int messageID = message.id;
 	switch (messageID)
@@ -279,19 +280,19 @@ void Picture_Module_Driver::Set_Pattern_Color(int _r, int _g, int _b) {
 
 void Picture_Module_Driver::Exec_Pattern_Next()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(PICTURE_MODULE_DRIVER_PATTERN_NEXT);
+	Int_Task_Msg *message = new Int_Task_Msg(PICTURE_MODULE_DRIVER_PATTERN_NEXT);
 	PostMessage(&message);
 }
 
 void Picture_Module_Driver::Exec_Pattern_Prev()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(PICTURE_MODULE_DRIVER_PATTERN_PREV);
+	Int_Task_Msg *message = new Int_Task_Msg(PICTURE_MODULE_DRIVER_PATTERN_PREV);
 	PostMessage(&message);
 }
 
 void Picture_Module_Driver::Exec_Pattern_Off()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(PICTURE_MODULE_DRIVER_PATTERN_OFF);
+	Int_Task_Msg *message = new Int_Task_Msg(PICTURE_MODULE_DRIVER_PATTERN_OFF);
 	PostMessage(&message);
 }
 

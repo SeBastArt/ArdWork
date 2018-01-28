@@ -29,7 +29,7 @@
 class Wifi_Device_Driver : public Device_Driver//, public Comm_Device_Driver
 {
 public:
-	Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = nullptr , uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = nullptr , uint8_t priority = TASK_PRIORITY_NORMAL);
 	
 private:
 	String __ssid;
@@ -58,11 +58,11 @@ protected:
 	virtual void InitComm() = 0;
 
 protected:
-	void DoAfterInit();
+	void DoInit() override;
 	void ProvideAP();
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
-	void DoDeviceMessage(Int_Thread_Msg message);
+	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	
 public:

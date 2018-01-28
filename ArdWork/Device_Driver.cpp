@@ -15,7 +15,7 @@ Device_Driver::Device_Driver(Module_Driver* _module, uint8_t _priority) :
 #endif //  DEBUG
 }
 
-void Device_Driver::DoMessage(Int_Thread_Msg message) {
+void Device_Driver::DoMessage(Int_Task_Msg message) {
 #ifdef  DEBUG
 	Serial.print("Start Device_Driver::DoMessage");
 #endif //  DEBUG
@@ -50,7 +50,9 @@ void Device_Driver::DoInit() {
 	Serial.print("Start Device_Driver::DoInit with DriverID: ");
 	Serial.println(this->DriverId);
 #endif //  DEBUG
-	DoAfterInit();
+
+	//Anmelden an Observer
+
 #ifdef  DEBUG
 	Serial.println("Ende Device_Driver::DoInit");
 #endif //  DEBUG

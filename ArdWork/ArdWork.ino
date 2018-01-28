@@ -7,6 +7,8 @@
 ////#define DEBUG
 //#define COMPILE_TEST
 
+#include <TaskManager.h>
+#include <Task.h>
 #include "Filesystem.h"
 #include <ESP8266WebServer.h>
 #include <WebSocketsServer.h>
@@ -95,10 +97,7 @@
 #include "Led_Device_Driver.h"
 #endif // DASH_ESP01
 
-//Main
-#include "Thread/ThreadManager.h"
-
-ThreadManager threadManager;
+TaskManager taskManager;
 uint32_t start;
 
 void setup() {
@@ -207,34 +206,34 @@ void setup() {
 
 #ifdef DASH_ESP01
 	Serial.println(F("Start esp8266_01_controller");
-	threadManager.StartThread(esp8266_01_controller);
+	TaskManager.StartTask(esp8266_01_controller);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10)
 	Serial.println(F("Start ESP8266-NodeMCU-Controller");
-	threadManager.StartThread(esp8266_NodeMCU_controller);
+	TaskManager.StartTask(esp8266_NodeMCU_controller);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01)
 	Serial.println(F("Start Dash_Mqqt_Wifi_Module_Driver");
-	threadManager.StartThread(dash_mqqt_wifi_module);
+	TaskManager.StartTask(dash_mqqt_wifi_module);
 #endif
 
 
 #if defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	//threadManager.StartThread(esp8266_NodeMCU_controller);
-	threadManager.StartThread(picture_module);
-	threadManager.StartThread(strip);
-	threadManager.StartThread(luxmeter);
+	//TaskManager.StartTask(esp8266_NodeMCU_controller);
+	taskManager.StartTask(picture_module);
+	taskManager.StartTask(strip);
+	taskManager.StartTask(luxmeter);
 #endif
 
 #if defined(DASH_NodeMCU09) || defined(DASH_NodeMCU10) || defined(DASH_ESP01) || defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	//threadManager.StartThread(wifi_status_led);
-	//threadManager.StartThread(led);
-	//threadManager.StartThread(button);
-	//threadManager.StartThread(mqqt_wifi);
-	//threadManager.StartThread(server_wifi);
-	threadManager.StartThread(webSocket_server_wifi);
+	//taskManager.StartTask(wifi_status_led);
+	//taskManager.StartTask(led);
+	//taskManager.StartTask(button);
+	//taskManager.StartTask(mqqt_wifi);
+	//taskManager.StartTask(server_wifi);
+	taskManager.StartTask(webSocket_server_wifi);
 #endif
 
 	Serial.flush();
@@ -260,5 +259,5 @@ void loop() {
 		ESP.deepSleep(0, WAKE_RFCAL); //gehe schlafen
 	}
 #endif // SLEEP
-	threadManager.Loop();
+	taskManager.Loop();
 }

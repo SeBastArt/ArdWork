@@ -7,22 +7,22 @@
 static int const BASE_TYPE = 1000000;
 static int const BASE_LAST_MESSAGE = BASE_TYPE;
 
-static int const THREAD_PRIORITY_VERY_HIGH = 1;
-static int const THREAD_PRIORITY_HIGH = 3;
-static int const THREAD_PRIORITY_NORMAL = 10;
-static int const THREAD_PRIORITY_LOW = 25;
-static int const THREAD_PRIORITY_VERY_LOW = 50;
+static int const TASK_PRIORITY_VERY_HIGH = 1;
+static int const TASK_PRIORITY_HIGH = 3;
+static int const TASK_PRIORITY_NORMAL = 10;
+static int const TASK_PRIORITY_LOW = 25;
+static int const TASK_PRIORITY_VERY_LOW = 50;
 
 
-static unsigned int const THREAD_MSG_BUTTONSTATE_TYPE = BASE_TYPE + 1000000000;
-static unsigned int const THREAD_MSG_BUTTONSTATE_TRACKING = THREAD_MSG_BUTTONSTATE_TYPE;
-static unsigned int const THREAD_MSG_BUTTONSTATE_PRESSED = THREAD_MSG_BUTTONSTATE_TYPE + 1;
-static unsigned int const THREAD_MSG_BUTTONSTATE_AUTOREPEAT = THREAD_MSG_BUTTONSTATE_TYPE + 2;
-static unsigned int const THREAD_MSG_BUTTONSTATE_RELEASED = THREAD_MSG_BUTTONSTATE_TYPE + 3;
-static unsigned int const THREAD_MSG_BUTTONSTATE_LAST_MESSAGE = THREAD_MSG_BUTTONSTATE_RELEASED;
+static unsigned int const TASK_MSG_BUTTONSTATE_TYPE = BASE_TYPE + 1000000000;
+static unsigned int const TASK_MSG_BUTTONSTATE_TRACKING = TASK_MSG_BUTTONSTATE_TYPE;
+static unsigned int const TASK_MSG_BUTTONSTATE_PRESSED = TASK_MSG_BUTTONSTATE_TYPE + 1;
+static unsigned int const TASK_MSG_BUTTONSTATE_AUTOREPEAT = TASK_MSG_BUTTONSTATE_TYPE + 2;
+static unsigned int const TASK_MSG_BUTTONSTATE_RELEASED = TASK_MSG_BUTTONSTATE_TYPE + 3;
+static unsigned int const TASK_MSG_BUTTONSTATE_LAST_MESSAGE = TASK_MSG_BUTTONSTATE_RELEASED;
 
 
-//Thread Messages
+//Task Messages
 enum MessageClass
 {
 	MessageClass_Heartbeat,
@@ -71,9 +71,9 @@ private:
 
 
 
-struct ThreadMessage
+struct TaskMessage
 {
-	ThreadMessage(uint8_t classEnum, uint8_t size) :
+	TaskMessage(uint8_t classEnum, uint8_t size) :
 		size(size),
 		Class(classEnum)
 	{
@@ -84,10 +84,10 @@ struct ThreadMessage
 };
 
 
-struct HeartbeatMessage : ThreadMessage
+struct HeartbeatMessage : TaskMessage
 {
 	HeartbeatMessage(bool state) :
-		ThreadMessage(MessageClass_Heartbeat, sizeof(HeartbeatMessage)),
+		TaskMessage(MessageClass_Heartbeat, sizeof(HeartbeatMessage)),
 		State(state)
 	{
 	};
@@ -95,10 +95,10 @@ struct HeartbeatMessage : ThreadMessage
 	bool State;
 };
 
-struct ButtonMessage : ThreadMessage
+struct ButtonMessage : TaskMessage
 {
 	ButtonMessage(int id, uint32_t state) :
-		ThreadMessage(MessageClass_Button, sizeof(ButtonMessage)),
+		TaskMessage(MessageClass_Button, sizeof(ButtonMessage)),
 		Id(id),
 		State(state)
 	{
@@ -109,10 +109,10 @@ struct ButtonMessage : ThreadMessage
 };
 
 //Template please
-struct FloatMessage : ThreadMessage
+struct FloatMessage : TaskMessage
 {
 	FloatMessage(int _id, float _absvalue) :
-		ThreadMessage(MessageClass_Float, sizeof(FloatMessage)),
+		TaskMessage(MessageClass_Float, sizeof(FloatMessage)),
 		__id(_id),
 		__absValue(_absvalue)
 	{
@@ -124,10 +124,10 @@ struct FloatMessage : ThreadMessage
 
 
 
-struct ExternMessage : ThreadMessage
+struct ExternMessage : TaskMessage
 {
 	ExternMessage(int _Id, int _CmdId, String _Value) :
-		ThreadMessage(MessageClass_Extern, sizeof(ExternMessage))
+		TaskMessage(MessageClass_Extern, sizeof(ExternMessage))
 	{
 		__Id = _Id;
 		__CmdId = _CmdId;
@@ -138,10 +138,10 @@ struct ExternMessage : ThreadMessage
 	String __Value;
 };
 
-struct MqqtMessage : ThreadMessage
+struct MqqtMessage : TaskMessage
 {
 	MqqtMessage(char message[50]) :
-		ThreadMessage(MessageClass_Mqqt, sizeof(MqqtMessage))
+		TaskMessage(MessageClass_Mqqt, sizeof(MqqtMessage))
 	{
 		*Message = *message;
 	};

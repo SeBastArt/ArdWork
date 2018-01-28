@@ -72,8 +72,9 @@ void Uart_RGB_Led_Device_Driver::Build_Descriptor() {
 }
 
 
-void Uart_RGB_Led_Device_Driver::DoAfterInit()
+void Uart_RGB_Led_Device_Driver::DoInit()
 {
+	Device_Driver::DoInit();
 	SetRandomSeed();
 	actAnimation = RGB_ANIMATION_SHINE;
 	Animation_Off();
@@ -91,7 +92,7 @@ void Uart_RGB_Led_Device_Driver::DoBeforeSuspend()
 	//
 }
 
-void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
+void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 {
 	int messageID = message.id;
 	switch (messageID)
@@ -416,45 +417,45 @@ void Uart_RGB_Led_Device_Driver::Animation_Color(uint8_t R, uint8_t G, uint8_t B
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Off()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_OFF);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_OFF);
 	PostMessage(&message);
 }
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Shine()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_SHINE);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_SHINE);
 	PostMessage(&message);
 }
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Random()
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_RANDOM);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_RANDOM);
 	PostMessage(&message);
 }
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Cyclon() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_CYCLON);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_CYCLON);
 	PostMessage(&message);
 }
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Fire() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_FIRE);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_FIRE);
 	PostMessage(&message);
 }
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Next() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_NEXT);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_NEXT);
 	PostMessage(&message);
 }
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Prev() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_PREV);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_PREV);
 	PostMessage(&message);
 }
 
 void Uart_RGB_Led_Device_Driver::Exec_Animation_Color(int R, int G, int B)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_COLOR);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_COLOR);
 	message->AddParam(R);
 	message->AddParam(G);
 	message->AddParam(B);
@@ -463,7 +464,7 @@ void Uart_RGB_Led_Device_Driver::Exec_Animation_Color(int R, int G, int B)
 
 void Uart_RGB_Led_Device_Driver::Exec_Set_Brightness(int _brightness)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(UART_RGB_LED_DEVICE_BRIGHTNESS);
+	Int_Task_Msg *message = new Int_Task_Msg(UART_RGB_LED_DEVICE_BRIGHTNESS);
 	message->AddParam(_brightness);
 	PostMessage(&message);
 }

@@ -98,7 +98,7 @@ void Mqqt_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 		client->loop();
 		if (mqtt_message != "") {
 			MqqtMessage* message = new MqqtMessage("Teste mal das hier");
-			if (!parentModule->SendAsyncThreadMessage(message))
+			if (!parentModule->SendAsyncTaskMessage(message))
 			{
 				Serial.println(F(">> message buffer overflow <<"));
 			}

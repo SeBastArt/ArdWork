@@ -49,7 +49,8 @@ void Distance_Device_Driver::Build_Descriptor() {
 }
 
 
-void Distance_Device_Driver::DoAfterInit() {
+void Distance_Device_Driver::DoInit() {
+	Device_Driver::DoInit();
 	Serial.println(F("Distance-Driver initialized!"));
 }
 
@@ -61,7 +62,7 @@ void Distance_Device_Driver::DoBeforeSuspend() {
 
 }
 
-void Distance_Device_Driver::DoDeviceMessage(Int_Thread_Msg message) {
+void Distance_Device_Driver::DoDeviceMessage(Int_Task_Msg message) {
 	int messageID = message.id;
 	switch (messageID)
 	{
@@ -92,7 +93,7 @@ void Distance_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			__distance = DistanceRead_inch();
 		}
 		FloatMessage* message = new FloatMessage(DriverId, __distance);
-		if (!parentModule->SendAsyncThreadMessage(message))
+		if (!parentModule->SendAsyncTaskMessage(message))
 		{
 			Serial.println(F(">> message buffer overflow <<"));
 		}
@@ -143,14 +144,14 @@ float Distance_Device_Driver::Timing() {
 
 void Distance_Device_Driver::Exec_Set_Unit(dist_unit _unit)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISTANCE_DEVICE_DRIVER_SET_UNIT);
+	Int_Task_Msg *message = new Int_Task_Msg(DISTANCE_DEVICE_DRIVER_SET_UNIT);
 	message->AddParam(_unit);
 	PostMessage(&message);
 }
 
 void Distance_Device_Driver::Exec_Set_Timeout(int _timeout)
 {
-	Int_Thread_Msg *message = new Int_Thread_Msg(DISTANCE_DEVICE_DRIVER_SET_TIMEOUT);
+	Int_Task_Msg *message = new Int_Task_Msg(DISTANCE_DEVICE_DRIVER_SET_TIMEOUT);
 	message->AddParam(_timeout);
 	PostMessage(&message);
 }

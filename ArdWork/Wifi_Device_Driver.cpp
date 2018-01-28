@@ -50,11 +50,12 @@ void Wifi_Device_Driver::Build_Descriptor() {
 }
 
 
-void Wifi_Device_Driver::DoAfterInit()
+void Wifi_Device_Driver::DoInit()
 {
 #ifdef  DEBUG
 	Serial.println("Start Wifi_Device_Driver::DoAfterInit");
 #endif //  DEBUG
+	Device_Driver::DoInit();
 	__connection_try = 0;
 	__WiFi_isConnected = false;
 	__AP_isConnected = false;
@@ -117,7 +118,7 @@ void Wifi_Device_Driver::DoBeforeSuspend()
 {
 }
 
-void Wifi_Device_Driver::DoDeviceMessage(Int_Thread_Msg message)
+void Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 {
 	int messageID = message.id;
 	switch (messageID)
@@ -283,19 +284,19 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 }
 
 void Wifi_Device_Driver::Exec_Set_SSID(String _ssid) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(WIFI_DEVICE_DRIVER_SET_SSID);
+	Int_Task_Msg *message = new Int_Task_Msg(WIFI_DEVICE_DRIVER_SET_SSID);
 	message->AddParam(_ssid);
 	PostMessage(&message);
 }
 
 void Wifi_Device_Driver::Exec_Set_Password(String _password) {
-	Int_Thread_Msg *message = new Int_Thread_Msg(WIFI_DEVICE_DRIVER_SET_PASSWORD);
+	Int_Task_Msg *message = new Int_Task_Msg(WIFI_DEVICE_DRIVER_SET_PASSWORD);
 	message->AddParam(_password);
 	PostMessage(&message);
 }
 
 void Wifi_Device_Driver::Exec_Reconnect() {
-	Int_Thread_Msg *message = new Int_Thread_Msg(WIFI_DEVICE_DRIVER_RECONNECT);
+	Int_Task_Msg *message = new Int_Task_Msg(WIFI_DEVICE_DRIVER_RECONNECT);
 	PostMessage(&message);
 }
 

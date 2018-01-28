@@ -10,7 +10,7 @@
 #endif
 #include "Base_Consts.h"
 
-class Int_Thread_Msg
+class Int_Task_Msg
 {
 private:
 	uint32 __id;
@@ -21,7 +21,7 @@ private:
 	uint8_t GetParamCount() const { return __param_count; }
 	String GetParamString()const { return __str_param; }
 public:
-	Int_Thread_Msg(uint32 _id);
+	Int_Task_Msg(uint32 _id);
 	void AddParam(bool boolean);
 	void AddParam(int intNumber);
 	void AddParam(unsigned char c);
@@ -34,9 +34,9 @@ public:
 	unsigned char GetCharParamByIndex(int index);
 	String GetStringParamByIndex(int index);
 
-	Property<uint32, Int_Thread_Msg> id{ this, nullptr, &Int_Thread_Msg::GetID };
-	Property<uint8_t, Int_Thread_Msg> param_count{ this, nullptr, &Int_Thread_Msg::GetParamCount };
-	Property<String, Int_Thread_Msg> param_string{ this, nullptr, &Int_Thread_Msg::GetParamString };
+	Property<uint32, Int_Task_Msg> id{ this, nullptr, &Int_Task_Msg::GetID };
+	Property<uint8_t, Int_Task_Msg> param_count{ this, nullptr, &Int_Task_Msg::GetParamCount };
+	Property<String, Int_Task_Msg> param_string{ this, nullptr, &Int_Task_Msg::GetParamString };
 };
 
 

@@ -5,7 +5,7 @@
 #include "Base_Controller.h"
 
 
-Base_Controller::Base_Controller(uint8_t priority) : Thread(MsToThreadTime(priority)) {
+Base_Controller::Base_Controller(uint8_t priority) : Task(MsToTaskTime(priority)) {
 	/*pins = new Vector <IO_Pin*>;*/
 };
 

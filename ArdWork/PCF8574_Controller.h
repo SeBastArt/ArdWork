@@ -14,7 +14,7 @@
 class PCF8574_Controller : public I2C_Controller
 {
  public:
-	 PCF8574_Controller(uint32_t adress, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	 PCF8574_Controller(uint32_t adress, uint8_t priority = TASK_PRIORITY_NORMAL);
 };
 
 

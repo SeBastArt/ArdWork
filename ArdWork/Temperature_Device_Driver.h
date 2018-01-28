@@ -17,13 +17,13 @@
 class Temperature_Device_Driver : public Device_Driver
 {
 public:
-	Temperature_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool isFahrenheit = false, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Temperature_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool isFahrenheit = false, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	DHT *dht;
-	void DoAfterInit();
+	void DoInit() override;
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
-	void DoDeviceMessage(Int_Thread_Msg message);
+	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void Build_Descriptor();
 

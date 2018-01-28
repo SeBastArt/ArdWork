@@ -12,9 +12,9 @@
 class Display_Device_Driver : public Device_Driver
 {
 public:
-	Display_Device_Driver(Module_Driver* module, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	Display_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
-	void DoDeviceMessage(Int_Thread_Msg message);
+	void DoDeviceMessage(Int_Task_Msg message);
 
 protected:
 	virtual void DoClear() = 0;
@@ -29,7 +29,7 @@ protected:
 	virtual void DoStartScrollLeft(uint8_t start, uint8_t stop) = 0;
 	virtual void DoStopScroll() = 0;
 
-	virtual void DoCustomDisplayMessage(Int_Thread_Msg message) = 0;
+	virtual void DoCustomDisplayMessage(Int_Task_Msg message) = 0;
 public:
 	 void Exec_Display_Clear();
 	 void Exec_Display_Flush();

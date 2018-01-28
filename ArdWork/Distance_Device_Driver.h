@@ -34,16 +34,16 @@ private:
 	void Set_Unit(dist_unit _unit);
 	void Set_Timeout(int _timeout);
 protected:
-	void DoAfterInit();
+	void DoInit() override;
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
-	void DoDeviceMessage(Int_Thread_Msg message);
+	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	
 	void Build_Descriptor();
 
  public:
-	 Distance_Device_Driver(Module_Driver* module, uint8_t pin_trig, uint8_t pin_echo, uint8_t priority = THREAD_PRIORITY_NORMAL);
+	 Distance_Device_Driver(Module_Driver* module, uint8_t pin_trig, uint8_t pin_echo, uint8_t priority = TASK_PRIORITY_NORMAL);
 	 void Exec_Set_Unit(dist_unit _unit);
 	 void Exec_Set_Timeout(int _timeout);
 
