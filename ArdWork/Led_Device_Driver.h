@@ -38,15 +38,13 @@ private:
 
 	int __pulse_counter;
 
-	void DoInit() override;
-	void DoBeforeShutdown();
-	void DoBeforeSuspend();
+	void OnInit() override;
 	void DoDeviceMessage(Int_Task_Msg message);
 	void Set_Led_Delay(int _delay);
 	void Set_Led_Pulse_Count(int _pulse_count);
 	void Set_Led_Mode(uint8_t _mode);
 	void DoUpdate(uint32_t deltaTime);
-	void Build_Descriptor();
+	void OnBuild_Descriptor() override;
 
 	void Set_IO_Pin_High();
 	void Set_IO_Pin_Low();

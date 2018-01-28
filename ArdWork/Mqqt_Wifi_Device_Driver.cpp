@@ -24,7 +24,7 @@ Mqqt_Wifi_Device_Driver::Mqqt_Wifi_Device_Driver(Module_Driver * module, Led_Dev
 	client->setCallback(EventMsgIn);
 }
 
-void Mqqt_Wifi_Device_Driver::Build_Descriptor() {
+void Mqqt_Wifi_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->name = F("Mqqt Broker");
 	__descriptor->descr = F("provide moquitto server-client communication");
 }
@@ -98,7 +98,7 @@ void Mqqt_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
 		client->loop();
 		if (mqtt_message != "") {
 			MqqtMessage* message = new MqqtMessage("Teste mal das hier");
-			if (!parentModule->SendAsyncTaskMessage(message))
+			if (!__parentModule->SendAsyncTaskMessage(message))
 			{
 				Serial.println(F(">> message buffer overflow <<"));
 			}

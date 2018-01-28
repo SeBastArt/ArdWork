@@ -20,7 +20,7 @@ void Base_Controller::InitPins() {
 }
 
 
-bool Base_Controller::OnStart() {
+void Base_Controller::OnStartup() {
 
 }
 

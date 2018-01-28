@@ -51,13 +51,11 @@ private:
 public:
 	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
-	void DoBeforeShutdown();
-	void DoBeforeSuspend();
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void Build_Descriptor();
+	void OnBuild_Descriptor() override;
 protected:
-	void DoInit() override;
+	void OnInit() override;
 protected:
 	void Animation_Off();
 	void Animation_Shine();

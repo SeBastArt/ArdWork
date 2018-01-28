@@ -20,12 +20,12 @@ public:
 	Temperature_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool isFahrenheit = false, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	DHT *dht;
-	void DoInit() override;
+	void OnInit() override;
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void Build_Descriptor();
+	void OnBuild_Descriptor() override;
 
 private:
 	IO_Pin* pin;

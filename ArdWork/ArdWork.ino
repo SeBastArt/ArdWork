@@ -244,7 +244,7 @@ void setup() {
 #endif
 
 #if defined(PICTURE_NodeMCU_GBRW) || defined(PICTURE_NodeMCU_GBR)
-	picture_module->ExecInit();
+	picture_module->ExecStart();
 #endif
 }
 

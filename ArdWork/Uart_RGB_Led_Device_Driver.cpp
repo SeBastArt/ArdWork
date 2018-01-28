@@ -22,7 +22,7 @@ Uart_RGB_Led_Device_Driver::Uart_RGB_Led_Device_Driver(Module_Driver* module, in
 	pixelCount = _pixelcount;
 	__brightness = 50;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
-	strip = new NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>(_pixelcount);
+	strip = new NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>(_pixelcount, 0);
 	animations = new NeoPixelAnimator(_pixelcount + RGB_ANIMATION_COUNT); // NeoPixel animation management object
 
 	for (uint8_t i = 0; i < _pixelcount; i++) {
@@ -32,7 +32,7 @@ Uart_RGB_Led_Device_Driver::Uart_RGB_Led_Device_Driver(Module_Driver* module, in
 	strip->Begin();
 };
 
-void Uart_RGB_Led_Device_Driver::Build_Descriptor() {
+void Uart_RGB_Led_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->name = F("RGB-Stripe");
 	__descriptor->descr = F("RGB-Stripe stellt die Steuerung der RGB-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben");
 	__descriptor->published = false;
@@ -72,24 +72,14 @@ void Uart_RGB_Led_Device_Driver::Build_Descriptor() {
 }
 
 
-void Uart_RGB_Led_Device_Driver::DoInit()
+void Uart_RGB_Led_Device_Driver::OnInit()
 {
-	Device_Driver::DoInit();
+	Device_Driver::OnInit();
 	SetRandomSeed();
 	actAnimation = RGB_ANIMATION_SHINE;
 	Animation_Off();
 	Animation_Shine();
 	Serial.println(F("Uart_Rgb_Led-Driver initialized!"));
-}
-
-void Uart_RGB_Led_Device_Driver::DoBeforeShutdown()
-{
-	//
-}
-
-void Uart_RGB_Led_Device_Driver::DoBeforeSuspend()
-{
-	//
 }
 
 void Uart_RGB_Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
@@ -332,7 +322,6 @@ void Uart_RGB_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Off() {
-	animations->StopAll();
 	for (uint8_t i = 0; i < pixelCount; i++) {
 		strip->SetPixelColor(i, RgbColor(0, 0, 0));
 	}
@@ -340,7 +329,6 @@ void Uart_RGB_Led_Device_Driver::Animation_Off() {
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Shine() {
-	animations->StopAll();
 	animations->StartAnimation(pixelCount + RGB_ANIMATION_SHINE - RGB_ANIMATION_FIRST, 200, ShineAnimUpdate);
 }
 

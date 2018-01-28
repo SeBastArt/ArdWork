@@ -24,12 +24,11 @@ class Mqqt_Wifi_Device_Driver;
 class Temperature_Device_Driver;
 class WebSocket_Wifi_Device_Driver;
 
-class Module_Driver : public Driver//, public Observee
+class Module_Driver : public Driver, public Observer
 {
 private:
 	int __isdebug;
 	Vector<TaskMessage*> queue;
-
 	void DoUpdate(uint32_t deltaTime);
 protected:
 	Vector <Driver*> *device_list;
@@ -49,21 +48,23 @@ protected:
 	bool HasDeviceWithId(int _id);
 	Driver *GetDeviceById(int Id);
 
-	void DoMessage(Int_Task_Msg message);
-	void DoInit();
-	void DoShutdown();
-	void DoSuspend();
-	void Build_Descriptor();
-	//Descriptor_List * GetDescriptrorList();
+	virtual void OnMessage(Int_Task_Msg message);
+	virtual void OnStartup();
+	virtual void OnStop();
+	virtual void OnInit();
+	virtual void OnShutdown();
+	virtual void OnSuspend();
+	virtual void OnBuild_Descriptor() override;
 	bool PopMessage(TaskMessage** message);
 
 	void Set_Debug_Mode(bool _state);
- protected:
-	 virtual void DoBeforeSuspend() = 0;
-	 virtual void DoBeforeShutdown() = 0;
+
+	void OnNotifyInitDone(int _DriverID);
+	void OnNotifyStartupDone(int _DriverID);
+protected:
 	 virtual void DoModuleMessage(Int_Task_Msg message) = 0;
 	 virtual void DoTaskMessage(TaskMessage *message) = 0;
-	 virtual void Build_Module_Discriptor() = 0;
+	 virtual void Build_Discriptor() = 0;
 public:
 	Module_Driver(uint8_t priority = TASK_PRIORITY_NORMAL);
 	~Module_Driver();

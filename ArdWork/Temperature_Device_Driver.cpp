@@ -16,7 +16,7 @@ Temperature_Device_Driver::Temperature_Device_Driver(Module_Driver* module, IO_P
 	dht->begin();
 };
 
-void Temperature_Device_Driver::Build_Descriptor() {
+void Temperature_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->name = "Temperatur Device";
 	__descriptor->descr = "Measure the temperatur of the environment";
 	__descriptor->published = false;
@@ -28,9 +28,9 @@ void Temperature_Device_Driver::Build_Descriptor() {
 	__descriptor->Add_Descriptor_Element(ctrlElem_temp);
 }
 
-void Temperature_Device_Driver::DoInit()
+void Temperature_Device_Driver::OnInit()
 {
-	Device_Driver::DoInit();
+	Device_Driver::OnInit();
 	act_temp = 20.0;
 	act_hum = 50.0;
 	accuracy_delay = 2000;

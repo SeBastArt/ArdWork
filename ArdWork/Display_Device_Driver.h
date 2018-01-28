@@ -25,8 +25,8 @@ protected:
 	virtual void DoDrawChar(unsigned char c) = 0;
 	virtual void DoDrawString(String text) = 0;
 
-	virtual void DoStartScrollRight(uint8_t start, uint8_t stop) = 0;
-	virtual void DoStartScrollLeft(uint8_t start, uint8_t stop) = 0;
+	virtual void OnStartupScrollRight(uint8_t start, uint8_t stop) = 0;
+	virtual void OnStartupScrollLeft(uint8_t start, uint8_t stop) = 0;
 	virtual void DoStopScroll() = 0;
 
 	virtual void DoCustomDisplayMessage(Int_Task_Msg message) = 0;

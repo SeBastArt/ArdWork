@@ -8,7 +8,7 @@ Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _
 	__DriverType = LED_DEVICE_DRIVER_TYPE;
 };
 
-void Led_Device_Driver::Build_Descriptor() {
+void Led_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->name = F("LED");
 	__descriptor->descr = F("a simple LED");
 	__descriptor->published = true;
@@ -35,9 +35,9 @@ void Led_Device_Driver::SetPullUp(bool _hasPullUp)
 }
 
 
-void Led_Device_Driver::DoInit()
+void Led_Device_Driver::OnInit()
 {
-	Device_Driver::DoInit();
+	Device_Driver::OnInit();
 	__pin->IsActive = true;
 	Set_IO_Pin_Low();
 	__blink_flag = false;
@@ -50,18 +50,6 @@ void Led_Device_Driver::DoInit()
 	__sv_pulse_count = 5;
 
 	Serial.println(F("Led-Driver initialized!"));
-}
-
-void Led_Device_Driver::DoBeforeShutdown()
-{
-	__pin->SetPinMode(OUTPUT);
-	(__hasPullUp) ? __pin->SetPinState(HIGH) : __pin->SetPinState(LOW);
-}
-
-void Led_Device_Driver::DoBeforeSuspend()
-{
-	__pin->SetPinMode(OUTPUT);
-	(__hasPullUp) ? __pin->SetPinState(HIGH) : __pin->SetPinState(LOW);
 }
 
 

@@ -17,7 +17,7 @@
 class Base_Controller : public Task
 {
 private:
-	bool OnStart();
+	void OnStartup();
 	void OnStop();
 	void OnUpdate(uint32_t deltaTime);
  protected: 

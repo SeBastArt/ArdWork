@@ -30,12 +30,10 @@ private:
 	bool __hasPullUp;
 	uint8_t __lastMessage;
 private:
-	void DoInit() override;
-	void DoBeforeShutdown();
-	void DoBeforeSuspend();
+	void OnInit() override;
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void Build_Descriptor();
+	void OnBuild_Descriptor() override;
 public:
 	Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp = false, uint8_t priority = TASK_PRIORITY_NORMAL);
 	void SetPullUp(bool _hasPullUp);

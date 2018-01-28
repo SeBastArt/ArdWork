@@ -31,13 +31,11 @@ private:
 	void Set_Pattern_Color(int _r, int _g, int _b);
 
 protected:
-	void DoBeforeSuspend();
-	void DoBeforeShutdown();
-	void DoInit() override;
+	void OnInit() override;
 	void DoModuleMessage(Int_Task_Msg message);
 
 	void DoTaskMessage(TaskMessage *message);
-	void Build_Module_Discriptor();
+	void Build_Discriptor();
 public:
 	void Exec_Pattern_Next();
 	void Exec_Pattern_Prev();

@@ -22,7 +22,7 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 }
 
 
-void Luxmeter_Device_Driver::Build_Descriptor() {
+void Luxmeter_Device_Driver::OnBuild_Descriptor() {
 #ifdef  DEBUG
 	Serial.println("Start Luxmeter_Device_Driver::Build_Descriptor");
 #endif //  DEBUG
@@ -89,12 +89,12 @@ void Luxmeter_Device_Driver::Build_Descriptor() {
 #endif //  DEBUG
 }
 
-void Luxmeter_Device_Driver::DoInit()
+void Luxmeter_Device_Driver::OnInit()
 {
 #ifdef  DEBUG
 	Serial.println("Start Luxmeter_Device_Driver::DoAfterInit");
 #endif //  DEBUG
-	Device_Driver::DoInit();
+	Device_Driver::OnInit();
 	if (!tsl->begin()) {
 #ifdef  DEBUG
 		Serial.println(F("------------------------------------"));
@@ -130,14 +130,6 @@ void Luxmeter_Device_Driver::DoInit()
 #ifdef  DEBUG
 	Serial.println("Ende Luxmeter_Device_Driver::DoAfterInit");
 #endif //  DEBUG
-}
-
-void Luxmeter_Device_Driver::DoBeforeShutdown() {
-	//
-}
-
-void Luxmeter_Device_Driver::DoBeforeSuspend() {
-	//
 }
 
 void Luxmeter_Device_Driver::DoDeviceMessage(Int_Task_Msg message) {
@@ -184,9 +176,6 @@ void Luxmeter_Device_Driver::DoDeviceMessage(Int_Task_Msg message) {
 }
 
 void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
-#ifdef  DEBUG
-	Serial.println("Start Luxmeter_Device_Driver::DoUpdate");
-#endif //  DEBUG
 	accuracy_delta += deltaTime;
 	if (accuracy_delta > accuracy_delay) {
 		accuracy_delta = 0;
@@ -201,7 +190,7 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #ifdef  DEBUG
 				Serial.println("Luxmeter_Device_Driver::DoUpdate SendAsyncTaskMessage");
 #endif //  DEBUG
-				if (!parentModule->SendAsyncTaskMessage(message))
+				if (!__parentModule->SendAsyncTaskMessage(message))
 				{
 					Serial.println(F(">> message buffer overflow <<"));
 				}
@@ -214,9 +203,6 @@ void Luxmeter_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			Serial.println(F("Sensor overload"));
 		}
 	}
-#ifdef  DEBUG
-	Serial.println("Ende Luxmeter_Device_Driver::DoUpdate");
-#endif //  DEBUG
 }
 
 

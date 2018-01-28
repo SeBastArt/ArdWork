@@ -53,15 +53,13 @@ protected:
 	int __isAP;
 	String hostname;
 	static Led_Device_Driver *statusLED;
-	void Build_Descriptor();
+	void OnBuild_Descriptor() override;
 	virtual void UpdateComm(uint32_t deltaTime) = 0;
 	virtual void InitComm() = 0;
 
 protected:
-	void DoInit() override;
+	void OnInit() override;
 	void ProvideAP();
-	void DoBeforeShutdown();
-	void DoBeforeSuspend();
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	

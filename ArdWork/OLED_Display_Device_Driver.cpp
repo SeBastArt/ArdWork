@@ -12,28 +12,19 @@ OLED_Display_Device_Driver::OLED_Display_Device_Driver(Module_Driver* module, ui
 	__display = new Adafruit_SSD1306(__reset_pin);
 };
 
-void OLED_Display_Device_Driver::Build_Descriptor() {
+void OLED_Display_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->name = F("Display");
 	__descriptor->descr = F("a monochrome Display");
 }
 
-void OLED_Display_Device_Driver::DoInit()
+void OLED_Display_Device_Driver::OnInit()
 {
-	Device_Driver::DoInit();
+	Device_Driver::OnInit();
 	__display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
 	DoClear();
 	Serial.println(F("OLED-Driver initialized!"));
 }
 
-void OLED_Display_Device_Driver::DoBeforeShutdown()
-{
-
-}
-
-void OLED_Display_Device_Driver::DoBeforeSuspend()
-{
-
-}
 
 void OLED_Display_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
@@ -174,14 +165,14 @@ void OLED_Display_Device_Driver::DoCustomDisplayMessage(Int_Task_Msg message)
 	{
 		uint8_t start = message.GetIntParamByIndex(0);
 		uint8_t end = message.GetIntParamByIndex(0);
-		DoStartScrollDiagRight(start, end);
+		OnStartupScrollDiagRight(start, end);
 	}
 	break;
 	case OLED_DISPLAY_DRIVER_START_SCROLL_DIAG_LEFT:
 	{
 		uint8_t start = message.GetIntParamByIndex(0);
 		uint8_t end = message.GetIntParamByIndex(0);
-		DoStartScrollDiagLeft(start, end);
+		OnStartupScrollDiagLeft(start, end);
 	}
 	break;
 	}
@@ -287,20 +278,20 @@ void OLED_Display_Device_Driver::DoDrawString(String text) {
 	__display->print(text);
 }
 
-void OLED_Display_Device_Driver::DoStartScrollRight(uint8_t start, uint8_t stop) {
+void OLED_Display_Device_Driver::OnStartupScrollRight(uint8_t start, uint8_t stop) {
 	__display->startscrollright(start, stop);
 }
 
-void OLED_Display_Device_Driver::DoStartScrollLeft(uint8_t start, uint8_t stop) {
+void OLED_Display_Device_Driver::OnStartupScrollLeft(uint8_t start, uint8_t stop) {
 	__display->startscrollleft(start, stop);
 }
 
-void OLED_Display_Device_Driver::DoStartScrollDiagRight(uint8_t start, uint8_t stop)
+void OLED_Display_Device_Driver::OnStartupScrollDiagRight(uint8_t start, uint8_t stop)
 {
 	__display->startscrolldiagright(start, stop);
 }
 
-void OLED_Display_Device_Driver::DoStartScrollDiagLeft(uint8_t start, uint8_t stop)
+void OLED_Display_Device_Driver::OnStartupScrollDiagLeft(uint8_t start, uint8_t stop)
 {
 	__display->startscrolldiagleft(start, stop);
 }

@@ -24,41 +24,54 @@ private:
 	bool __isPublished;
 	int GetDriverId() const { return __DriverId; }
 	unsigned int GetDriverType() const { return __DriverType; }
+
+	void OnUpdate(uint32_t deltaTime);
+	void DoMessage(Int_Task_Msg message);
+	void DoStartup();
+	void DoStop();
+	void DoInit();
+	void DoLoadPresets();
+	void DoShutdown();
+	void DoSuspend();
+
+
 protected:
-	bool __canBeLoad;
 	static Descriptor_List *__descriptor_list;
 	unsigned int __DriverType;
 	Descriptor *__descriptor;
 	static int driver_count;
 	int error_Code;
-	bool is_Error;
-	bool is_Suspend;
-	bool is_Idle;
-	bool is_Busy;
-	bool is_Inactive;
+	bool __isError;
+	bool __isSuspend;
+	bool __isIdle;
+	bool __isBusy;
+	bool __isInactive;
 protected:
-	bool OnStart();
-	void OnStop();
-	void OnUpdate(uint32_t deltaTime);
 
-	virtual void DoMessage(Int_Task_Msg message) = 0;
+	static void fw_Exec_Command(void * context, int i0, String i1);
+
 	virtual void DoUpdate(uint32_t deltaTime) = 0;
-	virtual void DoInit() = 0;
-	virtual void Build_Descriptor() = 0;
-	virtual void DoShutdown() = 0;
-	virtual void DoSuspend() = 0;
+	virtual void OnMessage(Int_Task_Msg message) = 0;
+	virtual void OnStartup() = 0;
+	virtual void OnStop() = 0;
+	virtual void OnInit() = 0;
+	virtual void OnShutdown() = 0;
+	virtual void OnSuspend() = 0;
+	virtual void OnBuild_Descriptor() = 0;
+
 public:
 	
 	Driver(uint8_t priority);
 	Property<int, Driver> DriverId{ this,nullptr,&Driver::GetDriverId };
 	Property<unsigned int, Driver> DriverType{ this,nullptr,&Driver::GetDriverType };
 
+	void ExecStart();
+	void ExecStop();
 	void ExecInit();
 	void ExecShutdown();
 	void ExecSuspend();
+	void ExecLoadPresets();
 
-	int GetError();
-	bool IsError() const;
 	bool isSuspend() const;
 	bool isIdle() const;
 	bool isBusy() const;

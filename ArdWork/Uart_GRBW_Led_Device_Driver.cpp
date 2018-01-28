@@ -26,7 +26,7 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	pixelCount = _pixelcount;
 	__brightness = 50;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
-	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelcount);
+	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelcount, 0);
 	animations = new NeoPixelAnimator(_pixelcount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
 
 	for (uint8_t i = 0; i < _pixelcount; i++) {
@@ -39,7 +39,7 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 #endif //  DEBUG
 };
 
-void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
+void Uart_GRBW_Led_Device_Driver::OnBuild_Descriptor() {
 #ifdef  DEBUG
 	Serial.println("Start Uart_GRBW_Led_Device_Driver::Build_Descriptor");
 #endif //  DEBUG
@@ -68,24 +68,14 @@ void Uart_GRBW_Led_Device_Driver::Build_Descriptor() {
 }
 
 
-void Uart_GRBW_Led_Device_Driver::DoInit()
+void Uart_GRBW_Led_Device_Driver::OnInit()
 {
 	Serial.println("Hier");
-	Device_Driver::DoInit();
+	Device_Driver::OnInit();
 	SetRandomSeed();
 	sv_pattern = GRBW_ANIMATION_SHINE;
 	Animation_Off();
 	Set_Animation();
-}
-
-void Uart_GRBW_Led_Device_Driver::DoBeforeShutdown()
-{
-	//
-}
-
-void Uart_GRBW_Led_Device_Driver::DoBeforeSuspend()
-{
-	//
 }
 
 void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
@@ -326,7 +316,6 @@ void Uart_GRBW_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 }
 
 void Uart_GRBW_Led_Device_Driver::Animation_Off() {
-	animations->StopAll();
 	for (uint8_t i = 0; i < pixelCount; i++) {
 		strip->SetPixelColor(i, RgbColor(0, 0, 0));
 	}
@@ -334,7 +323,6 @@ void Uart_GRBW_Led_Device_Driver::Animation_Off() {
 }
 
 void Uart_GRBW_Led_Device_Driver::Animation_Shine() {
-	animations->StopAll();
 	animations->StartAnimation(pixelCount + GRBW_ANIMATION_SHINE - GRBW_ANIMATION_FIRST, 200, ShineAnimUpdate);
 }
 

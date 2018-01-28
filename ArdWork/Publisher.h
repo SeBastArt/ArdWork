@@ -583,7 +583,8 @@ class Observer
 {
 public:
 	virtual ~Observer() {};		// Destructor
-	virtual void Notify(Descriptor_List *_descriptor_list) = 0;
+	virtual void OnNotifyInitDone(int _DriverID) = 0;
+	virtual void OnNotifyStartupDone(int _DriverID) = 0;
 protected:
 	//constructor is protected because this class is abstract, it’s only meant to be inherited!
 	Observer() {};
@@ -619,9 +620,15 @@ public:
 		}
 	};
 
-	bool NotifyObservers(Descriptor_List *_descriptor_list) {
+	void NotifyModuleStartupDone(int _DriverId) {
 		for (int i = 0; i < m_ObserverVec->Size(); i++) {
-			(*m_ObserverVec)[i]->Notify(_descriptor_list);
+			(*m_ObserverVec)[i]->OnNotifyStartupDone(_DriverId);
+		}
+	};
+
+	void NotifyModuleInitDone(int _DriverId) {
+		for (int i = 0; i < m_ObserverVec->Size(); i++) {
+			(*m_ObserverVec)[i]->OnNotifyInitDone(_DriverId);
 		}
 	};
 protected:

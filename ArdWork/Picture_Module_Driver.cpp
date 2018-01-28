@@ -25,7 +25,7 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	__absBrightness = 50;
 }
 
-void Picture_Module_Driver::Build_Module_Discriptor() {
+void Picture_Module_Driver::Build_Discriptor() {
 #ifdef  DEBUG
 	Serial.println("Start Picture_Module_Driver::Build_Module_Discriptor");
 #endif //  DEBUG	
@@ -57,17 +57,9 @@ void Picture_Module_Driver::Build_Module_Discriptor() {
 }
 
 
-void Picture_Module_Driver::DoBeforeSuspend()
+void Picture_Module_Driver::OnInit()
 {
-}
-
-void Picture_Module_Driver::DoBeforeShutdown()
-{
-}
-
-void Picture_Module_Driver::DoInit()
-{
-	Module_Driver::DoInit();
+	Module_Driver::OnInit();
 }
 
 void Picture_Module_Driver::DoTaskMessage(TaskMessage * message)

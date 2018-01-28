@@ -19,11 +19,10 @@ Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver 
 	__dnsServer = nullptr;
 }
 
-void Wifi_Device_Driver::Build_Descriptor() {
+void Wifi_Device_Driver::OnBuild_Descriptor() {
 #ifdef  DEBUG
 	Serial.println("Start Wifi_Device_Driver::Build_Descriptor");
 #endif //  DEBUG
-	__canBeLoad = true;
 	__descriptor->name = F("Wifi");
 	__descriptor->descr = F("Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit");
 	__descriptor->published = true;
@@ -50,12 +49,12 @@ void Wifi_Device_Driver::Build_Descriptor() {
 }
 
 
-void Wifi_Device_Driver::DoInit()
+void Wifi_Device_Driver::OnInit()
 {
 #ifdef  DEBUG
 	Serial.println("Start Wifi_Device_Driver::DoAfterInit");
 #endif //  DEBUG
-	Device_Driver::DoInit();
+	Device_Driver::OnInit();
 	__connection_try = 0;
 	__WiFi_isConnected = false;
 	__AP_isConnected = false;
@@ -109,14 +108,6 @@ void  Wifi_Device_Driver::ResetConnection() {
 	ESP.restart();
 }
 
-
-void Wifi_Device_Driver::DoBeforeShutdown()
-{
-}
-
-void Wifi_Device_Driver::DoBeforeSuspend()
-{
-}
 
 void Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 {
@@ -198,7 +189,7 @@ void Wifi_Device_Driver::ProvideAP() {
 
 
 void Wifi_Device_Driver::StartMSDNServices() {
-	MDNS.begin(String(parentModule->GetDescriptor()->name).c_str());
+	MDNS.begin(String(__parentModule->GetDescriptor()->name).c_str());
 	MDNS.addService(F("http"), F("tcp"), 80);
 	MDNS.addService(F("ws"), F("tcp"), 81);
 

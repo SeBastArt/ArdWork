@@ -23,12 +23,10 @@ public:
 
 //Divice Driver
 private:
-	void DoInit() override;
-	void DoBeforeShutdown();
-	void DoBeforeSuspend();
+	void OnInit() override;
 	void DoCustomDisplayMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void Build_Descriptor();
+	void OnBuild_Descriptor() override;
 
 //OLED_Diplay_device_Driver
 private:
@@ -62,10 +60,10 @@ protected:
 	void DoDrawString(String text);
 
 	//Srcolling
-	void DoStartScrollRight(uint8_t start, uint8_t stop);
-	void DoStartScrollLeft(uint8_t start, uint8_t stop);
-	void DoStartScrollDiagRight(uint8_t start, uint8_t stop);
-	void DoStartScrollDiagLeft(uint8_t start, uint8_t stop);
+	void OnStartupScrollRight(uint8_t start, uint8_t stop);
+	void OnStartupScrollLeft(uint8_t start, uint8_t stop);
+	void OnStartupScrollDiagRight(uint8_t start, uint8_t stop);
+	void OnStartupScrollDiagLeft(uint8_t start, uint8_t stop);
 	void DoStopScroll();
 
 public:

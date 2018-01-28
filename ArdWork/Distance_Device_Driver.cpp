@@ -20,7 +20,7 @@ Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pi
 }
 
 
-void Distance_Device_Driver::Build_Descriptor() {
+void Distance_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->name = F("Ultrasonic Distance");
 	__descriptor->descr = F("estimate the distance to a target");
 	__descriptor->published = true;
@@ -49,17 +49,9 @@ void Distance_Device_Driver::Build_Descriptor() {
 }
 
 
-void Distance_Device_Driver::DoInit() {
-	Device_Driver::DoInit();
+void Distance_Device_Driver::OnInit() {
+	Device_Driver::OnInit();
 	Serial.println(F("Distance-Driver initialized!"));
-}
-
-void Distance_Device_Driver::DoBeforeShutdown() {
-
-}
-
-void Distance_Device_Driver::DoBeforeSuspend() {
-
 }
 
 void Distance_Device_Driver::DoDeviceMessage(Int_Task_Msg message) {
@@ -93,7 +85,7 @@ void Distance_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			__distance = DistanceRead_inch();
 		}
 		FloatMessage* message = new FloatMessage(DriverId, __distance);
-		if (!parentModule->SendAsyncTaskMessage(message))
+		if (!__parentModule->SendAsyncTaskMessage(message))
 		{
 			Serial.println(F(">> message buffer overflow <<"));
 		}

@@ -26,7 +26,6 @@ Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
 	__isdebug = false;
 	device_list = new Vector <Driver*>;
-	__canBeLoad = true;
 }
 
 Module_Driver::~Module_Driver()
@@ -35,7 +34,7 @@ Module_Driver::~Module_Driver()
 	queue.Clear();
 }
 
-void Module_Driver::Build_Descriptor() {
+void Module_Driver::OnBuild_Descriptor() {
 #ifdef  DEBUG
 	Serial.println("Start Module_Driver::Build_Descriptor");
 #endif //  DEBUG
@@ -43,7 +42,7 @@ void Module_Driver::Build_Descriptor() {
 	__descriptor->descr = F("the main module");
 	__descriptor->published = true;
 
-	Build_Module_Discriptor();
+	Build_Discriptor();
 
 	Select_CtrlElem *ctrlElem_debug = new Select_CtrlElem(MODULE_DRIVER_SET_DEBUG_MODE, &__isdebug, F("Debug Mode"), F("Debug Mode On or Off - need a reload of HtmlPage"));
 	ctrlElem_debug->AddMember("Off");
@@ -59,207 +58,6 @@ void Module_Driver::Build_Descriptor() {
 #endif //  DEBUG
 }
 
-void Module_Driver::AddDevice(Device_Driver* device)
-{
-	device_list->PushBack(device);
-}
-
-WebSocket_Wifi_Device_Driver *Module_Driver::Get_WebSocket_Wifi_DevDrv(uint8_t _index) {
-	WebSocket_Wifi_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (WebSocket_Wifi_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-
-Button_Device_Driver * Module_Driver::Get_Button_DevDrv(uint8_t _index)
-{
-	Button_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == BUTTON_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Button_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Distance_Device_Driver * Module_Driver::Get_Distance_DevDrv(uint8_t _index)
-{
-	Distance_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == DISTANCE_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Distance_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-
-Led_Device_Driver * Module_Driver::Get_LED_DevDrv(uint8_t _index)
-{
-	Led_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == LED_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Led_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Luxmeter_Device_Driver * Module_Driver::Get_Luxmeter_DevDrv(uint8_t _index)
-{
-	Luxmeter_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == LUXMETER_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Luxmeter_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Mqqt_Wifi_Device_Driver * Module_Driver::Get_Mqqt_Wifi_DevDrv(uint8_t _index)
-{
-	Mqqt_Wifi_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == MQQT_WIFI_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Mqqt_Wifi_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-OLED_Display_Device_Driver * Module_Driver::Get_OLED_Display_DevDrv(uint8_t _index)
-{
-	OLED_Display_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == OLED_DISPLAY_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (OLED_Display_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Temperature_Device_Driver * Module_Driver::Get_Temperatur_DevDrv(uint8_t _index)
-{
-	Temperature_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == TEMPERATURE_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Temperature_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Uart_RGB_Led_Device_Driver * Module_Driver::Get_Uart_RGB_Led_DevDrv(uint8_t _index)
-{
-	Uart_RGB_Led_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == UART_RGB_LED_DEVICE_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Uart_RGB_Led_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Uart_GRBW_Led_Device_Driver *Module_Driver::Get_Uart_GRBW_Led_DevDrv(uint8_t _index) {
-	Uart_GRBW_Led_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == UART_GRBW_LED_DEVICE_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Uart_GRBW_Led_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-bool Module_Driver::HasDeviceWithId(int _id)
-{
-#ifdef  DEBUG
-	Serial.println("Start Module_Driver::HasDeviceWithId");
-#endif //  DEBUG
-	bool return_value = false;
-
-	if (DriverId == _id) {
-		return_value = true;
-	}
-	else {
-		for (int i = 0; i < device_list->Size(); i++) {
-			if ((*device_list)[i]->DriverId == _id) {
-				return_value = true;
-			}
-		}
-	}
-#ifdef  DEBUG
-	Serial.println("Ende Module_Driver::HasDeviceWithId");
-#endif //  DEBUG
-	return return_value;
-}
-
-
-Driver *Module_Driver::GetDeviceById(int _id)
-{
-#ifdef  DEBUG
-	Serial.println("Start Module_Driver::GetDeviceById");
-#endif //  DEBUG
-	Driver* result = nullptr;
-
-	if (DriverId == _id) {
-		result = this;
-	}
-	else {
-		for (int i = 0; i < device_list->Size(); i++) {
-			if ((*device_list)[i]->DriverId == _id) {
-				result = (*device_list)[i];
-			}
-		}
-	}
-#ifdef  DEBUG
-	Serial.println("Ende Module_Driver::GetDeviceById");
-#endif //  DEBUG
-	return result;
-}
 
 bool Module_Driver::PopMessage(TaskMessage** message) {
 	bool messagePopped = false;
@@ -278,7 +76,7 @@ bool Module_Driver::PopMessage(TaskMessage** message) {
 	return messagePopped;
 }
 
-void Module_Driver::DoMessage(Int_Task_Msg message) {
+void Module_Driver::OnMessage(Int_Task_Msg message) {
 	int messageID = message.id;
 	switch (messageID)
 	{
@@ -308,27 +106,57 @@ void Module_Driver::DoMessage(Int_Task_Msg message) {
 #endif //  DEBUG
 }
 
-void Module_Driver::DoInit() {
+
+
+void Module_Driver::OnStartup() {
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecStart();
+	}
+	ExecInit();
+}
+
+void Module_Driver::OnInit() {
 #ifdef  DEBUG
 	Serial.println("Start Module_Driver::DoInit");
 #endif //  DEBUG
-	for (int i = 0; i < device_list->Size(); i++) {
-		(*device_list)[i]->ExecInit();
-	}
+	//OnInit
 #ifdef  DEBUG
 	Serial.println("Ende Module_Driver::DoInit");
 #endif //  DEBUG
 }
 
-void Module_Driver::DoShutdown() {
+
+void Module_Driver::OnShutdown() {
 	for (int i = 0; i < device_list->Size(); i++) {
 		(*device_list)[i]->ExecShutdown();
 	}
 }
 
-void Module_Driver::DoSuspend() {
+void Module_Driver::OnSuspend() {
 	for (int i = 0; i < device_list->Size(); i++) {
 		(*device_list)[i]->ExecSuspend();
+	}
+}
+
+
+void Module_Driver::OnStop() {
+	for (int i = 0; i < device_list->Size(); i++) {
+		(*device_list)[i]->ExecStop();
+	}
+}
+
+
+void Module_Driver::OnNotifyStartupDone(int _DriverId) {
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverId == _DriverId)
+			(*device_list)[i]->ExecInit();
+	}
+}
+
+void Module_Driver::OnNotifyInitDone(int _DriverId) {
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverId == _DriverId)
+			(*device_list)[i]->ExecLoadPresets();
 	}
 }
 
@@ -362,6 +190,18 @@ void Module_Driver::Set_Debug_Mode(bool _state)
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
 	TaskMessage *pMessage;
+
+	if (!isIdle()) {
+		bool busyFlag = true;
+		for (int i = 0; i < device_list->Size(); i++) {
+			if ((*device_list)[i]->isBusy() || (*device_list)[i]->isInactive() || (!(*device_list)[i]->isIdle()))
+				busyFlag = false;
+		}
+		if (busyFlag == true) {
+			ExecLoadPresets();
+		}
+	}
+
 
 	if (PopMessage(&pMessage))
 	{
@@ -430,4 +270,209 @@ void Module_Driver::Exec_Set_Debug_Mode(bool _state)
 #ifdef  DEBUG
 	Serial.println("Ende Module_Driver::Exec_Set_Debug_Mode");
 #endif //  DEBUG
+}
+
+
+
+
+void Module_Driver::AddDevice(Device_Driver* device)
+{
+	device_list->PushBack(device);
+}
+
+WebSocket_Wifi_Device_Driver *Module_Driver::Get_WebSocket_Wifi_DevDrv(uint8_t _index) {
+	WebSocket_Wifi_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (WebSocket_Wifi_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+
+Button_Device_Driver* Module_Driver::Get_Button_DevDrv(uint8_t _index)
+{
+	Button_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == BUTTON_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Button_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+Distance_Device_Driver* Module_Driver::Get_Distance_DevDrv(uint8_t _index)
+{
+	Distance_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == DISTANCE_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Distance_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+
+Led_Device_Driver* Module_Driver::Get_LED_DevDrv(uint8_t _index)
+{
+	Led_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == LED_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Led_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+Luxmeter_Device_Driver* Module_Driver::Get_Luxmeter_DevDrv(uint8_t _index)
+{
+	Luxmeter_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == LUXMETER_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Luxmeter_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+Mqqt_Wifi_Device_Driver* Module_Driver::Get_Mqqt_Wifi_DevDrv(uint8_t _index)
+{
+	Mqqt_Wifi_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == MQQT_WIFI_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Mqqt_Wifi_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+OLED_Display_Device_Driver* Module_Driver::Get_OLED_Display_DevDrv(uint8_t _index)
+{
+	OLED_Display_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == OLED_DISPLAY_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (OLED_Display_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+Temperature_Device_Driver* Module_Driver::Get_Temperatur_DevDrv(uint8_t _index)
+{
+	Temperature_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == TEMPERATURE_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Temperature_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+Uart_RGB_Led_Device_Driver* Module_Driver::Get_Uart_RGB_Led_DevDrv(uint8_t _index)
+{
+	Uart_RGB_Led_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == UART_RGB_LED_DEVICE_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Uart_RGB_Led_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+Uart_GRBW_Led_Device_Driver* Module_Driver::Get_Uart_GRBW_Led_DevDrv(uint8_t _index) {
+	Uart_GRBW_Led_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == UART_GRBW_LED_DEVICE_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Uart_GRBW_Led_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+bool Module_Driver::HasDeviceWithId(int _id)
+{
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::HasDeviceWithId");
+#endif //  DEBUG
+	bool return_value = false;
+
+	if (DriverId == _id) {
+		return_value = true;
+	}
+	else {
+		for (int i = 0; i < device_list->Size(); i++) {
+			if ((*device_list)[i]->DriverId == _id) {
+				return_value = true;
+			}
+		}
+	}
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::HasDeviceWithId");
+#endif //  DEBUG
+	return return_value;
+}
+
+
+Driver *Module_Driver::GetDeviceById(int _id)
+{
+#ifdef  DEBUG
+	Serial.println("Start Module_Driver::GetDeviceById");
+#endif //  DEBUG
+	Driver* result = nullptr;
+
+	if (DriverId == _id) {
+		result = this;
+	}
+	else {
+		for (int i = 0; i < device_list->Size(); i++) {
+			if ((*device_list)[i]->DriverId == _id) {
+				result = (*device_list)[i];
+			}
+		}
+	}
+#ifdef  DEBUG
+	Serial.println("Ende Module_Driver::GetDeviceById");
+#endif //  DEBUG
+	return result;
 }

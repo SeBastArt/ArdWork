@@ -48,14 +48,14 @@ void Display_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 	{
 		int start = message.GetIntParamByIndex(0);
 		int end = message.GetIntParamByIndex(1);
-		DoStartScrollRight(start, end);
+		OnStartupScrollRight(start, end);
 	}
 	break;
 	case DISPLAY_DRIVER_START_SCROLLING_LEFT:
 	{
 		int start = message.GetIntParamByIndex(0);
 		int end = message.GetIntParamByIndex(1);
-		DoStartScrollLeft(start, end);
+		OnStartupScrollLeft(start, end);
 	}
 	case DISPLAY_DRIVER_STOP_SCROLL:
 	{

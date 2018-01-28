@@ -30,12 +30,12 @@ public:
 	 int sv_auto_range = 0;
 	 int sv_gain = 0;
 	 int sv_acc_rate = 0;
-	 void DoInit() override;
+	 void OnInit() override;
 	 void DoBeforeShutdown();
 	 void DoBeforeSuspend();
 	 void DoDeviceMessage(Int_Task_Msg message);
 	 void DoUpdate(uint32_t deltaTime);
-	 void Build_Descriptor();
+	 void OnBuild_Descriptor() override;
 private:
 	uint16_t accuracy_delta;
 	uint16_t accuracy_delay;

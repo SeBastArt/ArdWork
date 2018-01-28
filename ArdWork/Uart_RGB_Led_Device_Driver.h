@@ -48,12 +48,10 @@ private:
 public:
 	Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
-	void DoInit() override;
-	void DoBeforeShutdown();
-	void DoBeforeSuspend();
+	void OnInit() override;
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
-	void Build_Descriptor();
+	void OnBuild_Descriptor() override;
 
 protected:
 	void Animation_Off();
