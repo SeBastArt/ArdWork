@@ -35,9 +35,9 @@ Module_Driver::~Module_Driver()
 }
 
 void Module_Driver::OnBuild_Descriptor() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Module_Driver::Build_Descriptor");
-#endif //  DEBUG
+#endif // DEBUG
 	__descriptor->name = F("Module");
 	__descriptor->descr = F("the main module");
 	__descriptor->published = true;
@@ -53,9 +53,9 @@ void Module_Driver::OnBuild_Descriptor() {
 		
 	__descriptor->Add_Descriptor_Element(ctrlElem_debug);
 	__descriptor->Add_Descriptor_Element(ctrlElem_save);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::Build_Descriptor");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
@@ -82,9 +82,9 @@ void Module_Driver::OnMessage(Int_Task_Msg message) {
 	{
 	case MODULE_DRIVER_SET_DEBUG_MODE:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Module_Driver::DoMessage - MODULE_DRIVER_SET_DEBUG_MODE");
-#endif //  DEBUG
+#endif // DEBUG
 		bool state = message.GetBoolParamByIndex(0);
 		__isdebug = (int)state;
 		Set_Debug_Mode(state);
@@ -92,18 +92,18 @@ void Module_Driver::OnMessage(Int_Task_Msg message) {
 	break;
 	case MODULE_DRIVER_SAVE:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Module_Driver::DoMessage- MODULE_DRIVER_SAVE");
-#endif //  DEBUG
+#endif // DEBUG
 		__descriptor_list->Save();
 	}
 	break;
 	}
 
 	DoModuleMessage(message);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::DoMessage");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
@@ -116,13 +116,13 @@ void Module_Driver::OnStartup() {
 }
 
 void Module_Driver::OnInit() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Module_Driver::DoInit");
-#endif //  DEBUG
+#endif // DEBUG
 	//OnInit
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::DoInit");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
@@ -163,9 +163,9 @@ void Module_Driver::OnNotifyInitDone(int _DriverId) {
 
 void Module_Driver::Set_Debug_Mode(bool _state)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Module_Driver::Set_Debug_Mode");
-#endif //  DEBUG
+#endif // DEBUG
 	if (_state) {
 		for (uint8_t i = 0; i < __descriptor_list->count; i++)
 			__descriptor_list->GetElemByIndex(i)->published = true;
@@ -182,9 +182,9 @@ void Module_Driver::Set_Debug_Mode(bool _state)
 			}
 		}
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::Set_Debug_Mode");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
@@ -208,23 +208,23 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 		switch ((pMessage)->Class) {
 		case MessageClass_Extern:
 		{
-#ifdef  DEBUG
+#ifdef DEBUG
 			Serial.println("Start Module_Driver::DoUpdate MessageClass_Extern");
-#endif //  DEBUG
+#endif // DEBUG
 			ExternMessage* pExtern = (ExternMessage*)(pMessage);
 			if (HasDeviceWithId(pExtern->__Id)) {
 				Driver* device = GetDeviceById(pExtern->__Id);
 				device->Exec_Command(pExtern->__CmdId, pExtern->__Value);
 			}
-#ifdef  DEBUG
+#ifdef DEBUG
 			Serial.println("Ende Module_Driver::DoUpdate MessageClass_Extern");
-#endif //  DEBUG
+#endif // DEBUG
 			break;
 		}
 		}
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Fire Module_Driver::DoUpdate DoTaskMessage");
-#endif //  DEBUG
+#endif // DEBUG
 		DoTaskMessage(pMessage);
 
 		if (pMessage != NULL) {
@@ -236,9 +236,9 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 
 
 bool Module_Driver::SendAsyncTaskMessage(TaskMessage* message, bool withinIsr) {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Module_Driver::SendAsyncTaskMessage");
-#endif //  DEBUG
+#endif // DEBUG
 	bool result = false;
 	if (!withinIsr)
 	{
@@ -252,24 +252,24 @@ bool Module_Driver::SendAsyncTaskMessage(TaskMessage* message, bool withinIsr) {
 	{
 		interrupts();
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::SendAsyncTaskMessage");
-#endif //  DEBUG
+#endif // DEBUG
 	return result;
 }
 
 
 void Module_Driver::Exec_Set_Debug_Mode(bool _state)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Module_Driver::Exec_Set_Debug_Mode");
-#endif //  DEBUG
+#endif // DEBUG
 	Int_Task_Msg *message = new Int_Task_Msg(MODULE_DRIVER_SET_DEBUG_MODE);
 	message->AddParam(_state);
 	PostMessage(&message);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::Exec_Set_Debug_Mode");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
@@ -432,9 +432,9 @@ Uart_GRBW_Led_Device_Driver* Module_Driver::Get_Uart_GRBW_Led_DevDrv(uint8_t _in
 
 bool Module_Driver::HasDeviceWithId(int _id)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Module_Driver::HasDeviceWithId");
-#endif //  DEBUG
+#endif // DEBUG
 	bool return_value = false;
 
 	if (DriverId == _id) {
@@ -447,18 +447,18 @@ bool Module_Driver::HasDeviceWithId(int _id)
 			}
 		}
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::HasDeviceWithId");
-#endif //  DEBUG
+#endif // DEBUG
 	return return_value;
 }
 
 
 Driver *Module_Driver::GetDeviceById(int _id)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Module_Driver::GetDeviceById");
-#endif //  DEBUG
+#endif // DEBUG
 	Driver* result = nullptr;
 
 	if (DriverId == _id) {
@@ -471,8 +471,8 @@ Driver *Module_Driver::GetDeviceById(int _id)
 			}
 		}
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Module_Driver::GetDeviceById");
-#endif //  DEBUG
+#endif // DEBUG
 	return result;
 }

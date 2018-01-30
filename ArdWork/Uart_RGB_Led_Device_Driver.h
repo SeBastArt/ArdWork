@@ -31,7 +31,7 @@ private:
 	uint8_t __brightness;
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
-	static NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>* strip;
+	static NeoPixelBus<NeoRgbFeature, NeoEsp8266Dma800KbpsMethod>* strip;
 	static NeoPixelAnimator* animations; // NeoPixel animation management object
 
 	static void CylonAnimUpdate(const AnimationParam& param);

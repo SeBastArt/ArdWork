@@ -12,10 +12,10 @@ Descriptor_List *Driver::__descriptor_list = new Descriptor_List;
 Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 	Task(MsToTaskTime(priority))
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Constructor Driver with ID: ");
 	Serial.println(this->DriverId);
-#endif //  DEBUG
+#endif // DEBUG
 	driver_count++;
 	__descriptor = new Descriptor(driver_count);
 	__descriptor->published = true;
@@ -28,9 +28,9 @@ Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 	__isIdle = false;
 	__isBusy = false;
 	__isInactive = true;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Ende Constructor Driver");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::fw_Exec_Command(void* context, int i0, String i1) {
@@ -39,17 +39,17 @@ void Driver::fw_Exec_Command(void* context, int i0, String i1) {
 
 void Driver::Exec_Command(int _cmdId, String _value)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::Exec_Command for DeviceID: ");
 	Serial.println(this->DriverId);
-#endif //  DEBUG
+#endif // DEBUG
 	Int_Task_Msg *message = new Int_Task_Msg(_cmdId);
 	message->AddParam(_value);
 	PostMessage(&message);
 	__isBusy = true;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Driver::Exec_Command");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::OnUpdate(uint32_t deltaTime) {
@@ -57,45 +57,45 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 	if (!message_queue.Empty()) {
 		for (unsigned i = 0; i < message_queue.Size(); i++) {
 			int messageID = message_queue[i]->id;
-#ifdef  DEBUG
+#ifdef DEBUG
 			Serial.print("messageID: ");
 			Serial.println(messageID);
-#endif //  DEBUG
+#endif // DEBUG
 
 			switch (messageID)
 			{
 			case DRIVER_START:
 			{
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Start Driver::OnUpdate DRIVER_START");
-#endif //  DEBUG
+#endif // DEBUG
 				DoStartup();
 				break;
 			}
 
 			case DRIVER_INIT:
 			{
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Start Driver::OnUpdate DRIVER_INIT");
-#endif //  DEBUG
+#endif // DEBUG
 				DoInit();
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.print("Initialize Driver with ID: ");
 				Serial.println(DriverId);
-#endif //  DEBUG
+#endif // DEBUG
 
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Ende Driver::OnUpdate DRIVER_INIT");
-#endif //  DEBUG
+#endif // DEBUG
 				break;
 		}
 
 
 			case DRIVER_LOADPRESETS:
 			{
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Start Driver::OnUpdate DRIVER_LOADPRESETS");
-#endif //  DEBUG
+#endif // DEBUG
 				DoLoadPresets();
 				break;
 	}
@@ -103,9 +103,9 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 
 			case DRIVER_STOP:
 			{
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Start Driver::OnUpdate DRIVER_STOP");
-#endif //  DEBUG
+#endif // DEBUG
 				DoStop();
 				break;
 }
@@ -113,9 +113,9 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 
 			case DRIVER_SHUTDOWN:
 			{
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Start Driver::OnUpdate DRIVER_SHUTDOWN");
-#endif //  DEBUG
+#endif // DEBUG
 				DoShutdown();
 				break;
 			}
@@ -123,17 +123,17 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 
 			case DRIVER_SUSPEND:
 			{
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Start Driver::OnUpdate DRIVER_SUSPEND");
-#endif //  DEBUG
+#endif // DEBUG
 				DoSuspend();
 				break;
 			}
 			default:
 			{
-#ifdef  DEBUG
+#ifdef DEBUG
 				Serial.println("Start Driver::OnUpdate default");
-#endif //  DEBUG
+#endif // DEBUG
 				DoMessage(*message_queue[i]);
 			}
 			}
@@ -147,92 +147,92 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 }
 
 void Driver::DoMessage(Int_Task_Msg message) {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::DoMessage");
-#endif //  DEBUG
+#endif // DEBUG
 	OnMessage(message);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Driver::DoMessage");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::DoStartup() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::DoStartup");
-#endif //  DEBUG
+#endif // DEBUG
 	OnStartup();
 	__isInactive = false;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Ende Driver::DoStartup");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::DoInit() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::DoInit");
-#endif //  DEBUG
+#endif // DEBUG
 	OnInit();
 	OnBuild_Descriptor();
 	__isPublished = __descriptor->published;
 	__descriptor_list->Add_Descriptor(__descriptor);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Ende Driver::DoInit");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::DoLoadPresets() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::DoLoadPresets");
-#endif //  DEBUG
+#endif // DEBUG
 	__descriptor_list->Load(DriverId, &fw_Exec_Command, this);
 	__isIdle = true;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Ende Driver::DoLoadPresets");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::DoStop() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::DoStop");
-#endif //  DEBUG
+#endif // DEBUG
 	OnStop();
 	__isInactive = true;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Ende Driver::DoStop");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::DoShutdown() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::DoShutdown");
-#endif //  DEBUG
+#endif // DEBUG
 	OnShutdown();
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Ende Driver::DoShutdown");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::DoSuspend() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Driver::DoSuspend");
-#endif //  DEBUG
+#endif // DEBUG
 	OnSuspend();
 	__isSuspend = true;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Ende Driver::DoSuspend");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
 void Driver::ExecInit() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Driver::ExecInit");
-#endif //  DEBUG
+#endif // DEBUG
 	Int_Task_Msg *message = new Int_Task_Msg(DRIVER_INIT);
 	PostMessage(&message);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Driver::ExecInit");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Driver::ExecShutdown() {

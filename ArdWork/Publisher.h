@@ -184,7 +184,19 @@ public:
 		Color v_color = *reinterpret_cast<Color*>(__supervisor);
 		char buf[12];
 		String result_string;
-		result_string = String(itoa(v_color.R, buf, 16)) + String(itoa(v_color.G, buf, 16)) + String(itoa(v_color.B, buf, 16));
+
+		char r[255];
+		sprintf(r, "%.2X", v_color.R);
+		result_string = result_string + r;
+
+		char g[255];
+		sprintf(g, "%.2X", v_color.G);
+		result_string = result_string + g;
+
+		char b[255];
+		sprintf(b, "%.2X", v_color.B);
+		result_string = result_string + b;
+
 		return result_string;
 	};
 };
@@ -323,31 +335,31 @@ public:
 		for (auto obj_descriptor : arr_descriptors) {
 			//for (size_t i = 0; i < __elem_count; i++) {
 				//Descriptor * ptr_descriptor = (*__vec_descriptor_elem)[i];
-				if (_driverID == (int)obj_descriptor["id"]) {
-					JsonArray& arr_controls = obj_descriptor["Controls"];
-					for (auto obj_control : arr_controls) {
-						int device_id = obj_descriptor["id"];
-						int contrl_id = obj_control["id"];
-						int contrl_type = obj_control["type"];
-						String value = obj_control["value"];
+			if (_driverID == (int)obj_descriptor["id"]) {
+				JsonArray& arr_controls = obj_descriptor["Controls"];
+				for (auto obj_control : arr_controls) {
+					int device_id = obj_descriptor["id"];
+					int contrl_id = obj_control["id"];
+					int contrl_type = obj_control["type"];
+					String value = obj_control["value"];
 
 #ifdef  LOAD_SAVE_DEBUG
-						Serial.print(" Load -> ");
-						Serial.print(" - DeviceId: ");
-						Serial.print(device_id);
-						Serial.print(" - CtrlId: ");
-						Serial.print(contrl_id);
-						Serial.print(" - Type: ");
-						Serial.print(contrl_type);
-						Serial.print(" - Value: ");
-						Serial.println(value);
+					Serial.print(" Load -> ");
+					Serial.print(" - DeviceId: ");
+					Serial.print(device_id);
+					Serial.print(" - CtrlId: ");
+					Serial.print(contrl_id);
+					Serial.print(" - Type: ");
+					Serial.print(contrl_type);
+					Serial.print(" - Value: ");
+					Serial.println(value);
 #endif //  LOAD_SAVE_DEBUG	
 
-						if ((contrl_id > 0) && !value.equals("") && (contrl_type != group)) {
-							fw_Exec_Command(context, contrl_id, value);
-						}
+					if ((contrl_id > 0) && !value.equals("") && (contrl_type != group)) {
+						fw_Exec_Command(context, contrl_id, value);
 					}
 				}
+			}
 			//}
 		}
 
@@ -363,8 +375,40 @@ public:
 #endif //  LOAD_SAVE_DEBUG
 	}
 
-
 	void Save() {
+		DynamicJsonBuffer jsonBuffer;
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("JSON-File - create new one");
+#endif //  LOAD_SAVE_DEBUG	
+		JsonObject& root = jsonBuffer.createObject();
+		JsonArray& arr_descriptors = root.createNestedArray("Descriptors");
+		for (size_t i = 0; i < __elem_count; i++)
+		{
+			JsonObject& descriptor = arr_descriptors.createNestedObject();
+			descriptor["id"] = (int)(*__vec_descriptor_elem)[i]->id;
+			JsonArray& arr_controls = descriptor.createNestedArray("Controls");
+			for (size_t j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++)
+			{
+				JsonObject& obj_control = arr_controls.createNestedObject();
+#ifdef  LOAD_SAVE_DEBUG
+				Serial.print(" Add - ");
+				Serial.print("descriptorId: "); Serial.print((*__vec_descriptor_elem)[i]->id);
+				Serial.print("ctrlId: "); Serial.print(j);
+				Serial.print(" - id: "); Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id);
+				Serial.print(" - type: "); Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type);
+				Serial.print(" - value: "); Serial.println((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString());
+#endif //  LOAD_SAVE_DEBUG
+				obj_control["id"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id;
+				obj_control["type"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type;
+				obj_control["value"] = (String)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
+			}
+		}
+		String text;
+		root.printTo(text);
+		filesystem.SaveToFile("/testfile.json", text);
+	}
+
+	void ModifySave() {
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println("Start Descriptor_List::Save");
 #endif //  LOAD_SAVE_DEBUG
@@ -393,7 +437,7 @@ public:
 		}
 
 		JsonObject& root = jsonBuffer.parseObject(file_text);
-		filesystem.CloseFile();	
+		filesystem.CloseFile();
 
 		if (!root.success()) {
 #ifdef  LOAD_SAVE_DEBUG
@@ -511,7 +555,7 @@ public:
 			root.printTo(text);
 			filesystem.SaveToFile("/testfile.json", text);
 
-			
+
 
 #ifdef  LOAD_SAVE_DEBUG
 			filesystem.OpenFile("/testfile.json");
@@ -529,7 +573,7 @@ public:
 			Serial.println(text);
 #endif //  LOAD_SAVE_DEBUG	
 		}
-		
+
 
 
 #ifdef  LOAD_SAVE_DEBUG

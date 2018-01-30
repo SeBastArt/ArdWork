@@ -12,7 +12,7 @@ Vector <RGBAnimationState*> Uart_RGB_Led_Device_Driver::animationState_list;
 HslColor Uart_RGB_Led_Device_Driver::mainColor = RgbColor(150, 0, 0);
 
 NeoGamma<NeoGammaTableMethod>* Uart_RGB_Led_Device_Driver::colorGamma;
-NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>* Uart_RGB_Led_Device_Driver::strip;
+NeoPixelBus<NeoRgbFeature, NeoEsp8266Dma800KbpsMethod>* Uart_RGB_Led_Device_Driver::strip;
 NeoPixelAnimator* Uart_RGB_Led_Device_Driver::animations;
 
 Uart_RGB_Led_Device_Driver::Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority) :
@@ -22,7 +22,7 @@ Uart_RGB_Led_Device_Driver::Uart_RGB_Led_Device_Driver(Module_Driver* module, in
 	pixelCount = _pixelcount;
 	__brightness = 50;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
-	strip = new NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod>(_pixelcount, 0);
+	strip = new NeoPixelBus<NeoRgbFeature, NeoEsp8266Dma800KbpsMethod>(_pixelcount, 0);
 	animations = new NeoPixelAnimator(_pixelcount + RGB_ANIMATION_COUNT); // NeoPixel animation management object
 
 	for (uint8_t i = 0; i < _pixelcount; i++) {
@@ -322,6 +322,7 @@ void Uart_RGB_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Off() {
+	animations->StopAll();
 	for (uint8_t i = 0; i < pixelCount; i++) {
 		strip->SetPixelColor(i, RgbColor(0, 0, 0));
 	}

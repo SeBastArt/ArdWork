@@ -138,7 +138,7 @@ void DNSServer::replyWithIP()
 
 
 
-#ifdef  DEBUG
+#ifdef DEBUG
 	DEBUG_OUTPUT.print("DNS responds: ");
 	DEBUG_OUTPUT.print(_resolvedIP[0]);
 	DEBUG_OUTPUT.print(".");

@@ -25,7 +25,7 @@ struct GRBWAnimationState
 class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
 private:
-	int sv_pattern = 0;
+	unsigned int sv_pattern = 0;
 	Color sv_color = { 255, 255, 255 };
 	float sv_relBrightness = 100;
 	static uint8_t pixelCount;

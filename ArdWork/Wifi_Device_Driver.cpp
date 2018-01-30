@@ -17,12 +17,13 @@ Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver 
 	conn_delay = 500;
 	__connection_try = 0;
 	__dnsServer = nullptr;
+	WiFi.mode(WIFI_OFF);
 }
 
 void Wifi_Device_Driver::OnBuild_Descriptor() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::Build_Descriptor");
-#endif //  DEBUG
+#endif // DEBUG
 	__descriptor->name = F("Wifi");
 	__descriptor->descr = F("Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit");
 	__descriptor->published = true;
@@ -43,17 +44,17 @@ void Wifi_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->Add_Descriptor_Element(ctrlElem_pass);
 	__descriptor->Add_Descriptor_Element(ctrlElem_mode);
 	__descriptor->Add_Descriptor_Element(ctrlElem_reconnect);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::Build_Descriptor");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
 void Wifi_Device_Driver::OnInit()
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::DoAfterInit");
-#endif //  DEBUG
+#endif // DEBUG
 	Device_Driver::OnInit();
 	__connection_try = 0;
 	__WiFi_isConnected = false;
@@ -64,44 +65,44 @@ void Wifi_Device_Driver::OnInit()
 	__ssid = "";
 	__password = "";
 	hostname = "ESP";
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::DoAfterInit");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Wifi_Device_Driver::SetSSID(String _ssid)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::SetSSID");
-#endif //  DEBUG
+#endif // DEBUG
 	__ssid = _ssid;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::SetSSID");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Wifi_Device_Driver::SetPassword(String _password)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::SetPassword");
-#endif //  DEBUG
+#endif // DEBUG
 	__password = _password;
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::SetPassword");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void  Wifi_Device_Driver::SetMode(uint8_t _mode) {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::SetMode");
-#endif //  DEBUG
+#endif // DEBUG
 	__isAP = _mode;
 	if (!__WiFi_isConnected && !__AP_isConnected) {
 		__run_isAp = _mode;
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::SetMode");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void  Wifi_Device_Driver::ResetConnection() {
@@ -116,36 +117,36 @@ void Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 	{
 	case WIFI_DEVICE_DRIVER_SET_SSID:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_SET_SSID");
-#endif //  DEBUG
+#endif // DEBUG
 		String ssid = message.GetStringParamByIndex(0);
 		SetSSID(ssid);
 	}
 	break;
 	case WIFI_DEVICE_DRIVER_SET_PASSWORD:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_SET_PASSWORD");
-#endif //  DEBUG
+#endif // DEBUG
 		String password = message.GetStringParamByIndex(0);
 		SetPassword(password);
 	}
 	break;
 	case WIFI_DEVICE_DRIVER_SET_MODE:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_SET_MODE");
-#endif //  DEBUG
+#endif // DEBUG
 		int mode = message.GetIntParamByIndex(0);
 		SetMode(mode);
 	}
 	break;
 	case WIFI_DEVICE_DRIVER_RECONNECT:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Wifi_Device_Driver::DoDeviceMessage - WIFI_DEVICE_DRIVER_RECONNECT");
-#endif //  DEBUG
+#endif // DEBUG
 		ResetConnection();
 	}
 	break;
@@ -153,9 +154,9 @@ void Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 }
 
 void Wifi_Device_Driver::ProvideAP() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::ProvideAP");
-#endif //  DEBUG
+#endif // DEBUG
 	IPAddress apIP(192, 168, 1, 1);
 	const byte DNS_PORT = 53;
 
@@ -164,16 +165,12 @@ void Wifi_Device_Driver::ProvideAP() {
 	__dnsServer = new DNSServer();
 
 	WiFi.persistent(false); // Do not write new connections to FLASH
+	
 	WiFi.mode(WIFI_AP);
+	delay(1000);
 	WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-
 	const char* ssid = "EspSetup";
-	WiFi.softAP(ssid);
-
-	// if DNSServer is started with "*" for domain name, it will reply with
-	// provided IP to all DNS request
-	__dnsServer->start(DNS_PORT, "*", apIP);
-
+	Serial.println(WiFi.softAP(ssid) ? "AccessPoint Ready" : "AccessPoint Failed!");;
 	Serial.print("AccessPoint SSID: ["); Serial.print(ssid); Serial.print("]");
 	IPAddress myIP = WiFi.softAPIP();
 	Serial.print(" IP-address: ");
@@ -181,28 +178,37 @@ void Wifi_Device_Driver::ProvideAP() {
 	Serial.print(myIP);
 	Serial.println("]");
 	__AP_isConnected = true;
+
+	// if DNSServer is started with "*" for domain name, it will reply with
+	// provided IP to all DNS request
+	__dnsServer->start(DNS_PORT, "*", apIP);
 	StartMSDNServices();
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ProvideAP");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
 void Wifi_Device_Driver::StartMSDNServices() {
+#ifdef DEBUG
+	Serial.println("Start Wifi_Device_Driver::StartMSDNServices");
+#endif // DEBUG
+	Serial.println(String(__parentModule->GetDescriptor()->name).c_str());
 	MDNS.begin(String(__parentModule->GetDescriptor()->name).c_str());
 	MDNS.addService(F("http"), F("tcp"), 80);
 	MDNS.addService(F("ws"), F("tcp"), 81);
-
 	SetupOTA();
 	InitComm();
-
 	__isMSDN = true;
+#ifdef DEBUG
+	Serial.println("Ende Wifi_Device_Driver::StartMSDNServices");
+#endif // DEBUG
 }
 
 void Wifi_Device_Driver::ConnectToWifi() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::ConnectToWifi");
-#endif //  DEBUG
+#endif // DEBUG
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
 	Serial.print("Try to Connect to [");
@@ -213,17 +219,18 @@ void Wifi_Device_Driver::ConnectToWifi() {
 
 	WiFi.persistent(false); // Do not write new connections to FLASH
 	WiFi.mode(WIFI_STA);
+	delay(1000);
 	WiFi.begin(ssid, password);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ConnectToWifi");
-#endif //  DEBUG
+#endif // DEBUG
 	delay(1000);
 }
 
 void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
-#ifdef  DEBUG
+#ifdef DEBUG
 	//Serial.println("Start Wifi_Device_Driver::DoUpdate");
-#endif //  DEBUG
+#endif // DEBUG
 	if ((WiFi.status() != WL_CONNECTED) && !__AP_isConnected) {
 		if (__WiFi_isConnected == true) {
 			Serial.println("Connection lost...");
@@ -243,7 +250,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 				__connection_try++;
 			}
 
-			if ((__connection_try > 30) && (!__WiFi_isConnected)) {
+			if ((__connection_try > 10) && (!__WiFi_isConnected)) {
 				__run_isAp = true;
 				Serial.println("Fallback to AccessPoint: ");
 			}
@@ -269,9 +276,9 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			__dnsServer->processNextRequest();
 		}
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	//Serial.println("Ende Wifi_Device_Driver::DoUpdate");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Wifi_Device_Driver::Exec_Set_SSID(String _ssid) {

@@ -17,18 +17,18 @@
 Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	Module_Driver(priority)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.print("Start Picture_Module_Driver with ID: ");
 	Serial.println(this->DriverId);
-#endif //  DEBUG
+#endif // DEBUG
 	__DriverType = PICTURE_MODULE_DRIVER_TYPE;
 	__absBrightness = 50;
 }
 
 void Picture_Module_Driver::Build_Discriptor() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Build_Module_Discriptor");
-#endif //  DEBUG	
+#endif // DEBUG	
 	__descriptor->name = F("Light Control");
 	__descriptor->descr = F("control the behavior of the ambilight");
 	__descriptor->published = true;
@@ -51,9 +51,9 @@ void Picture_Module_Driver::Build_Discriptor() {
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);
 	__descriptor->Add_Descriptor_Element(ctrlElem_autobrightness);
 	__descriptor->Add_Descriptor_Element(ctrlElem_brightess);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Build_Module_Discriptor");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
@@ -67,9 +67,9 @@ void Picture_Module_Driver::DoTaskMessage(TaskMessage * message)
 	switch ((message)->Class) {
 	case MessageClass_Float:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoTaskMessage - MessageClass_Float");
-#endif //  DEBUG
+#endif // DEBUG
 		FloatMessage* pFMessage = (FloatMessage*)(message);
 		if (pFMessage->__id == Get_Luxmeter_DevDrv(0)->DriverId) {
 			__absBrightness = pFMessage->__absValue;
@@ -80,9 +80,9 @@ void Picture_Module_Driver::DoTaskMessage(TaskMessage * message)
 
 	case MessageClass_Button:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoTaskMessage - MessageClass_Button");
-#endif //  DEBUG
+#endif // DEBUG
 		ButtonMessage* pButton = (ButtonMessage*)(message);
 		if (pButton->State == TASK_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
@@ -114,60 +114,60 @@ void Picture_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	{
 	case PICTURE_MODULE_DRIVER_PATTERN_NEXT:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_NEXT");
-#endif //  DEBUG
+#endif // DEBUG
 		Pattern_Next();
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_PREV:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_PREV");
-#endif //  DEBUG
+#endif // DEBUG
 		Pattern_Prev();
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_OFF:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_OFF");
-#endif //  DEBUG
+#endif // DEBUG
 		Pattern_Off();
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_SWITCH:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_SWITCH");
-#endif //  DEBUG
+#endif // DEBUG
 		uint8_t direction = message.GetIntParamByIndex(0);
 		SwitchPattern(direction);
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_AUTO_BRIGHTNESS:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_AUTO_BRIGHTNESS");
-#endif //  DEBUG
+#endif // DEBUG
 		bool state = message.GetIntParamByIndex(0);
 		Set_Auto_Brightness(state);
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS");
-#endif //  DEBUG
+#endif // DEBUG
 		int brightness = message.GetIntParamByIndex(0);
 		SetRelBrightness(brightness);
 	}
 	break;
 	case PICTURE_MODULE_DRIVER_PATTERN_COLOR:
 	{
-#ifdef  DEBUG
+#ifdef DEBUG
 		Serial.println("Start Picture_Module_Driver::DoModuleMessage - PICTURE_MODULE_DRIVER_PATTERN_COLOR");
-#endif //  DEBUG
+#endif // DEBUG
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(0).c_str(), NULL, 16);
 		__sv_color.R = (uint8_t)((rgb >> 16) & 0xFF);
 		__sv_color.G = (uint8_t)((rgb >> 8) & 0xFF);
@@ -176,16 +176,16 @@ void Picture_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	}
 	break;
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::DoModuleMessage");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 
 void Picture_Module_Driver::SwitchPattern(uint8_t _control) {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::SwitchPattern");
-#endif //  DEBUG
+#endif // DEBUG
 	switch (_control)
 	{
 	case 0:
@@ -204,15 +204,15 @@ void Picture_Module_Driver::SwitchPattern(uint8_t _control) {
 	}
 	break;
 	}
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::SwitchPattern");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Picture_Module_Driver::SetStripBrightness() {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::SetStripBrightness");
-#endif //  DEBUG
+#endif // DEBUG
 	uint8_t brightness;
 	if (__sv_autoBrightness > 0) {
 		float faktor = 200.0 / __sv_relBrightness;
@@ -227,46 +227,46 @@ void Picture_Module_Driver::SetStripBrightness() {
 
 	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
 		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Brightness(brightness);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::SetStripBrightness");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Picture_Module_Driver::SetRelBrightness(uint8_t _relBrightness)
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::SetRelBrightness");
-#endif //  DEBUG
+#endif // DEBUG
 	__sv_relBrightness = MAX(1, MIN(200, _relBrightness));
 	SetStripBrightness();
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::SetRelBrightness");
-#endif //  DEBUG
+#endif // DEBUG
 }
 
 void Picture_Module_Driver::Set_Auto_Brightness(bool _state) {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Set_Auto_Brightness");
-#endif //  DEBUG	
+#endif // DEBUG	
 	__sv_autoBrightness = (int)_state;
 	SetStripBrightness();
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Set_Auto_Brightness");
-#endif //  DEBUG	
+#endif // DEBUG	
 }
 
 void Picture_Module_Driver::Set_Pattern_Color(int _r, int _g, int _b) {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Set_Pattern_Color");
-#endif //  DEBUG	
+#endif // DEBUG	
 	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr)
 		Get_Uart_RGB_Led_DevDrv(0)->Exec_Animation_Color(_r, _g, _b);
 
 	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
 		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Color(_r, _g, _b);
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Set_Pattern_Color");
-#endif //  DEBUG	
+#endif // DEBUG	
 }
 
 
@@ -290,47 +290,47 @@ void Picture_Module_Driver::Exec_Pattern_Off()
 
 void Picture_Module_Driver::Pattern_Next()
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Pattern_Next");
-#endif //  DEBUG	
+#endif // DEBUG	
 	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr) 
 		Get_Uart_RGB_Led_DevDrv(0)->Exec_Animation_Next();
 
 
 	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr) 
 		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Next();
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Pattern_Next");
-#endif //  DEBUG	
+#endif // DEBUG	
 }
 
 void Picture_Module_Driver::Pattern_Prev()
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Pattern_Prev");
-#endif //  DEBUG	
+#endif // DEBUG	
 	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr)
 		Get_Uart_RGB_Led_DevDrv(0)->Exec_Animation_Prev();
 
 	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
 		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Prev();
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Pattern_Prev");
-#endif //  DEBUG	
+#endif // DEBUG	
 }
 
 void Picture_Module_Driver::Pattern_Off()
 {
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Pattern_Off");
-#endif //  DEBUG	
+#endif // DEBUG	
 	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr)
 		Get_Uart_RGB_Led_DevDrv(0)->Exec_Animation_Off();
 
 	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
 		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Off();
-#ifdef  DEBUG
+#ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Pattern_Off");
-#endif //  DEBUG	
+#endif // DEBUG	
 }
 
