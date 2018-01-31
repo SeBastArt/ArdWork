@@ -8,8 +8,6 @@ ESP8266WebServer *WebSocket_Wifi_Device_Driver::server;
 WebSocketsServer *WebSocket_Wifi_Device_Driver::webSocket;
 event_msg WebSocket_Wifi_Device_Driver::__event_msg;
 
-
-
 String WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey(String _text, String _key) {
 #ifdef DEBUG
 	Serial.println("Start WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey");
@@ -34,6 +32,7 @@ String WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey(String _text, String _
 #endif // DEBUG
 	return value;
 }
+
 
 void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 #ifdef DEBUG
@@ -85,8 +84,8 @@ void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, ui
 #endif // DEBUG
 }
 
-WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * module, Led_Device_Driver * _statusLED, uint8_t priority) :
-	Wifi_Device_Driver(module, _statusLED, priority)
+WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * module, uint8_t priority) :
+	Device_Driver(module, priority)
 {
 #ifdef DEBUG
 	Serial.print("Start WebSocket_Wifi_Device_Driver with ID: ");
@@ -95,7 +94,6 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 	__DriverType = WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE;
 	server = nullptr;
 	webSocket = nullptr;
-
 	__event_msg._filled = false;
 	accuracy_delay = 2000;
 	accuracy_delta = 0;
@@ -104,58 +102,83 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 #endif // DEBUG
 }
 
-void WebSocket_Wifi_Device_Driver::UpdateComm(uint32_t deltaTime) {
+void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #ifdef DEBUG
 	//Serial.println("Start WebSocket_Wifi_Device_Driver::UpdateComm");
 #endif // DEBUG
-	accuracy_delta += deltaTime;
-	if (accuracy_delta > accuracy_delay) {
-		accuracy_delta = 0;
-		if (__descriptor_list->count > 0)
-			for (uint8_t I = 0; I < __descriptor_list->count; I++)
-				if (__descriptor_list->GetElemByIndex(I)->published)
-					for (uint8_t J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
-						if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) {
-							String json_str;
-							StaticJsonBuffer<200> jsonBuffer;
-							JsonObject& root = jsonBuffer.createObject();
-							root["_deviceId"] = String(__descriptor_list->GetElemByIndex(I)->id);
-							root["_cmdId"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->id);
-							root["_value"] = __descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->ToString();
-							root["_unit"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->unit);
-							root.printTo(json_str);
-							webSocket->sendTXT(0, json_str.c_str());
-						}
-	}
-
-	webSocket->loop();
-	server->handleClient();
-
-	if (__event_msg._filled) {
-		ExternMessage* message = new ExternMessage(__event_msg._deviceId, __event_msg._cmdId, __event_msg._value);
-#ifdef DEBUG
-		Serial.println("WebSocket_Wifi_Device_Driver::UpdateComm SendAsyncTaskMessage");
-#endif // DEBUG
-		if (!__parentModule->SendAsyncTaskMessage(message))
-		{
-			Serial.println(">> message buffer overflow <<");
+	if (__isOnline) {
+		accuracy_delta += deltaTime;
+		if (accuracy_delta > accuracy_delay) {
+			accuracy_delta = 0;
+			if (__descriptor_list->count > 0)
+				for (uint8_t I = 0; I < __descriptor_list->count; I++)
+					if (__descriptor_list->GetElemByIndex(I)->published)
+						for (uint8_t J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
+							if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) {
+								String json_str;
+								StaticJsonBuffer<200> jsonBuffer;
+								JsonObject& root = jsonBuffer.createObject();
+								root["_deviceId"] = String(__descriptor_list->GetElemByIndex(I)->id);
+								root["_cmdId"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->id);
+								root["_value"] = __descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->ToString();
+								root["_unit"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->unit);
+								root.printTo(json_str);
+								webSocket->sendTXT(0, json_str.c_str());
+							}
 		}
-		__event_msg._filled = false;
-	}
 
+		webSocket->loop();
+		server->handleClient();
+
+		if (__event_msg._filled) {
+			ExternMessage* message = new ExternMessage(__event_msg._deviceId, __event_msg._cmdId, __event_msg._value);
+#ifdef DEBUG
+			Serial.println("WebSocket_Wifi_Device_Driver::UpdateComm SendAsyncTaskMessage");
+#endif // DEBUG
+			if (!__parentModule->SendAsyncTaskMessage(message))
+			{
+				Serial.println(">> message buffer overflow <<");
+			}
+			__event_msg._filled = false;
+		}
+	}
 #ifdef DEBUG
 	//Serial.println("Ende WebSocket_Wifi_Device_Driver::UpdateComm");
 #endif // DEBUG
 }
 
-void WebSocket_Wifi_Device_Driver::InitComm() {
+void WebSocket_Wifi_Device_Driver::OnNotifyConnectionLost()
+{
+	if (server != nullptr) {
+		server->~ESP8266WebServer();
+		server = nullptr;
+	}
+
+	if (webSocket != nullptr) {
+		webSocket->~WebSocketsServer();
+		webSocket = nullptr;
+	}
+}
+
+void WebSocket_Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
+{
+	int messageID = message.id;
+	switch (messageID)
+	{
+	default:
+		break;
+	}
+}
+
+void WebSocket_Wifi_Device_Driver::OnNotifyConnected() {
 #ifdef DEBUG
 	Serial.println("Start WebSocket_Wifi_Device_Driver::InitComm");
 #endif // DEBUG
-	if (server != nullptr)
+	if (server != nullptr) {
 		server->~ESP8266WebServer();
-	server = nullptr,
-		server = new ESP8266WebServer(80);
+		server = nullptr;
+	}
+	server = new ESP8266WebServer(80);
 
 	// handle index
 	//server->serveStatic("/dist/js/jscolor.min.js", SPIFFS, "/dist/js/jscolor.min.js");
@@ -218,10 +241,11 @@ void WebSocket_Wifi_Device_Driver::InitComm() {
 	server->begin();
 
 
-	if (webSocket != nullptr)
+	if (webSocket != nullptr) {
 		webSocket->~WebSocketsServer();
-	webSocket = nullptr,
-		webSocket = new WebSocketsServer(81);
+		webSocket = nullptr;
+	}
+	webSocket = new WebSocketsServer(81);
 
 	if (MDNS.begin("esp8266")) {
 		Serial.println("MDNS responder started");

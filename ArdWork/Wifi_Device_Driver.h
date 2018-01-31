@@ -26,7 +26,7 @@
 
 
 
-class Wifi_Device_Driver : public Device_Driver//, public Comm_Device_Driver
+class Wifi_Device_Driver : public Device_Driver, public CommunicationProvider
 {
 public:
 	Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = nullptr , uint8_t priority = TASK_PRIORITY_NORMAL);
@@ -54,8 +54,6 @@ protected:
 	String hostname;
 	static Led_Device_Driver *statusLED;
 	void OnBuild_Descriptor() override;
-	virtual void UpdateComm(uint32_t deltaTime) = 0;
-	virtual void InitComm() = 0;
 
 protected:
 	void OnInit() override;

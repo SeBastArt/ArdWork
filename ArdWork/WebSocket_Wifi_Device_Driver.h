@@ -11,8 +11,9 @@
 
 #include <WebSocketsServer.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 
-#include "Wifi_Device_Driver.h"
+#include "Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver_Consts.h"
 
 
@@ -24,12 +25,11 @@ struct event_msg
 	String _value;
 };
 
-class WebSocket_Wifi_Device_Driver : public Wifi_Device_Driver
+class WebSocket_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
 private:
 	int accuracy_delta;
 	int accuracy_delay;
-
 	static ESP8266WebServer *server;
 	static WebSocketsServer *webSocket;
 	static event_msg __event_msg;
@@ -39,24 +39,20 @@ private:
 	void GenerateForm(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
 	void GenerateDecending(WiFiClient * client, CtrlElem * _ctrl_elem);
 	void GenerateColor(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
-	void GenerateBoolean(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
 	void GenerateSelect(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
-	void GenerateBooleanOption(WiFiClient * client, CtrlElem * _ctrl_elem);
 	void GenerateMultiOption(WiFiClient * client, CtrlElem * _ctrl_elem);
 	void GenerateInput(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
 	void GenerateButtonGroup(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
 	void GenerateSetButton(WiFiClient * client, int _deviceId, int _cmdId);
-	
+	static String Json_GetvalueFromKey(String _text, String _key);
 	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
-	static String Json_GetvalueFromKey(String Text, String key);
-
-public:
-	WebSocket_Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = nullptr, uint8_t priority = TASK_PRIORITY_NORMAL);
-
-//herited
 protected:
-	void UpdateComm(uint32_t deltaTime);
-	void InitComm();
+	void OnNotifyConnected();
+	void OnNotifyConnectionLost();
+	void DoDeviceMessage(Int_Task_Msg message);
+	void DoUpdate(uint32_t deltaTime);
+public:
+	WebSocket_Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 	
 };
 

@@ -65,7 +65,8 @@ void Device_Driver::OnInit() {
 
 
 void Device_Driver::OnBuild_Descriptor() {
-
+	__descriptor->name = String("Driver #") +  String(DriverId);
+	__descriptor->published = false;
 }
 
 

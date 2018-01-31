@@ -13,10 +13,10 @@
 #include "m_Vector.h"
 #include <PubSubClient.h>
 
-class Mqqt_Wifi_Device_Driver : public Wifi_Device_Driver
+class Mqqt_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
 public:
-	Mqqt_Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = NULL, uint8_t priority = TASK_PRIORITY_NORMAL);
+	Mqqt_Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	uint8 connRetry;
 	String outTopic;
@@ -34,10 +34,10 @@ private:
 	static void EventMsgIn(char* topic, uint8_t* payload, unsigned int length);
 protected:
 	Vector <String*> msg_list;
-	void UpdateComm(uint32_t deltaTime);
-	void CheckComm(uint32_t deltaTime);
-	void InitComm();
-	void OnBuild_Descriptor() override;
+	void DoUpdate(uint32_t deltaTime);
+	void DoDeviceMessage(Int_Task_Msg message);
+	void OnNotifyConnected();
+	void OnNotifyConnectionLost();
 public:
 	void SetOutTopic(String topic);
 	void SetInTopic(String topic);

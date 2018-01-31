@@ -689,4 +689,78 @@ private:
 };
 
 
+
+//-----------------------------------------------------
+// CommunicationClient Class			
+//-----------------------------------------------------
+class CommunicationClient
+{
+public:
+	virtual ~CommunicationClient() {};		// Destructor
+	void NotifyConnected() { __isOnline = true;  OnNotifyConnected(); };
+	void NotifyConnectionLost() { __isOnline = false;  OnNotifyConnectionLost(); };
+	virtual void OnNotifyConnected() = 0;
+	virtual void OnNotifyConnectionLost() = 0;
+protected:
+	bool __isOnline;
+	//constructor is protected because this class is abstract, it’s only meant to be inherited!
+	CommunicationClient() { __isOnline = false; };
+private:
+	// -------------------------
+	// Disabling default copy constructor and default 
+	// assignment operator.
+	// -------------------------
+	CommunicationClient(const CommunicationClient& yRef) = delete;
+	CommunicationClient& operator=(const CommunicationClient& yRef) = delete;
+};
+
+class CommunicationProvider
+{
+public:
+	virtual ~CommunicationProvider() { m_CommunicationClientVec->Clear(); m_CommunicationClientVec = nullptr; };        //destructor
+	bool AddCommunicationClient(CommunicationClient* _communicationClient) {
+		if (m_CommunicationClientVec->Find(_communicationClient) > -1) {
+			return false;
+		}
+
+		m_CommunicationClientVec->PushBack(_communicationClient);
+		return true;
+	};
+	bool RemoveCommunicationClient(CommunicationClient* _communicationClient) {
+		int temp = m_CommunicationClientVec->Find(_communicationClient);
+		if (temp > -1) {
+			m_CommunicationClientVec->Erase(temp);
+			return true;
+		}
+		else {
+			return false;
+		}
+	};
+
+	void DoNotifyConnected() {
+		for (int i = 0; i < m_CommunicationClientVec->Size(); i++) {
+			(*m_CommunicationClientVec)[i]->NotifyConnected();
+		}
+	};
+
+	void DoNotifyConnectionLost() {
+		for (int i = 0; i < m_CommunicationClientVec->Size(); i++) {
+			(*m_CommunicationClientVec)[i]->NotifyConnectionLost();
+		}
+	};
+protected:
+	//constructor is protected because this class is abstract, it’s only meant to be inherited!
+	CommunicationProvider() { m_CommunicationClientVec = new Vector<CommunicationClient*>; };
+private:
+	Vector<CommunicationClient*> *m_CommunicationClientVec;
+	// -------------------------
+	// Disabling default copy constructor and default
+	// assignment operator.
+	// -------------------------
+	CommunicationProvider(const CommunicationProvider& yRef) = delete;
+	CommunicationProvider& operator=(const CommunicationProvider& yRef) = delete;
+};
+
+
+
 #endif

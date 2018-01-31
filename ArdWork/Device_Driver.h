@@ -29,7 +29,7 @@ protected:
 	virtual void OnInit();
 	virtual void OnShutdown();
 	virtual void OnSuspend();
-	virtual void OnBuild_Descriptor() override;
+	virtual void OnBuild_Descriptor();
 };
 
 #endif

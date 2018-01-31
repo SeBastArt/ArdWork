@@ -145,6 +145,12 @@
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebSocket_Wifi_Device_Driver">
       <UniqueIdentifier>{13feec6e-dc83-4e42-9367-26ef8a30a6cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver">
+      <UniqueIdentifier>{7f86c344-9349-47f5-990b-05be05aeb0fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver">
+      <UniqueIdentifier>{1504b6f7-d60e-48f1-83e3-cde76d432d10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ArdWork.ino" />
@@ -306,6 +312,15 @@
     <ClInclude Include="Int_Task_Msg_Sys.h">
       <Filter>Header Files\Helper\Message_System</Filter>
     </ClInclude>
+    <ClInclude Include="Ntp_Wifi_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Ntp_Wifi_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Timezone.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">
@@ -382,6 +397,12 @@
     </ClCompile>
     <ClCompile Include="Int_Task_Msg.cpp">
       <Filter>Header Files\Helper\Message_System</Filter>
+    </ClCompile>
+    <ClCompile Include="Ntp_Wifi_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Timezone.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

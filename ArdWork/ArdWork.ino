@@ -7,6 +7,8 @@
 ////#define DEBUG
 //#define COMPILE_TEST
 
+#include <TimeLib.h>
+#include <Time.h>
 #include <TaskManager.h>
 #include <Task.h>
 #include "Filesystem.h"
@@ -67,6 +69,7 @@
 #include "Luxmeter_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
+#include "Ntp_Wifi_Device_Driver.h"
 #endif // PICTURE_NodeMCU_GBR
 
 
@@ -150,7 +153,11 @@ void setup() {
 	//Led_Device_Driver *wifi_status_led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(D3), true);
 	//Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D5"), true);
 	//Mqqt_Wifi_Device_Driver *mqqt_wifi = new Mqqt_Wifi_Device_Driver(picture_module, wifi_status_led);
+	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(picture_module);
+	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(picture_module);
 	WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(picture_module);
+	wifi_device->AddCommunicationClient(webSocket_server_wifi);
+	wifi_device->AddCommunicationClient(ntp_device);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
 #endif // PICTURE_NodeMCU_GBR
 
@@ -198,7 +205,9 @@ void setup() {
 	//picture_module->AddDevice(led);
 	picture_module->AddDevice(strip);
 	//picture_module->AddDevice(mqqt_wifi);
+	picture_module->AddDevice(wifi_device);
 	picture_module->AddDevice(webSocket_server_wifi);
+	picture_module->AddDevice(ntp_device);
 	picture_module->AddDevice(luxmeter);
 #endif
 
@@ -233,7 +242,9 @@ void setup() {
 	//taskManager.StartTask(button);
 	//taskManager.StartTask(mqqt_wifi);
 	//taskManager.StartTask(server_wifi);
+	taskManager.StartTask(wifi_device);
 	taskManager.StartTask(webSocket_server_wifi);
+	taskManager.StartTask(ntp_device);
 #endif
 
 	Serial.flush();

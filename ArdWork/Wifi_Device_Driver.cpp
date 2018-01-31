@@ -198,8 +198,8 @@ void Wifi_Device_Driver::StartMSDNServices() {
 	MDNS.addService(F("http"), F("tcp"), 80);
 	MDNS.addService(F("ws"), F("tcp"), 81);
 	SetupOTA();
-	InitComm();
 	__isMSDN = true;
+	DoNotifyConnected();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::StartMSDNServices");
 #endif // DEBUG
@@ -233,6 +233,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #endif // DEBUG
 	if ((WiFi.status() != WL_CONNECTED) && !__AP_isConnected) {
 		if (__WiFi_isConnected == true) {
+			DoNotifyConnectionLost();
 			Serial.println("Connection lost...");
 			Serial.println("Try to reconnect...");
 			__WiFi_isConnected = false;
@@ -250,7 +251,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 				__connection_try++;
 			}
 
-			if ((__connection_try > 10) && (!__WiFi_isConnected)) {
+			if ((__connection_try > 20) && (!__WiFi_isConnected)) {
 				__run_isAp = true;
 				Serial.println("Fallback to AccessPoint: ");
 			}
@@ -266,11 +267,9 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			Serial.print(" with IP address: ");
 			Serial.println(WiFi.localIP());
 			__WiFi_isConnected = true;
-
 			StartMSDNServices();
 		}
 
-		UpdateComm(deltaTime);
 		ArduinoOTA.handle();
 		if (__run_isAp) {
 			__dnsServer->processNextRequest();
