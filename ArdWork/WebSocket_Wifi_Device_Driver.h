@@ -34,6 +34,8 @@ private:
 	static WebSocketsServer *webSocket;
 	static event_msg __event_msg;
 
+	void InitializeServices();
+
 	void GenerateNav(WiFiClient * client, Descriptor_List * _descriptor_list);
 	void GenerateTab(WiFiClient * client, Descriptor * _descriptor);
 	void GenerateForm(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
@@ -47,8 +49,10 @@ private:
 	static String Json_GetvalueFromKey(String _text, String _key);
 	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
 protected:
+	void OnBuild_Descriptor();
 	void OnNotifyConnected();
 	void OnNotifyConnectionLost();
+	void OnNotifyOnline();
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 public:

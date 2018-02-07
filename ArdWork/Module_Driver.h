@@ -23,6 +23,7 @@ class OLED_Display_Device_Driver;
 class Mqqt_Wifi_Device_Driver;
 class Temperature_Device_Driver;
 class WebSocket_Wifi_Device_Driver;
+class Ntp_Wifi_Device_Driver;
 
 class Module_Driver : public Driver, public Observer
 {
@@ -43,6 +44,7 @@ protected:
 	Uart_RGB_Led_Device_Driver * Get_Uart_RGB_Led_DevDrv(uint8_t _index);
 	Uart_GRBW_Led_Device_Driver * Get_Uart_GRBW_Led_DevDrv(uint8_t _index);
 	WebSocket_Wifi_Device_Driver * Get_WebSocket_Wifi_DevDrv(uint8_t _index);
+	Ntp_Wifi_Device_Driver * Get_Ntp_Wifi_Device_DevDrv(uint8_t _index);
 
 	//bool GetDeviceById(int _id, Driver * _device);
 	bool HasDeviceWithId(int _id);
@@ -65,13 +67,12 @@ protected:
 	 virtual void DoModuleMessage(Int_Task_Msg message) = 0;
 	 virtual void DoTaskMessage(TaskMessage *message) = 0;
 	 virtual void Build_Discriptor() = 0;
+	 virtual void OnModuleUpdate(uint32_t deltaTime) = 0;
 public:
 	Module_Driver(uint8_t priority = TASK_PRIORITY_NORMAL);
 	~Module_Driver();
 	bool SendAsyncTaskMessage(TaskMessage* message, bool withinIsr = false);
 	void AddDevice(Device_Driver* device);
-
-
 
 	void Exec_Set_Debug_Mode(bool _state);
 };

@@ -38,6 +38,7 @@ protected:
 	void DoDeviceMessage(Int_Task_Msg message);
 	void OnNotifyConnected();
 	void OnNotifyConnectionLost();
+	void OnNotifyOnline();
 public:
 	void SetOutTopic(String topic);
 	void SetInTopic(String topic);

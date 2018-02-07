@@ -190,7 +190,26 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 		Animation_Color((uint8_t)((rgb >> 16) & 0xFF), (uint8_t)((rgb >> 8) & 0xFF), (uint8_t)((rgb >> 0) & 0xFF));
 	}
 	break;
+	case UART_GRBW_LED_DEVICE_SET_PIXEL:
+	{
+#ifdef DEBUG
+		Serial.println("Start Uart_GRBW_Led_Device_Driver::DoDeviceMessage - UART_GRBW_LED_DEVICE_COLOR_HEX");
+#endif // DEBUG
+		uint8_t index = message.GetIntParamByIndex(0);
+		uint8_t R = message.GetIntParamByIndex(1);
+		uint8_t G = message.GetIntParamByIndex(2);
+		uint8_t B = message.GetIntParamByIndex(3);
+		SetPixel(index, R, G, B);
 	}
+	break;
+	}
+}
+
+void Uart_GRBW_Led_Device_Driver::SetPixel(uint8_t _index, uint8_t R, uint8_t G, uint8_t B)
+{
+	RgbColor color(R, G, B);
+	colorGamma->Correct(color);
+	strip->SetPixelColor(_index, color);
 }
 
 void Uart_GRBW_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
@@ -482,7 +501,7 @@ void Uart_GRBW_Led_Device_Driver::Set_Animation() {
 #endif // DEBUG
 		Animation_Cyclon();
 	}
-		break;
+	break;
 	case GRBW_ANIMATION_RANDOM:
 	{
 #ifdef DEBUG
@@ -490,7 +509,7 @@ void Uart_GRBW_Led_Device_Driver::Set_Animation() {
 #endif // DEBUG
 		Animation_Random();
 	}
-		break;
+	break;
 	case GRBW_ANIMATION_FIRE:
 	{
 #ifdef DEBUG
@@ -498,7 +517,7 @@ void Uart_GRBW_Led_Device_Driver::Set_Animation() {
 #endif // DEBUG
 		Animation_Fire();
 	}
-		break;
+	break;
 	case GRBW_ANIMATION_SHINE:
 	{
 #ifdef DEBUG
@@ -506,7 +525,7 @@ void Uart_GRBW_Led_Device_Driver::Set_Animation() {
 #endif // DEBUG
 		Animation_Shine();
 	}
-		break;
+	break;
 	default:
 	{
 #ifdef DEBUG
@@ -520,7 +539,7 @@ void Uart_GRBW_Led_Device_Driver::Set_Animation() {
 #endif // DEBUG
 }
 
-void Uart_GRBW_Led_Device_Driver::Animation_Color(uint8_t R, uint8_t G, uint8_t B){
+void Uart_GRBW_Led_Device_Driver::Animation_Color(uint8_t R, uint8_t G, uint8_t B) {
 #ifdef DEBUG
 	Serial.println("Start Uart_GRBW_Led_Device_Driver::Animation_Color");
 #endif // DEBUG
@@ -582,6 +601,16 @@ void Uart_GRBW_Led_Device_Driver::Exec_Set_Brightness(int _brightness)
 {
 	Int_Task_Msg *message = new Int_Task_Msg(UART_GRBW_LED_DEVICE_BRIGHTNESS);
 	message->AddParam(_brightness);
+	PostMessage(&message);
+}
+
+void Uart_GRBW_Led_Device_Driver::Exec_Set_Pixel(int _index, int R, int G, int B)
+{
+	Int_Task_Msg *message = new Int_Task_Msg(UART_GRBW_LED_DEVICE_SET_PIXEL);
+	message->AddParam(_index);
+	message->AddParam(R);
+	message->AddParam(G);
+	message->AddParam(B);
 	PostMessage(&message);
 }
 

@@ -21,30 +21,41 @@
 class Ntp_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
 private:
-	typedef struct
-	{
-		unsigned char second; // 0-59
-		unsigned char minute; // 0-59
-		unsigned char hour;   // 0-23
-		unsigned char day;    // 1-31
-		unsigned char month;  // 1-12
-		unsigned char year;   // 0-99 (representing 2000-2099)
-	}
-	date_time_t;
+	//typedef struct
+	//{
+	//	unsigned char second; // 0-59
+	//	unsigned char minute; // 0-59
+	//	unsigned char hour;   // 0-23
+	//	unsigned char day;    // 1-31
+	//	unsigned char month;  // 1-12
+	//	unsigned char year;   // 0-99 (representing 2000-2099)
+	//}
+	//date_time_t;
 
 	int accuracy_delta;
 	int accuracy_delay;
 	static unsigned long getNTPTimestamp();
 	static unsigned long sendNTPpacket(IPAddress& address);
-	
 	static time_t getNTP_UTCTime1970();
+	time_t __local_time;
+	time_t __utc_time;
+	void SyncTimeWithNTP();
+	time_t GetLocalTime() const { return __local_time; }
+	time_t GetUtcTime() const { return __utc_time; }
 protected:
+	void OnBuild_Descriptor();
 	void OnNotifyConnected();
 	void OnNotifyConnectionLost();
+	void OnNotifyOnline();
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
+	void OnInit();
 public:
+	Property<time_t, Ntp_Wifi_Device_Driver> local_time{ this, nullptr, &Ntp_Wifi_Device_Driver::GetLocalTime };
+	Property<time_t, Ntp_Wifi_Device_Driver> utc_time{ this, nullptr, &Ntp_Wifi_Device_Driver::GetUtcTime };
 	Ntp_Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
+
+
 
 };
 

@@ -7,6 +7,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArdWork", "ArdWork\ArdWork.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Time", "..\..\..\Documents\Arduino\libraries\Time\Time.vcxitems", "{D97B31C7-51BE-4A4F-9847-8C23DC69151D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoOTA", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\ArduinoOTA\ArduinoOTA.vcxitems", "{6D68E47E-7222-4418-9FAB-CF3464247E0E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP8266WiFi", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\ESP8266WiFi\ESP8266WiFi.vcxitems", "{F0F80A2E-91FE-4984-9E86-18E3FE32C382}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86

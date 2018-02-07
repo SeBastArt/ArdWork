@@ -21,6 +21,7 @@ extern "C" {
 #include "OLED_Display_Device_Driver.h"
 #include "Distance_Device_Driver.h"
 #include "Temperature_Device_Driver.h"
+#include "Ntp_Wifi_Device_Driver.h"
 
 Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
@@ -232,6 +233,7 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			pMessage = NULL;
 		}
 	}
+	OnModuleUpdate(deltaTime);
 }
 
 
@@ -288,6 +290,21 @@ WebSocket_Wifi_Device_Driver *Module_Driver::Get_WebSocket_Wifi_DevDrv(uint8_t _
 			match++;
 			if (match == _index) {
 				result = (WebSocket_Wifi_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+Ntp_Wifi_Device_Driver * Module_Driver::Get_Ntp_Wifi_Device_DevDrv(uint8_t _index)
+{
+	Ntp_Wifi_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == NTP_WIFI_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (Ntp_Wifi_Device_Driver *)(*device_list)[i];
 			}
 		}
 	}

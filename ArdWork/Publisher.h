@@ -2,12 +2,14 @@
 #define _PUBLISHER_h
 
 #include "Arduino.h"
+#include <ESP8266WiFi.h>
 #include "m_Vector.h"
 #include "Base_Consts.h"
 #include "Filesystem.h"
 #include "ArduinoJson.h"
 #include "Driver.h"
-
+#include "Timezone.h" //https://github.com/JChristensen/Timezone
+#include "ping.h"
 //#define DEBUG
 //#define LOAD_SAVE_DEBUG
 
@@ -38,7 +40,8 @@ enum ctrl_type
 	color,
 	value,
 	select,
-	group
+	group, 
+	zeit
 };
 
 class CtrlElem
@@ -198,6 +201,46 @@ public:
 		result_string = result_string + b;
 
 		return result_string;
+	};
+};
+
+
+class Time_CtrlElem :public CtrlElem
+{
+private:
+	bool __editable;
+public:
+	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name = "Time Control Element", String _descr = "Description") :
+		CtrlElem(_id, (void*)_supervisor, _name, _descr),
+		__editable(_editable)
+	{
+		__type = zeit;
+	};
+
+	bool IsEditable() { return __editable; }
+	
+	String TimeToString() {
+		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
+		String resultString = "";
+		resultString += hour(v_time); resultString += F(":");
+		resultString += minute(v_time) / 10; resultString += minute(v_time) % 10; resultString += F(":");
+		resultString += second(v_time) / 10; resultString += second(v_time) % 10;
+	}
+
+	String DateToString() {
+		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
+		String resultString = "";
+		resultString += day(v_time); resultString += F("."); resultString += month(v_time); resultString += F("."); resultString += year(v_time);
+	}
+
+	String ToString() {
+		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
+		String resultString = "";
+		resultString += hour(v_time); resultString += F(":");
+		resultString += minute(v_time) / 10; resultString += minute(v_time) % 10; resultString += F(":");
+		resultString += second(v_time) / 10; resultString += second(v_time) % 10; resultString += F(" - ");
+		resultString += day(v_time); resultString += F("."); resultString += month(v_time); resultString += F("."); resultString += year(v_time);
+		return resultString;
 	};
 };
 
@@ -697,14 +740,17 @@ class CommunicationClient
 {
 public:
 	virtual ~CommunicationClient() {};		// Destructor
-	void NotifyConnected() { __isOnline = true;  OnNotifyConnected(); };
-	void NotifyConnectionLost() { __isOnline = false;  OnNotifyConnectionLost(); };
+	void NotifyConnected() { __isConnected = true; __isOnline = false;  OnNotifyConnected(); };
+	void NotifyConnectionLost() { __isConnected = false; __isOnline = false;  OnNotifyConnectionLost(); };
+	void NotifyOnline() { __isConnected = true; OnNotifyOnline(); };
 	virtual void OnNotifyConnected() = 0;
 	virtual void OnNotifyConnectionLost() = 0;
+	virtual void OnNotifyOnline() = 0;
 protected:
 	bool __isOnline;
+	bool __isConnected;
 	//constructor is protected because this class is abstract, it’s only meant to be inherited!
-	CommunicationClient() { __isOnline = false; };
+	CommunicationClient() { __isOnline = false; __isConnected = false; };
 private:
 	// -------------------------
 	// Disabling default copy constructor and default 
@@ -748,6 +794,13 @@ public:
 			(*m_CommunicationClientVec)[i]->NotifyConnectionLost();
 		}
 	};
+
+	void DoNotifyOnline() {
+		for (int i = 0; i < m_CommunicationClientVec->Size(); i++) {
+			(*m_CommunicationClientVec)[i]->NotifyOnline();
+		}
+	};
+
 protected:
 	//constructor is protected because this class is abstract, it’s only meant to be inherited!
 	CommunicationProvider() { m_CommunicationClientVec = new Vector<CommunicationClient*>; };

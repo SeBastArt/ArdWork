@@ -52,6 +52,7 @@ public:
 	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	void DoDeviceMessage(Int_Task_Msg message);
+
 	void DoUpdate(uint32_t deltaTime);
 	void OnBuild_Descriptor() override;
 protected:
@@ -68,6 +69,7 @@ protected:
 	void Animation_Prev();
 	void Animation_Color(uint8_t R, uint8_t G, uint8_t B);
 	void SetBrightness(uint8_t _brightness);
+	void SetPixel(uint8_t _index, uint8_t R, uint8_t G, uint8_t B);
 public:
 	void Exec_Animation_Off();
 	void Exec_Animation_Shine();
@@ -78,6 +80,7 @@ public:
 	void Exec_Animation_Prev();
 	void Exec_Animation_Color(int R, int G, int B);
 	void Exec_Set_Brightness(int _brightness);
+	void Exec_Set_Pixel(int _index, int R, int G, int B);
 };
 
 #endif

@@ -7,6 +7,17 @@
 //#define DEBUG
 
 Led_Device_Driver *Wifi_Device_Driver::statusLED;
+bool Wifi_Device_Driver::__isOnline;
+
+void Wifi_Device_Driver::callback_reply(void* arg, void *pdata) {
+	struct ping_resp *pingresp = (struct ping_resp *)pdata;
+	if (pingresp->resp_time > 0) {
+		__isOnline = true;
+	}
+	else {
+		Serial.println("Ping Timeout");
+	}
+}
 
 Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED, uint8_t priority) :
 	Device_Driver(module, priority)
@@ -18,6 +29,8 @@ Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver 
 	__connection_try = 0;
 	__dnsServer = nullptr;
 	WiFi.mode(WIFI_OFF);
+	__isOnline = false;
+	__isNotifyOnline = false;
 }
 
 void Wifi_Device_Driver::OnBuild_Descriptor() {
@@ -165,7 +178,7 @@ void Wifi_Device_Driver::ProvideAP() {
 	__dnsServer = new DNSServer();
 
 	WiFi.persistent(false); // Do not write new connections to FLASH
-	
+
 	WiFi.mode(WIFI_AP);
 	delay(1000);
 	WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
@@ -183,6 +196,7 @@ void Wifi_Device_Driver::ProvideAP() {
 	// provided IP to all DNS request
 	__dnsServer->start(DNS_PORT, "*", apIP);
 	StartMSDNServices();
+	DoNotifyConnected();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ProvideAP");
 #endif // DEBUG
@@ -199,7 +213,7 @@ void Wifi_Device_Driver::StartMSDNServices() {
 	MDNS.addService(F("ws"), F("tcp"), 81);
 	SetupOTA();
 	__isMSDN = true;
-	DoNotifyConnected();
+
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::StartMSDNServices");
 #endif // DEBUG
@@ -234,6 +248,8 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	if ((WiFi.status() != WL_CONNECTED) && !__AP_isConnected) {
 		if (__WiFi_isConnected == true) {
 			DoNotifyConnectionLost();
+			__isOnline = false;
+			__isNotifyOnline = false;
 			Serial.println("Connection lost...");
 			Serial.println("Try to reconnect...");
 			__WiFi_isConnected = false;
@@ -268,9 +284,15 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			Serial.println(WiFi.localIP());
 			__WiFi_isConnected = true;
 			StartMSDNServices();
+			Ping();
 		}
 
 		ArduinoOTA.handle();
+		if ((__isOnline) && (!__isNotifyOnline)) {
+			__isNotifyOnline = true;
+			DoNotifyOnline();
+		}
+
 		if (__run_isAp) {
 			__dnsServer->processNextRequest();
 		}
@@ -278,6 +300,17 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #ifdef DEBUG
 	//Serial.println("Ende Wifi_Device_Driver::DoUpdate");
 #endif // DEBUG
+		}
+
+void Wifi_Device_Driver::Ping()
+{
+	IPAddress googleServer(172, 217, 0, 0);
+	pingopt.ip = googleServer;
+	pingopt.count = 1;
+	pingopt.coarse_time = 500;
+	pingopt.recv_function = &callback_reply;
+	// pingopt.sent_function = NULL;
+	ping_start(&pingopt);
 }
 
 void Wifi_Device_Driver::Exec_Set_SSID(String _ssid) {

@@ -21,6 +21,8 @@ private:
 	float __sv_relBrightness = 100;
 	Color __sv_color = { 55, 111, 222 };
 	int __absBrightness;
+	int accuracy_delta;
+	int accuracy_delay;
 	void Pattern_Next();
 	void Pattern_Prev();
 	void Pattern_Off();
@@ -33,7 +35,7 @@ private:
 protected:
 	void OnInit() override;
 	void DoModuleMessage(Int_Task_Msg message);
-
+	void OnModuleUpdate(uint32_t deltaTime);
 	void DoTaskMessage(TaskMessage *message);
 	void Build_Discriptor();
 public:

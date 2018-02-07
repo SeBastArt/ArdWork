@@ -38,6 +38,7 @@ private:
 	uint32_t conn_delta;
 	uint32_t conn_delay;
 	DNSServer *__dnsServer;
+	struct ping_option pingopt;
 	bool __isMSDN;
 	void SetSSID(String _ssid);
 	void SetPassword(String _password);
@@ -46,10 +47,14 @@ private:
 	void ConnectToWifi();
 	void SetupOTA();
 	void StartMSDNServices();
+	void Ping();
+	static void callback_reply(void * arg, void * pdata);
 protected:
 	bool __WiFi_isConnected;
 	bool __AP_isConnected;
 	bool __run_isAp;
+	bool __isNotifyOnline;
+	static bool __isOnline;
 	int __isAP;
 	String hostname;
 	static Led_Device_Driver *statusLED;

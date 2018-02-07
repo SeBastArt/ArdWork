@@ -86,6 +86,11 @@ void Mqqt_Wifi_Device_Driver::OnNotifyConnectionLost()
 {
 }
 
+void Mqqt_Wifi_Device_Driver::OnNotifyOnline()
+{
+
+}
+
 void Mqqt_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	if (__isOnline) {
 		if (client->connected()) {

@@ -106,7 +106,7 @@ void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #ifdef DEBUG
 	//Serial.println("Start WebSocket_Wifi_Device_Driver::UpdateComm");
 #endif // DEBUG
-	if (__isOnline) {
+	if (__isConnected) {
 		accuracy_delta += deltaTime;
 		if (accuracy_delta > accuracy_delay) {
 			accuracy_delta = 0;
@@ -114,7 +114,9 @@ void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 				for (uint8_t I = 0; I < __descriptor_list->count; I++)
 					if (__descriptor_list->GetElemByIndex(I)->published)
 						for (uint8_t J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
-							if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) {
+							if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) ||
+								(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == zeit))
+							{
 								String json_str;
 								StaticJsonBuffer<200> jsonBuffer;
 								JsonObject& root = jsonBuffer.createObject();
@@ -160,6 +162,11 @@ void WebSocket_Wifi_Device_Driver::OnNotifyConnectionLost()
 	}
 }
 
+void WebSocket_Wifi_Device_Driver::OnNotifyOnline()
+{
+	InitializeServices();
+}
+
 void WebSocket_Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 {
 	int messageID = message.id;
@@ -170,9 +177,16 @@ void WebSocket_Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 	}
 }
 
-void WebSocket_Wifi_Device_Driver::OnNotifyConnected() {
+void WebSocket_Wifi_Device_Driver::OnNotifyConnected()
+{
+	InitializeServices();
+}
+
+
+void WebSocket_Wifi_Device_Driver::InitializeServices()
+{
 #ifdef DEBUG
-	Serial.println("Start WebSocket_Wifi_Device_Driver::InitComm");
+	Serial.println("Start WebSocket_Wifi_Device_Driver::InitializeServices");
 #endif // DEBUG
 	if (server != nullptr) {
 		server->~ESP8266WebServer();
@@ -199,7 +213,7 @@ void WebSocket_Wifi_Device_Driver::OnNotifyConnected() {
 
 	server->on("/", [&]() {
 #ifdef DEBUG
-		Serial.println("Start WebSocket_Wifi_Device_Driver::InitComm server->on");
+		Serial.println("Start WebSocket_Wifi_Device_Driver::InitializeServices server->on");
 		Serial.printf("before all heap size: %u\n", ESP.getFreeHeap());
 #endif // DEBUG
 		WiFiClient client = server->client();
@@ -233,7 +247,7 @@ void WebSocket_Wifi_Device_Driver::OnNotifyConnected() {
 		client.stop();
 #ifdef DEBUG
 		Serial.printf("after all heap size: %u\n", ESP.getFreeHeap());
-		Serial.println("Ende WebSocket_Wifi_Device_Driver::InitComm server->on");
+		Serial.println("Ende WebSocket_Wifi_Device_Driver::InitializeServices server->on");
 #endif // DEBUG
 	});
 
@@ -281,6 +295,19 @@ void WebSocket_Wifi_Device_Driver::GenerateNav(WiFiClient *client, Descriptor_Li
 
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateNav");
+#endif // DEBUG
+}
+
+
+void WebSocket_Wifi_Device_Driver::OnBuild_Descriptor() {
+#ifdef DEBUG
+	Serial.println("Start WebSocket_Wifi_Device_Driver::Build_Descriptor");
+#endif // DEBUG
+	__descriptor->name = F("WebSocekt Driver");
+	__descriptor->descr = F("Broadcasts the website of all controls");
+	__descriptor->published = false;
+#ifdef DEBUG
+	Serial.println("Ende WebSocket_Wifi_Device_Driver::Build_Descriptor");
 #endif // DEBUG
 }
 
@@ -367,6 +394,13 @@ void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceI
 		GenerateInput(client, _deviceId, _ctrl_elem);
 		if ((bool)((Value_CtrlElem*)_ctrl_elem)->IsEditable())
 			GenerateSetButton(client, _deviceId, _ctrl_elem->id);
+		client->println("			</div>");
+		break;
+	}
+	case zeit:
+	{
+		client->println("			<div class = \"append w35 w100-sm\">");
+		GenerateInput(client, _deviceId, _ctrl_elem);
 		client->println("			</div>");
 		break;
 	}
@@ -480,9 +514,12 @@ void WebSocket_Wifi_Device_Driver::GenerateInput(WiFiClient *client, int _device
 	else
 		client->print("					<input type=\"text\" class=\"small\" id=\"");
 	client->print(String(_deviceId) + "_" + String(_ctrl_elem->id));
-	client->print("\"  value=\"");
+	if (_ctrl_elem->type == pass)
+		client->print("\"  value=\"");
+	else
+		client->print("\"  placeholder=\"");
 	client->print(_ctrl_elem->ToString());
-	if ((_ctrl_elem->type == value) && (!((Value_CtrlElem*)_ctrl_elem)->IsEditable())) {
+	if (((_ctrl_elem->type == value) || (_ctrl_elem->type == zeit)) && (!((Value_CtrlElem*)_ctrl_elem)->IsEditable())) {
 		client->println("\" disabled>");
 	}
 	else {

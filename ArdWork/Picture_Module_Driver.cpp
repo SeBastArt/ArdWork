@@ -11,6 +11,7 @@
 #include "Mqqt_Wifi_Device_Driver.h"
 #include "Uart_RGB_Led_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
+#include "Ntp_Wifi_Device_Driver.h"
 
 //#define DEBUG
 
@@ -23,6 +24,8 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 #endif // DEBUG
 	__DriverType = PICTURE_MODULE_DRIVER_TYPE;
 	__absBrightness = 50;
+	accuracy_delta = 0;
+	accuracy_delay = 2000;
 }
 
 void Picture_Module_Driver::Build_Discriptor() {
@@ -181,6 +184,42 @@ void Picture_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 #endif // DEBUG
 }
 
+void Picture_Module_Driver::OnModuleUpdate(uint32_t deltaTime)
+{
+	time_t tTlocal = Get_Ntp_Wifi_Device_DevDrv(0)->local_time;
+
+	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Off();
+
+	int sec_before;
+	int sec_after;
+
+	sec_before = second(tTlocal) % 10 - 1;
+	if (sec_before < 0) {
+		sec_before = 9;
+	}
+	sec_after = second(tTlocal) % 10 + 1;
+	if (sec_after > 9) {
+		sec_after = 0;
+	}
+
+	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(sec_before, 200, 0, 0);
+	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(second(tTlocal) % 10, 0, 200, 0);
+	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(sec_after, 0, 0, 200);
+
+	accuracy_delta += deltaTime;
+	if (accuracy_delta > accuracy_delay) {
+#ifdef DEBUG
+		Serial.println("Start Picture_Module_Driver::OnModuleUpdate");
+#endif // DEBUG
+		accuracy_delta = 0;
+		
+		
+
+#ifdef DEBUG
+		Serial.println("Ende Picture_Module_Driver::OnModuleUpdate");
+#endif // DEBUG
+	}
+}
 
 void Picture_Module_Driver::SwitchPattern(uint8_t _control) {
 #ifdef DEBUG
@@ -203,7 +242,7 @@ void Picture_Module_Driver::SwitchPattern(uint8_t _control) {
 		Pattern_Next();
 	}
 	break;
-	}
+}
 #ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::SwitchPattern");
 #endif // DEBUG
@@ -221,7 +260,7 @@ void Picture_Module_Driver::SetStripBrightness() {
 	else {
 		brightness = round(__sv_relBrightness / 2);
 	}
-	
+
 	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr)
 		Get_Uart_RGB_Led_DevDrv(0)->Exec_Set_Brightness(brightness);
 
@@ -293,11 +332,11 @@ void Picture_Module_Driver::Pattern_Next()
 #ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Pattern_Next");
 #endif // DEBUG	
-	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr) 
+	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr)
 		Get_Uart_RGB_Led_DevDrv(0)->Exec_Animation_Next();
 
 
-	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr) 
+	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
 		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Next();
 #ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Pattern_Next");

@@ -7,6 +7,18 @@
 ////#define DEBUG
 //#define COMPILE_TEST
 
+#include <WiFiUdp.h>
+#include <WiFiServer.h>
+#include <WiFiClientSecure.h>
+#include <WiFiClient.h>
+#include <ESP8266WiFiType.h>
+#include <ESP8266WiFiSTA.h>
+#include <ESP8266WiFiScan.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266WiFiGeneric.h>
+#include <ESP8266WiFiAP.h>
+#include <ESP8266WiFi.h>
+#include <ArduinoOTA.h>
 #include <TimeLib.h>
 #include <Time.h>
 #include <TaskManager.h>
