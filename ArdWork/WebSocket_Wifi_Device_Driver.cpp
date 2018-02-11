@@ -95,11 +95,31 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 	server = nullptr;
 	webSocket = nullptr;
 	__event_msg._filled = false;
-	accuracy_delay = 2000;
-	accuracy_delta = 0;
+	SetTimerDelay(1000);
 #ifdef DEBUG
 	Serial.println("Ende Start WebSocket_Wifi_Device_Driver");
 #endif // DEBUG
+}
+
+void WebSocket_Wifi_Device_Driver::TimerTick() {
+	if (__isConnected)
+		if (__descriptor_list->count > 0)
+			for (uint8_t I = 0; I < __descriptor_list->count; I++)
+				if (__descriptor_list->GetElemByIndex(I)->published)
+					for (uint8_t J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
+						if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) ||
+							(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == zeit))
+						{
+							String json_str;
+							StaticJsonBuffer<200> jsonBuffer;
+							JsonObject& root = jsonBuffer.createObject();
+							root["_deviceId"] = String(__descriptor_list->GetElemByIndex(I)->id);
+							root["_cmdId"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->id);
+							root["_value"] = __descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->ToString();
+							root["_unit"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->unit);
+							root.printTo(json_str);
+							webSocket->sendTXT(0, json_str.c_str());
+						}
 }
 
 void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
@@ -107,28 +127,6 @@ void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	//Serial.println("Start WebSocket_Wifi_Device_Driver::UpdateComm");
 #endif // DEBUG
 	if (__isConnected) {
-		accuracy_delta += deltaTime;
-		if (accuracy_delta > accuracy_delay) {
-			accuracy_delta = 0;
-			if (__descriptor_list->count > 0)
-				for (uint8_t I = 0; I < __descriptor_list->count; I++)
-					if (__descriptor_list->GetElemByIndex(I)->published)
-						for (uint8_t J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
-							if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) ||
-								(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == zeit))
-							{
-								String json_str;
-								StaticJsonBuffer<200> jsonBuffer;
-								JsonObject& root = jsonBuffer.createObject();
-								root["_deviceId"] = String(__descriptor_list->GetElemByIndex(I)->id);
-								root["_cmdId"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->id);
-								root["_value"] = __descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->ToString();
-								root["_unit"] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->unit);
-								root.printTo(json_str);
-								webSocket->sendTXT(0, json_str.c_str());
-							}
-		}
-
 		webSocket->loop();
 		server->handleClient();
 
@@ -145,7 +143,7 @@ void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 	}
 #ifdef DEBUG
-	//Serial.println("Ende WebSocket_Wifi_Device_Driver::UpdateComm");
+//Serial.println("Ende WebSocket_Wifi_Device_Driver::UpdateComm");
 #endif // DEBUG
 }
 
@@ -154,7 +152,7 @@ void WebSocket_Wifi_Device_Driver::OnNotifyConnectionLost()
 	if (server != nullptr) {
 		server->~ESP8266WebServer();
 		server = nullptr;
-	}
+}
 
 	if (webSocket != nullptr) {
 		webSocket->~WebSocketsServer();
@@ -285,12 +283,12 @@ void WebSocket_Wifi_Device_Driver::GenerateNav(WiFiClient *client, Descriptor_Li
 			if (first) {
 				client->print(" active");
 				first = false;
-			}
+		}
 			client->print("\" ");
 			client->print("onclick=\"openTab(event, 'tab" + String(__descriptor_list->GetElemByIndex(I)->name) + "')\">");
 			client->print(String(__descriptor_list->GetElemByIndex(I)->name));
 			client->println("</button>");
-		}
+}
 	client->println("		</div>");
 
 #ifdef DEBUG
@@ -406,7 +404,7 @@ void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceI
 	}
 	default:
 		break;
-	}
+}
 	GenerateDecending(client, _ctrl_elem);
 	client->println("		</div>");
 #ifdef DEBUG
@@ -446,7 +444,7 @@ void WebSocket_Wifi_Device_Driver::GenerateDecending(WiFiClient *client, CtrlEle
 	{
 		break;
 	}
-	}
+}
 	client->println(String(_ctrl_elem->name));
 	client->println("			</div>");
 #ifdef DEBUG
@@ -543,7 +541,7 @@ void WebSocket_Wifi_Device_Driver::GenerateButtonGroup(WiFiClient *client, int _
 			if (I < (((Group_CtrlElem*)_ctrl_elem)->MembersCount() - 1)) {
 				client->print(" prepend ");
 			}
-		}
+			}
 		client->print("\">");
 		client->print("				<button class=\"button small\" ");
 		client->print("onclick=\"SendMessage(");
@@ -554,14 +552,14 @@ void WebSocket_Wifi_Device_Driver::GenerateButtonGroup(WiFiClient *client, int _
 		client->print(String(I) + "); \">");
 		client->print(((Group_CtrlElem*)_ctrl_elem)->GetMember(I));
 		client->println("</button>");
-	}
+		}
 	for (uint8_t I = 0; I < ((Group_CtrlElem*)_ctrl_elem)->MembersCount(); I++) {
 		client->print("</div>");
 	}
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateButtonGroup");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateSetButton(WiFiClient *client, int _deviceId, int _cmdId) {
 #ifdef DEBUG

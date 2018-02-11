@@ -23,6 +23,11 @@ extern "C" {
 #include "Temperature_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
 
+void Module_Driver::OnModuleUpdate(uint32_t deltaTime)
+{
+	//
+}
+
 Module_Driver::Module_Driver(uint8_t priority) :
 	Driver(priority) {
 	__isdebug = false;

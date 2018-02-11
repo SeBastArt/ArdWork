@@ -28,10 +28,12 @@ private:
 	unsigned int sv_pattern = 0;
 	Color sv_color = { 255, 255, 255 };
 	float sv_relBrightness = 100;
-	static uint8_t pixelCount;
+	static uint8_t __pixelCount;
 	unsigned int actAnimation;
 	static HslColor mainColor;
 	uint8_t __brightness;
+
+	uint8_t GetLedCount() const { return __pixelCount; };
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
 	static NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* strip;
@@ -49,7 +51,7 @@ private:
 	
 	static Vector <GRBWAnimationState*> animationState_list;
 public:
-	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority = TASK_PRIORITY_NORMAL);
+	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelCount, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	void DoDeviceMessage(Int_Task_Msg message);
 
@@ -70,6 +72,7 @@ protected:
 	void Animation_Color(uint8_t R, uint8_t G, uint8_t B);
 	void SetBrightness(uint8_t _brightness);
 	void SetPixel(uint8_t _index, uint8_t R, uint8_t G, uint8_t B);
+	void Set_Color_All(int R, int G, int B);
 public:
 	void Exec_Animation_Off();
 	void Exec_Animation_Shine();
@@ -78,9 +81,14 @@ public:
 	void Exec_Animation_Fire();
 	void Exec_Animation_Next();
 	void Exec_Animation_Prev();
+	void Exec_Animation_Number(uint8_t _number);
 	void Exec_Animation_Color(int R, int G, int B);
 	void Exec_Set_Brightness(int _brightness);
 	void Exec_Set_Pixel(int _index, int R, int G, int B);
+	void Exec_Set_Color_All(int R, int G, int B);
+
+	Property<uint8_t, Uart_GRBW_Led_Device_Driver> led_count{ this, nullptr, &Uart_GRBW_Led_Device_Driver::GetLedCount };
+
 };
 
 #endif

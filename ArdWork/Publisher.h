@@ -11,7 +11,7 @@
 #include "Timezone.h" //https://github.com/JChristensen/Timezone
 #include "ping.h"
 //#define DEBUG
-//#define LOAD_SAVE_DEBUG
+#define LOAD_SAVE_DEBUG
 
 struct Color
 {
@@ -742,7 +742,7 @@ public:
 	virtual ~CommunicationClient() {};		// Destructor
 	void NotifyConnected() { __isConnected = true; __isOnline = false;  OnNotifyConnected(); };
 	void NotifyConnectionLost() { __isConnected = false; __isOnline = false;  OnNotifyConnectionLost(); };
-	void NotifyOnline() { __isConnected = true; OnNotifyOnline(); };
+	void NotifyOnline() { __isConnected = true; __isOnline = true; OnNotifyOnline(); };
 	virtual void OnNotifyConnected() = 0;
 	virtual void OnNotifyConnectionLost() = 0;
 	virtual void OnNotifyOnline() = 0;

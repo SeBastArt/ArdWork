@@ -284,7 +284,6 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			Serial.println(WiFi.localIP());
 			__WiFi_isConnected = true;
 			StartMSDNServices();
-			Ping();
 		}
 
 		ArduinoOTA.handle();
@@ -300,7 +299,14 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #ifdef DEBUG
 	//Serial.println("Ende Wifi_Device_Driver::DoUpdate");
 #endif // DEBUG
-		}
+}
+
+
+void Wifi_Device_Driver::TimerTick() {
+	if (__WiFi_isConnected && !__isOnline) {
+		Ping();
+	}
+}
 
 void Wifi_Device_Driver::Ping()
 {

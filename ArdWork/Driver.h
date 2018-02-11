@@ -34,7 +34,8 @@ private:
 	void DoShutdown();
 	void DoSuspend();
 
-
+	uint timer_delta;
+	uint timer_delay;
 protected:
 	static Descriptor_List *__descriptor_list;
 	unsigned int __DriverType;
@@ -46,10 +47,11 @@ protected:
 	bool __isIdle;
 	bool __isBusy;
 	bool __isInactive;
+	void SetTimerDelay(uint delay_ms);
 protected:
 
 	static void fw_Exec_Command(void * context, int i0, String i1);
-
+	virtual void TimerTick(); 
 	virtual void DoUpdate(uint32_t deltaTime) = 0;
 	virtual void OnMessage(Int_Task_Msg message) = 0;
 	virtual void OnStartup() = 0;

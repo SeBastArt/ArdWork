@@ -151,6 +151,9 @@
     <Filter Include="Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver">
       <UniqueIdentifier>{1504b6f7-d60e-48f1-83e3-cde76d432d10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\Nixie_Module_Driver">
+      <UniqueIdentifier>{2144fc05-e233-417e-b978-e00e8b476ca2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ArdWork.ino" />
@@ -321,6 +324,12 @@
     <ClInclude Include="Timezone.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
     </ClInclude>
+    <ClInclude Include="Nixie_Module_Driver.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\Nixie_Module_Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="Nixie_Module_Driver_Consts.h">
+      <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\Nixie_Module_Driver</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">
@@ -403,6 +412,9 @@
     </ClCompile>
     <ClCompile Include="Timezone.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
+    </ClCompile>
+    <ClCompile Include="Nixie_Module_Driver.cpp">
+      <Filter>Source Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

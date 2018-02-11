@@ -56,7 +56,8 @@ protected:
 	virtual void OnInit();
 	virtual void OnShutdown();
 	virtual void OnSuspend();
-	virtual void OnBuild_Descriptor() override;
+	virtual void OnBuild_Descriptor();
+	virtual void OnModuleUpdate(uint32_t deltaTime);
 	bool PopMessage(TaskMessage** message);
 
 	void Set_Debug_Mode(bool _state);
@@ -67,7 +68,6 @@ protected:
 	 virtual void DoModuleMessage(Int_Task_Msg message) = 0;
 	 virtual void DoTaskMessage(TaskMessage *message) = 0;
 	 virtual void Build_Discriptor() = 0;
-	 virtual void OnModuleUpdate(uint32_t deltaTime) = 0;
 public:
 	Module_Driver(uint8_t priority = TASK_PRIORITY_NORMAL);
 	~Module_Driver();

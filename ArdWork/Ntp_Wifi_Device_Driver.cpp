@@ -17,24 +17,11 @@ Ntp_Wifi_Device_Driver::Ntp_Wifi_Device_Driver(Module_Driver * module, uint8_t p
 	Device_Driver(module, priority)
 {
 	__DriverType = NTP_WIFI_DEVICE_DRIVER_TYPE;
-	accuracy_delta = 0;
-	accuracy_delay = 2000;
 	__local_time = 0;
 	__utc_time = 0;
 }
 
 
-
-void Ntp_Wifi_Device_Driver::OnInit()
-{
-#ifdef DEBUG
-	Serial.println("Start Ntp_Wifi_Device_Driver::OnInit");
-#endif // DEBUG
-
-#ifdef DEBUG
-	Serial.println("Ende Ntp_Wifi_Device_Driver::OnInit");
-#endif // DEBUG
-}
 
 void Ntp_Wifi_Device_Driver::OnBuild_Descriptor() {
 #ifdef DEBUG
@@ -102,39 +89,59 @@ void Ntp_Wifi_Device_Driver::OnNotifyOnline()
 
 void Ntp_Wifi_Device_Driver::SyncTimeWithNTP()
 {
-		Serial.println("Setup sync with NTP service.");
-		setSyncProvider(getNTP_UTCTime1970);
-		setSyncInterval(86400); // NTP re-sync; i.e. 86400 sec would be once per day
-		yield();
-		__utc_time = now();
-		__local_time = CE.toLocal(__utc_time);
-		String sResponse = "";
-		sResponse += ("local time (Berlin) ");
-		sResponse += hour(__local_time); sResponse += (":");
-		sResponse += minute(__local_time) / 10; sResponse += minute(__local_time) % 10; sResponse += (":");
-		sResponse += second(__local_time) / 10; sResponse += second(__local_time) % 10; sResponse += (" - ");
-		sResponse += day(__local_time); sResponse += ("."); sResponse += month(__local_time); sResponse += ("."); sResponse += year(__local_time);
-		Serial.println(sResponse);
+	Serial.println("Setup sync with NTP service.");
+	setSyncProvider(getNTP_UTCTime1970);
+	setSyncInterval(86400); // NTP re-sync; i.e. 86400 sec would be once per day
+	yield();
+	__utc_time = now();
+	__local_time = CE.toLocal(__utc_time);
+	String sResponse = "";
+	sResponse += ("local time (Berlin) ");
+	sResponse += hour(__local_time); sResponse += (":");
+	sResponse += minute(__local_time) / 10; sResponse += minute(__local_time) % 10; sResponse += (":");
+	sResponse += second(__local_time) / 10; sResponse += second(__local_time) % 10; sResponse += (" - ");
+	sResponse += day(__local_time); sResponse += ("."); sResponse += month(__local_time); sResponse += ("."); sResponse += year(__local_time);
+	Serial.println(sResponse);
+}
+
+
+void Ntp_Wifi_Device_Driver::TimerTick()
+{
+#ifdef DEBUG
+	Serial.println("Start Ntp_Wifi_Device_Driver::TimerTick");
+#endif // DEBUG
+	if ((__isOnline) && (__utc_time < 100000)) {
+		SyncTimeWithNTP();
+	} 
+	__utc_time = now();
+	__local_time = CE.toLocal(__utc_time);
+#ifdef DEBUG
+	Serial.println("Ende Ntp_Wifi_Device_Driver::TimerTick");
+#endif // DEBUG
 }
 
 void Ntp_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
 {
-	__utc_time = now();
-	__local_time = CE.toLocal(__utc_time);
-	if ((__isOnline) && (timeStatus() == timeNotSet)) {
-		accuracy_delta += deltaTime;
-		if (accuracy_delta > accuracy_delay) {
-#ifdef DEBUG
-			Serial.println("Start Ntp_Wifi_Device_Driver::DoUpdate");
-#endif // DEBUG
-			accuracy_delta = 0;
-			SyncTimeWithNTP();
-#ifdef DEBUG
-			Serial.println("Ende Ntp_Wifi_Device_Driver::DoUpdate");
-#endif // DEBUG
-		}
-	}
 }
+
+
+time_t Ntp_Wifi_Device_Driver::GetLocalTime() const 
+{ 
+	time_t utc_time;
+	time_t local_time;
+	utc_time = now();
+	local_time = CE.toLocal(utc_time);
+	return local_time;
+}
+
+time_t Ntp_Wifi_Device_Driver::GetUtcTime() const
+{ 
+	time_t utc_time;
+	utc_time = now();
+	return __utc_time; 
+}
+
+
 
 time_t Ntp_Wifi_Device_Driver::getNTP_UTCTime1970()
 {

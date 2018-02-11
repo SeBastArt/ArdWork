@@ -28,6 +28,8 @@ Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 	__isIdle = false;
 	__isBusy = false;
 	__isInactive = true;
+	timer_delay = 2000;
+	timer_delta = 0;
 #ifdef DEBUG
 	Serial.print("Ende Constructor Driver");
 #endif // DEBUG
@@ -35,6 +37,18 @@ Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 
 void Driver::fw_Exec_Command(void* context, int i0, String i1) {
 	static_cast<Driver*>(context)->Exec_Command(i0, i1);
+}
+
+void Driver::TimerTick()
+{
+#ifdef DEBUG
+	Serial.print("Start Driver::TimerTick for DeviceID: ");
+	Serial.println(this->DriverId);
+#endif // DEBUG
+	//
+#ifdef DEBUG
+	Serial.print("Ende Driver::TimerTick");
+#endif // DEBUG
 }
 
 void Driver::Exec_Command(int _cmdId, String _value)
@@ -144,7 +158,18 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 	else
 		__isBusy = false;
 	DoUpdate(deltaTime);
+
+	timer_delta += deltaTime;
+	if (timer_delta > timer_delay) {
+		timer_delta = 0;
+		TimerTick();
+	}
 }
+
+void Driver::SetTimerDelay(uint delay_ms) {
+	timer_delay = delay_ms;
+}
+
 
 void Driver::DoMessage(Int_Task_Msg message) {
 #ifdef DEBUG

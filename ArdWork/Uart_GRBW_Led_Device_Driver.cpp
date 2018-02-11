@@ -7,7 +7,7 @@
 
 //#define DEBUG
 
-uint8_t Uart_GRBW_Led_Device_Driver::pixelCount;
+uint8_t Uart_GRBW_Led_Device_Driver::__pixelCount;
 uint16_t Uart_GRBW_Led_Device_Driver::lastPixel = 0;
 int8_t Uart_GRBW_Led_Device_Driver::moveDir = 1;
 Vector <GRBWAnimationState*> Uart_GRBW_Led_Device_Driver::animationState_list;
@@ -17,7 +17,7 @@ NeoGamma<NeoGammaTableMethod>* Uart_GRBW_Led_Device_Driver::colorGamma;
 NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* Uart_GRBW_Led_Device_Driver::strip;
 NeoPixelAnimator* Uart_GRBW_Led_Device_Driver::animations;
 
-Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelcount, uint8_t priority) :
+Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelCount, uint8_t priority) :
 	Device_Driver(module, priority)
 {
 #ifdef DEBUG
@@ -25,13 +25,13 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	Serial.println(this->DriverId);
 #endif // DEBUG
 	__DriverType = UART_GRBW_LED_DEVICE_TYPE;
-	pixelCount = _pixelcount;
+	__pixelCount =_pixelCount;
 	__brightness = 50;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
-	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelcount, 0);
-	animations = new NeoPixelAnimator(_pixelcount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
+	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelCount, 0);
+	animations = new NeoPixelAnimator(_pixelCount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
 
-	for (uint8_t i = 0; i < _pixelcount; i++) {
+	for (uint8_t i = 0; i < _pixelCount; i++) {
 		GRBWAnimationState* animationState = new GRBWAnimationState();
 		animationState_list.PushBack(animationState);
 	}
@@ -190,6 +190,17 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 		Animation_Color((uint8_t)((rgb >> 16) & 0xFF), (uint8_t)((rgb >> 8) & 0xFF), (uint8_t)((rgb >> 0) & 0xFF));
 	}
 	break;
+	case UART_GRBW_LED_DEVICE_SET_COLOR_ALL:
+	{
+#ifdef DEBUG
+		Serial.println("Start Uart_GRBW_Led_Device_Driver::DoDeviceMessage - UART_GRBW_LED_DEVICE_SET_COLOR_ALL");
+#endif // DEBUG
+		uint8_t R = message.GetIntParamByIndex(0);
+		uint8_t G = message.GetIntParamByIndex(1);
+		uint8_t B = message.GetIntParamByIndex(2);
+		Set_Color_All(R, G, B);
+	}
+	break;
 	case UART_GRBW_LED_DEVICE_SET_PIXEL:
 	{
 #ifdef DEBUG
@@ -210,6 +221,20 @@ void Uart_GRBW_Led_Device_Driver::SetPixel(uint8_t _index, uint8_t R, uint8_t G,
 	RgbColor color(R, G, B);
 	colorGamma->Correct(color);
 	strip->SetPixelColor(_index, color);
+}
+
+void Uart_GRBW_Led_Device_Driver::Set_Color_All(int R, int G, int B)
+{
+	Animation_Off();
+	/*Serial.print("Uart_GRBW_Led_Device_Driver R:");
+	Serial.print(R);
+	Serial.print(" - G:");
+	Serial.print(G);
+	Serial.print(" - B:");
+	Serial.println(B);*/
+	for (uint8_t i = 0; i < __pixelCount; i++) {
+		strip->SetPixelColor(i, RgbColor(R, G, B));
+	}
 }
 
 void Uart_GRBW_Led_Device_Driver::DoUpdate(uint32_t deltaTime) {
@@ -259,11 +284,11 @@ void Uart_GRBW_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 	uint16_t nextPixel;
 
 	float progress = NeoEase::Linear(param.progress);
-	nextPixel = round(progress * pixelCount) % pixelCount;
+	nextPixel = round(progress * __pixelCount) % __pixelCount;
 	if ((lastPixel != nextPixel)) {
 		uint8_t count = 2;
 		for (uint8_t j = 0; j < count; j++) {
-			uint8_t actpixel = (nextPixel + (j * (pixelCount / count))) % pixelCount;
+			uint8_t actpixel = (nextPixel + (j * (__pixelCount / count))) % __pixelCount;
 
 			RgbColor startingColor;
 			RgbColor tempRGBColor = mainColor;
@@ -285,7 +310,7 @@ void Uart_GRBW_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 	if (param.state == AnimationState_Completed)
 	{
 		// done, time to restart this position tracking animation/timer
-		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_CYLON - GRBW_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + GRBW_ANIMATION_CYLON - GRBW_ANIMATION_FIRST);
 	}
 }
 
@@ -293,12 +318,12 @@ void Uart_GRBW_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
-		uint8_t count = random(pixelCount);
+		uint8_t count = random(__pixelCount);
 
 		while (count > 0)
 		{
 			// pick a random pixel
-			uint16_t pixel = random(pixelCount);
+			uint16_t pixel = random(__pixelCount);
 
 			// pick random time and random color
 			// we use HslColor object as it allows us to easily pick a color
@@ -313,7 +338,7 @@ void Uart_GRBW_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_RANDOM - GRBW_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + GRBW_ANIMATION_RANDOM - GRBW_ANIMATION_FIRST);
 	}
 }
 
@@ -337,12 +362,12 @@ void Uart_GRBW_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
-		uint8_t count = random(pixelCount);
+		uint8_t count = random(__pixelCount);
 
 		while (count > 0)
 		{
 			// pick a random pixel
-			uint8_t pixel = random(pixelCount);
+			uint8_t pixel = random(__pixelCount);
 
 			// pick random time and random color
 			// we use HslColor object as it allows us to easily pick a color
@@ -367,19 +392,19 @@ void Uart_GRBW_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_FIRE - GRBW_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + GRBW_ANIMATION_FIRE - GRBW_ANIMATION_FIRST);
 	}
 }
 
 void Uart_GRBW_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 	if (param.state != AnimationState_Completed)
 	{
-		for (int pixel = 0; pixel < pixelCount; pixel++) {
+		for (int pixel = 0; pixel < __pixelCount; pixel++) {
 			strip->SetPixelColor(pixel, mainColor);
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + GRBW_ANIMATION_SHINE - GRBW_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + GRBW_ANIMATION_SHINE - GRBW_ANIMATION_FIRST);
 	}
 }
 
@@ -388,10 +413,10 @@ void Uart_GRBW_Led_Device_Driver::Animation_Off() {
 	Serial.println("Start Uart_GRBW_Led_Device_Driver::Animation_Off");
 #endif // DEBUG
 	animations->StopAll();
-	for (uint8_t i = 0; i < pixelCount; i++) {
+	for (uint8_t i = 0; i < __pixelCount; i++) {
 		strip->SetPixelColor(i, RgbColor(0, 0, 0));
 	}
-	strip->Show();
+	//strip->Show();
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Animation_Off");
 #endif // DEBUG
@@ -402,7 +427,7 @@ void Uart_GRBW_Led_Device_Driver::Animation_Shine() {
 	Serial.println("Start Uart_GRBW_Led_Device_Driver::Animation_Shine");
 #endif // DEBUG
 	Animation_Off();
-	animations->StartAnimation(pixelCount + GRBW_ANIMATION_SHINE - GRBW_ANIMATION_FIRST, 200, ShineAnimUpdate);
+	animations->StartAnimation(__pixelCount + GRBW_ANIMATION_SHINE - GRBW_ANIMATION_FIRST, 200, ShineAnimUpdate);
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Animation_Shine");
 #endif // DEBUG
@@ -413,7 +438,7 @@ void Uart_GRBW_Led_Device_Driver::Animation_Random() {
 	Serial.println("Start Uart_GRBW_Led_Device_Driver::Animation_Random");
 #endif // DEBUG
 	Animation_Off();
-	animations->StartAnimation(pixelCount + GRBW_ANIMATION_RANDOM - GRBW_ANIMATION_FIRST, 200, RandomAnimUpdate);
+	animations->StartAnimation(__pixelCount + GRBW_ANIMATION_RANDOM - GRBW_ANIMATION_FIRST, 200, RandomAnimUpdate);
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Animation_Random");
 #endif // DEBUG
@@ -426,7 +451,7 @@ void Uart_GRBW_Led_Device_Driver::Animation_Cyclon() {
 	Animation_Off();
 	lastPixel = 0;
 	moveDir = 1;
-	animations->StartAnimation(pixelCount + GRBW_ANIMATION_CYLON - GRBW_ANIMATION_FIRST, 2000, CylonAnimUpdate);
+	animations->StartAnimation(__pixelCount + GRBW_ANIMATION_CYLON - GRBW_ANIMATION_FIRST, 2000, CylonAnimUpdate);
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Animation_Cyclon");
 #endif // DEBUG
@@ -437,7 +462,7 @@ void Uart_GRBW_Led_Device_Driver::Animation_Fire() {
 	Serial.println("Start Uart_GRBW_Led_Device_Driver::Animation_Fire");
 #endif // DEBUG
 	Animation_Off();
-	animations->StartAnimation(pixelCount + GRBW_ANIMATION_FIRE - GRBW_ANIMATION_FIRST, 200, FireAnimUpdate);
+	animations->StartAnimation(__pixelCount + GRBW_ANIMATION_FIRE - GRBW_ANIMATION_FIRST, 200, FireAnimUpdate);
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Animation_Fire");
 #endif // DEBUG
@@ -587,6 +612,13 @@ void Uart_GRBW_Led_Device_Driver::Exec_Animation_Prev() {
 	PostMessage(&message);
 }
 
+void Uart_GRBW_Led_Device_Driver::Exec_Animation_Number(uint8_t _number)
+{
+	Int_Task_Msg *message = new Int_Task_Msg(UART_GRBW_LED_DEVICE_PATTERN);
+	message->AddParam(_number);
+	PostMessage(&message);
+}
+
 
 void Uart_GRBW_Led_Device_Driver::Exec_Animation_Color(int R, int G, int B)
 {
@@ -608,6 +640,15 @@ void Uart_GRBW_Led_Device_Driver::Exec_Set_Pixel(int _index, int R, int G, int B
 {
 	Int_Task_Msg *message = new Int_Task_Msg(UART_GRBW_LED_DEVICE_SET_PIXEL);
 	message->AddParam(_index);
+	message->AddParam(R);
+	message->AddParam(G);
+	message->AddParam(B);
+	PostMessage(&message);
+}
+
+void Uart_GRBW_Led_Device_Driver::Exec_Set_Color_All(int R, int G, int B)
+{
+	Int_Task_Msg *message = new Int_Task_Msg(UART_GRBW_LED_DEVICE_SET_COLOR_ALL);
 	message->AddParam(R);
 	message->AddParam(G);
 	message->AddParam(B);

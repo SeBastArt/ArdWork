@@ -47,6 +47,7 @@ private:
 	void ConnectToWifi();
 	void SetupOTA();
 	void StartMSDNServices();
+	
 	void Ping();
 	static void callback_reply(void * arg, void * pdata);
 protected:
@@ -59,7 +60,7 @@ protected:
 	String hostname;
 	static Led_Device_Driver *statusLED;
 	void OnBuild_Descriptor() override;
-
+	void TimerTick() override;
 protected:
 	void OnInit() override;
 	void ProvideAP();

@@ -28,8 +28,6 @@ struct event_msg
 class WebSocket_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
 private:
-	int accuracy_delta;
-	int accuracy_delay;
 	static ESP8266WebServer *server;
 	static WebSocketsServer *webSocket;
 	static event_msg __event_msg;
@@ -55,9 +53,9 @@ protected:
 	void OnNotifyOnline();
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
+	void TimerTick() override;
 public:
 	WebSocket_Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
-	
 };
 
 #endif
