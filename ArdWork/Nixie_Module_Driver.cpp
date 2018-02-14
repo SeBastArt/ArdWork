@@ -65,7 +65,7 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 		if (pButton->State == TASK_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
-				Pattern_Next();
+				//Pattern_Next();
 			}
 		}
 		else if (pButton->State == TASK_MSG_BUTTONSTATE_RELEASED)
@@ -77,7 +77,7 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 		else if (pButton->State == TASK_MSG_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
-				Pattern_Off();
+				//Pattern_Off();
 			}
 		}
 		break;

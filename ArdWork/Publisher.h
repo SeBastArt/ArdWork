@@ -1,5 +1,6 @@
 #ifndef _PUBLISHER_h
 #define _PUBLISHER_h
+#pragma once 
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
@@ -11,7 +12,10 @@
 #include "Timezone.h" //https://github.com/JChristensen/Timezone
 #include "ping.h"
 //#define DEBUG
-#define LOAD_SAVE_DEBUG
+//#define LOAD_SAVE_DEBUG
+
+
+
 
 struct Color
 {
@@ -222,24 +226,24 @@ public:
 	String TimeToString() {
 		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
 		String resultString = "";
-		resultString += hour(v_time); resultString += F(":");
-		resultString += minute(v_time) / 10; resultString += minute(v_time) % 10; resultString += F(":");
+		resultString += hour(v_time); resultString += (":");
+		resultString += minute(v_time) / 10; resultString += minute(v_time) % 10; resultString += (":");
 		resultString += second(v_time) / 10; resultString += second(v_time) % 10;
 	}
 
 	String DateToString() {
 		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
 		String resultString = "";
-		resultString += day(v_time); resultString += F("."); resultString += month(v_time); resultString += F("."); resultString += year(v_time);
+		resultString += day(v_time); resultString += ("."); resultString += month(v_time); resultString += ("."); resultString += year(v_time);
 	}
 
 	String ToString() {
 		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
 		String resultString = "";
-		resultString += hour(v_time); resultString += F(":");
-		resultString += minute(v_time) / 10; resultString += minute(v_time) % 10; resultString += F(":");
-		resultString += second(v_time) / 10; resultString += second(v_time) % 10; resultString += F(" - ");
-		resultString += day(v_time); resultString += F("."); resultString += month(v_time); resultString += F("."); resultString += year(v_time);
+		resultString += hour(v_time); resultString += (":");
+		resultString += minute(v_time) / 10; resultString += minute(v_time) % 10; resultString += (":");
+		resultString += second(v_time) / 10; resultString += second(v_time) % 10; resultString += (" - ");
+		resultString += day(v_time); resultString += ("."); resultString += month(v_time); resultString += ("."); resultString += year(v_time);
 		return resultString;
 	};
 };

@@ -22,6 +22,7 @@ extern "C" {
 #include "Distance_Device_Driver.h"
 #include "Temperature_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
+#include "GPS_Device_Driver.h"
 
 void Module_Driver::OnModuleUpdate(uint32_t deltaTime)
 {
@@ -198,12 +199,12 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 	TaskMessage *pMessage;
 
 	if (!isIdle()) {
-		bool busyFlag = true;
+		bool busyFlag = false;
 		for (int i = 0; i < device_list->Size(); i++) {
 			if ((*device_list)[i]->isBusy() || (*device_list)[i]->isInactive() || (!(*device_list)[i]->isIdle()))
-				busyFlag = false;
+				busyFlag = true;
 		}
-		if (busyFlag == true) {
+		if (busyFlag == false) {
 			ExecLoadPresets();
 		}
 	}
@@ -310,6 +311,21 @@ Ntp_Wifi_Device_Driver * Module_Driver::Get_Ntp_Wifi_Device_DevDrv(uint8_t _inde
 			match++;
 			if (match == _index) {
 				result = (Ntp_Wifi_Device_Driver *)(*device_list)[i];
+			}
+		}
+	}
+	return result;
+}
+
+GPS_Device_Driver * Module_Driver::Get_GPS_Device_DevDrv(uint8_t _index)
+{
+	GPS_Device_Driver *result = nullptr;
+	uint8_t match = -1;
+	for (int i = 0; i < device_list->Size(); i++) {
+		if ((*device_list)[i]->DriverType == GPS_DEVICE_DRIVER_TYPE) {
+			match++;
+			if (match == _index) {
+				result = (GPS_Device_Driver *)(*device_list)[i];
 			}
 		}
 	}

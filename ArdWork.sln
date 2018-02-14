@@ -11,6 +11,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoOTA", "..\..\..\AppD
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP8266WiFi", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\ESP8266WiFi\ESP8266WiFi.vcxitems", "{F0F80A2E-91FE-4984-9E86-18E3FE32C382}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoftwareSerial", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\SoftwareSerial\SoftwareSerial.vcxitems", "{1886D771-FD28-450E-808A-CA0C32050782}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "espsoftwareserial", "..\..\..\Documents\Arduino\libraries\espsoftwareserial\espsoftwareserial.vcxitems", "{8C533D1F-4E21-401D-8011-A24DF821A564}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86

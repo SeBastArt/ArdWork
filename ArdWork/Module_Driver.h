@@ -24,6 +24,7 @@ class Mqqt_Wifi_Device_Driver;
 class Temperature_Device_Driver;
 class WebSocket_Wifi_Device_Driver;
 class Ntp_Wifi_Device_Driver;
+class GPS_Device_Driver;
 
 class Module_Driver : public Driver, public Observer
 {
@@ -45,6 +46,7 @@ protected:
 	Uart_GRBW_Led_Device_Driver * Get_Uart_GRBW_Led_DevDrv(uint8_t _index);
 	WebSocket_Wifi_Device_Driver * Get_WebSocket_Wifi_DevDrv(uint8_t _index);
 	Ntp_Wifi_Device_Driver * Get_Ntp_Wifi_Device_DevDrv(uint8_t _index);
+	GPS_Device_Driver * Get_GPS_Device_DevDrv(uint8_t _index);
 
 	//bool GetDeviceById(int _id, Driver * _device);
 	bool HasDeviceWithId(int _id);

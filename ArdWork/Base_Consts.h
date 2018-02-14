@@ -4,6 +4,7 @@
 
 #include "Arduino.h"
 
+
 static int const BASE_TYPE = 1000000;
 static int const BASE_LAST_MESSAGE = BASE_TYPE;
 

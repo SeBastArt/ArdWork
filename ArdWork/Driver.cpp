@@ -102,7 +102,7 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 				Serial.println("Ende Driver::OnUpdate DRIVER_INIT");
 #endif // DEBUG
 				break;
-		}
+			}
 
 
 			case DRIVER_LOADPRESETS:
@@ -112,7 +112,7 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 #endif // DEBUG
 				DoLoadPresets();
 				break;
-	}
+			}
 
 
 			case DRIVER_STOP:
@@ -122,7 +122,7 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 #endif // DEBUG
 				DoStop();
 				break;
-}
+			}
 
 
 			case DRIVER_SHUTDOWN:
@@ -162,7 +162,12 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 	timer_delta += deltaTime;
 	if (timer_delta > timer_delay) {
 		timer_delta = 0;
-		TimerTick();
+		if (__isIdle) {
+#ifdef DEBUG
+			Serial.println("Start Driver::OnUpdate TimerTick");
+#endif // DEBUG
+			TimerTick();
+		}
 	}
 }
 

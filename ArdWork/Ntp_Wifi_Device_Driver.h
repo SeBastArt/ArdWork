@@ -13,25 +13,12 @@
 #include <WiFiUdp.h>
 
 #include <Time.h> //https://github.com/PaulStoffregen/Time
-#include "Timezone.h" //https://github.com/JChristensen/Timezone
 #include "Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver_Consts.h"
-
 
 class Ntp_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
 private:
-	//typedef struct
-	//{
-	//	unsigned char second; // 0-59
-	//	unsigned char minute; // 0-59
-	//	unsigned char hour;   // 0-23
-	//	unsigned char day;    // 1-31
-	//	unsigned char month;  // 1-12
-	//	unsigned char year;   // 0-99 (representing 2000-2099)
-	//}
-	//date_time_t;
-
 	static unsigned long getNTPTimestamp();
 	static unsigned long sendNTPpacket(IPAddress& address);
 	static time_t getNTP_UTCTime1970();

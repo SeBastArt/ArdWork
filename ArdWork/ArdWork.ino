@@ -2,6 +2,7 @@
 //#define SLEEP
 //#define COMPILE_TEST
 
+#include <espsoftwareserial\SoftwareSerial.h>
 #include <WiFiUdp.h>
 #include <WiFiServer.h>
 #include <WiFiClientSecure.h>
@@ -24,10 +25,12 @@
 #include <WebSocketsClient.h>
 #include <WebSockets.h>
 #include <ArduinoJson.h>
+#include "Timezone.h" //https://github.com/JChristensen/Timezone
 
 //#define PICTURE_NodeMCU_GRBW
 #define NIXIE_NodeMCU_GRBW
 //#define COMPILE_TEST
+
 
 
 #ifdef COMPILE_TEST
@@ -63,6 +66,7 @@
 #include "Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
+#include "GPS_Device_Driver.h"
 #endif // PICTUNIXIE_NodeMCU_GRBWRE_NodeMCU_GRBW
 
 
@@ -121,6 +125,7 @@ void setup() {
 	ESP8266_NodeMCU_Controller* esp8266_NodeMCU_controller = new ESP8266_NodeMCU_Controller();
 	Button_Device_Driver *button = new Button_Device_Driver(nixie_module, esp8266_NodeMCU_controller->Pin("D5"), true);
 	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(nixie_module);
+	GPS_Device_Driver *gps_device = new GPS_Device_Driver(nixie_module);
 	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(nixie_module);
 	WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(nixie_module);
 #endif // NIXIE_NodeMCU_GRBW
@@ -158,6 +163,7 @@ void setup() {
 	wifi_device->AddCommunicationClient(ntp_device);
 	nixie_module->AddDevice(webSocket_server_wifi);
 	nixie_module->AddDevice(ntp_device);
+	nixie_module->AddDevice(gps_device);
 #endif // NIXIE_NodeMCU_GRBW
 
 #ifdef PICTURE_NodeMCU_GRBW
@@ -186,6 +192,7 @@ void setup() {
 	taskManager.StartTask(wifi_device);
 	taskManager.StartTask(webSocket_server_wifi);
 	taskManager.StartTask(ntp_device);
+	taskManager.StartTask(gps_device);
 #endif // NIXIE_NodeMCU_GRBW
 
 #ifdef PICTURE_NodeMCU_GRBW
