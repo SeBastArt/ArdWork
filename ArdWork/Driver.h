@@ -16,7 +16,6 @@
 #include "Base_Consts.h"
 #include "Publisher.h"
 
-
 class Driver : public Task, public Int_Task_Msg_Sys
 {
 private:
@@ -62,8 +61,8 @@ protected:
 	virtual void OnBuild_Descriptor() = 0;
 
 public:
-	
 	Driver(uint8_t priority);
+	virtual ~Driver() {}
 	Property<int, Driver> DriverId{ this,nullptr,&Driver::GetDriverId };
 	Property<unsigned int, Driver> DriverType{ this,nullptr,&Driver::GetDriverType };
 

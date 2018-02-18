@@ -18,6 +18,7 @@
 
 class Ntp_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
+	REGISTER(Ntp_Wifi_Device_Driver);
 private:
 	static unsigned long getNTPTimestamp();
 	static unsigned long sendNTPpacket(IPAddress& address);
@@ -36,11 +37,10 @@ protected:
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 public:
+	virtual ~Ntp_Wifi_Device_Driver() {};
 	Property<time_t, Ntp_Wifi_Device_Driver> local_time{ this, nullptr, &Ntp_Wifi_Device_Driver::GetLocalTime };
 	Property<time_t, Ntp_Wifi_Device_Driver> utc_time{ this, nullptr, &Ntp_Wifi_Device_Driver::GetUtcTime };
 	Ntp_Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
-
-
 
 };
 

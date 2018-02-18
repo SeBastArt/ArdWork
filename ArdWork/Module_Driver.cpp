@@ -4,7 +4,7 @@
 
 #include "Module_Driver.h"
 #include "Device_Driver.h"
-
+#include "Creator.h"
 //#define DEBUG
 
 extern "C" {
@@ -23,6 +23,32 @@ extern "C" {
 #include "Temperature_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
 #include "GPS_Device_Driver.h"
+
+
+void Module_Driver::registerit(const std::string& classname, Creator* creator)
+{
+	get_table()[classname] = creator;
+}
+
+Device_Driver* Module_Driver::create(const std::string& classname)
+{
+	for (std::map<std::string, Creator*>::iterator it = get_table().begin(); it != get_table().end(); ++it) {
+		if (it->first.compare(classname))
+		{
+			Device_Driver* temp = it->second->create(this);
+			device_list->PushBack(temp);
+			return temp;
+		}
+	}
+	return (Device_Driver*)NULL;
+}
+
+std::map<std::string, Creator*>& Module_Driver::get_table()
+{
+	static std::map<std::string, Creator*> table;
+	return table;
+}
+
 
 void Module_Driver::OnModuleUpdate(uint32_t deltaTime)
 {

@@ -26,6 +26,8 @@
 #include <WebSockets.h>
 #include <ArduinoJson.h>
 #include "Timezone.h" //https://github.com/JChristensen/Timezone
+#include "Driver.h"
+
 
 //#define PICTURE_NodeMCU_GRBW
 #define NIXIE_NodeMCU_GRBW
@@ -119,7 +121,11 @@ void setup() {
 #endif // PICTURE_NodeMCU_GRBW
 
 #ifdef NIXIE_NodeMCU_GRBW
+	//Driver* p;
+	//p = DeviceDriverFactory::create("Ntp_Wifi_Device_Driver");
+
 	Nixie_Module_Driver *nixie_module = new Nixie_Module_Driver();
+	nixie_module->create("Ntp_Wifi_Device_Driver");
 	//Driver
 	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(nixie_module, 120);
 	ESP8266_NodeMCU_Controller* esp8266_NodeMCU_controller = new ESP8266_NodeMCU_Controller();

@@ -93,6 +93,8 @@
     <ClInclude Include="Base_Controller_Consts.h" />
     <ClInclude Include="Button_Device_Driver_Consts.h" />
     <ClInclude Include="Comm_Device_Driver.h" />
+    <ClInclude Include="Creator.h" />
+    <ClInclude Include="CreatorImpl.h" />
     <ClInclude Include="Device_Driver.h" />
     <ClInclude Include="Device_Driver_Consts.h" />
     <ClInclude Include="Base_Consts.h" />
@@ -152,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Base_Controller.cpp" />
+    <ClCompile Include="Creator.cpp" />
     <ClCompile Include="Device_Driver.cpp" />
     <ClCompile Include="Display_Device_Driver.cpp" />
     <ClCompile Include="Distance_Device_Driver.cpp" />

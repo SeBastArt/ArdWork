@@ -133,6 +133,15 @@
     <Filter Include="Header Files\Helper\TinyGPS">
       <UniqueIdentifier>{7d706adb-34a0-47fd-9ee2-13ae0c2f3143}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Helper\Misc\Factory">
+      <UniqueIdentifier>{c1462483-3030-428f-897f-bba67edb8fcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helper">
+      <UniqueIdentifier>{e1b11b05-077d-4820-b516-d576c2e18fb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helper\Factory">
+      <UniqueIdentifier>{7932c5bc-b150-435f-a1fe-01d0acd01a32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ArdWork.ino" />
@@ -318,6 +327,12 @@
     <ClInclude Include="TinyGPS.h">
       <Filter>Header Files\Helper\TinyGPS</Filter>
     </ClInclude>
+    <ClInclude Include="CreatorImpl.h">
+      <Filter>Header Files\Helper\Misc\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="Creator.h">
+      <Filter>Header Files\Helper\Misc\Factory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">
@@ -352,9 +367,6 @@
     </ClCompile>
     <ClCompile Include="Picture_Module_Driver.cpp">
       <Filter>Source Files\Driver\Module_Driver\Custom_Module_Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="DNSServer.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Int_Task_Msg.cpp">
       <Filter>Header Files\Helper\Message_System</Filter>
@@ -409,6 +421,12 @@
     </ClCompile>
     <ClCompile Include="TinyGPS.cpp">
       <Filter>Header Files\Helper\TinyGPS</Filter>
+    </ClCompile>
+    <ClCompile Include="DNSServer.cpp">
+      <Filter>Source Files\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="Creator.cpp">
+      <Filter>Source Files\Helper\Factory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -37,7 +37,20 @@ void GPS_Device_Driver::OnBuild_Descriptor() {
 
 void GPS_Device_Driver::DoUpdate(uint32_t deltaTime)
 {
-	//
+	if (__isIdle)
+		while (Serial.available() > 0) {
+			if (gps->encode(Serial.read())) { // process gps messages
+												// when TinyGPS reports new data...
+				unsigned long age;
+				int Year;
+				byte Month, Day, Hour, Minute, Second;
+				gps->crack_datetime(&Year, &Month, &Day, &Hour, &Minute, &Second, NULL, &age);
+				if (age < 500) {
+					// set the Time to the latest GPS reading
+					setTime(Hour, Minute, Second, Day, Month, Year);
+				}
+			}
+		}
 }
 
 void GPS_Device_Driver::OnInit()
@@ -60,24 +73,12 @@ void GPS_Device_Driver::TimerTick()
 	Serial.println("Start GPS_Device_Driver::TimerTick");
 #endif // DEBUG
 
-	//while (Serial.available() > 0) {
-	//	if (gps->encode(Serial.read())) { // process gps messages
-	//										// when TinyGPS reports new data...
-	//		unsigned long age;
-	//		int Year;
-	//		byte Month, Day, Hour, Minute, Second;
-	//		gps->crack_datetime(&Year, &Month, &Day, &Hour, &Minute, &Second, NULL, &age);
-	//		if (age < 500) {
-	//			// set the Time to the latest GPS reading
-	//			setTime(Hour, Minute, Second, Day, Month, Year);
-	//		}
-	//	}
-	//}
+
 	//	__utc_time = now();
 	//	__local_time = CE1.toLocal(__utc_time);
-		
+
 #ifdef DEBUG
-		Serial.println("Ende GPS_Device_Driver::TimerTick");
+	Serial.println("Ende GPS_Device_Driver::TimerTick");
 #endif // DEBUG
 }
 
@@ -101,7 +102,7 @@ void GPS_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 		Serial.println("Start Ntp_Wifi_Device_Driver::DoDeviceMessage - NTP_WIFI_DEVICE_DRIVER_LOCAL_TIME");
 #endif // DEBUG
 		//
-	}
+}
 	break;
 	}
 }

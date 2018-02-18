@@ -6,12 +6,15 @@
 #else
 	#include "WProgram.h"
 #endif
-
+#include <string>
+#include <map>
 #include "m_Vector.h"
 
 #include "Driver.h"
 #include "Module_Driver_Consts.h"
+#include "CreatorImpl.h"
 
+class Creator;
 class Device_Driver;
 class Led_Device_Driver;
 class Button_Device_Driver;
@@ -32,6 +35,7 @@ private:
 	int __isdebug;
 	Vector<TaskMessage*> queue;
 	void DoUpdate(uint32_t deltaTime);
+	static std::map<std::string, Creator*>& get_table();
 protected:
 	Vector <Driver*> *device_list;
 
@@ -48,7 +52,7 @@ protected:
 	Ntp_Wifi_Device_Driver * Get_Ntp_Wifi_Device_DevDrv(uint8_t _index);
 	GPS_Device_Driver * Get_GPS_Device_DevDrv(uint8_t _index);
 
-	//bool GetDeviceById(int _id, Driver * _device);
+	bool GetDeviceById(int _id, Driver * _device);
 	bool HasDeviceWithId(int _id);
 	Driver *GetDeviceById(int Id);
 
@@ -61,9 +65,7 @@ protected:
 	virtual void OnBuild_Descriptor();
 	virtual void OnModuleUpdate(uint32_t deltaTime);
 	bool PopMessage(TaskMessage** message);
-
 	void Set_Debug_Mode(bool _state);
-
 	void OnNotifyInitDone(int _DriverID);
 	void OnNotifyStartupDone(int _DriverID);
 protected:
@@ -71,6 +73,8 @@ protected:
 	 virtual void DoTaskMessage(TaskMessage *message) = 0;
 	 virtual void Build_Discriptor() = 0;
 public:
+	Device_Driver* create(const std::string& classname);
+	static void registerit(const std::string& classname, Creator* creator);
 	Module_Driver(uint8_t priority = TASK_PRIORITY_NORMAL);
 	~Module_Driver();
 	bool SendAsyncTaskMessage(TaskMessage* message, bool withinIsr = false);
@@ -78,6 +82,14 @@ public:
 
 	void Exec_Set_Debug_Mode(bool _state);
 };
+
+#define REGISTER(classname) \
+	private: \
+	static const CreatorImpl<classname> creator;
+
+#define REGISTERIMPL(classname) \
+	const CreatorImpl<classname> classname::creator(#classname);
+
 
 #endif
 
