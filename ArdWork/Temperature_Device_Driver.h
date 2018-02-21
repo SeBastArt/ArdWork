@@ -16,11 +16,13 @@
 
 class Temperature_Device_Driver : public Device_Driver
 {
+	REGISTER(Temperature_Device_Driver);
 public:
-	Temperature_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool isFahrenheit = false, uint8_t priority = TASK_PRIORITY_NORMAL);
+	Temperature_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
-	DHT *dht;
+	DHT *__dht;
 	void OnInit() override;
+	void InitSensor();
 	void DoBeforeShutdown();
 	void DoBeforeSuspend();
 	void DoDeviceMessage(Int_Task_Msg message);
@@ -28,10 +30,10 @@ private:
 	void OnBuild_Descriptor() override;
 
 private:
-	IO_Pin* pin;
+	IO_Pin* __pin;
 	float act_temp;
 	float act_hum;
-	bool fahrenheit;
+	bool __isfahrenheit;
 
 	uint16_t accuracy_delta;
 	uint16_t accuracy_delay;
@@ -45,7 +47,7 @@ public:
 	void Exec_Set_SI_To_Fahrenheit();
 	void Exec_Set_SI_To_Celsius();
 	void Exec_Set_Accuracy_Time_Ms(uint16_t time);
-	
+	void SetPin(IO_Pin* _pin);
 	float Get_Temperature();
 	float Get_Humidity();
 };

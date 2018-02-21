@@ -24,6 +24,7 @@ struct GRBWAnimationState
 
 class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
+	REGISTER(Uart_GRBW_Led_Device_Driver);
 private:
 	unsigned int sv_pattern = 0;
 	Color sv_color = { 255, 255, 255 };
@@ -32,7 +33,6 @@ private:
 	unsigned int actAnimation;
 	static HslColor mainColor;
 	uint8_t __brightness;
-
 	uint8_t GetLedCount() const { return __pixelCount; };
 
 	static NeoGamma<NeoGammaTableMethod>* colorGamma; // for any fade animations, best to correct gamma
@@ -51,12 +51,14 @@ private:
 	
 	static Vector <GRBWAnimationState*> animationState_list;
 public:
-	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelCount, uint8_t priority = TASK_PRIORITY_NORMAL);
+	Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	void DoDeviceMessage(Int_Task_Msg message);
 
 	void DoUpdate(uint32_t deltaTime);
 	void OnBuild_Descriptor() override;
+	
+	void InitStrip();
 protected:
 	void OnInit() override;
 protected:
@@ -86,9 +88,11 @@ public:
 	void Exec_Set_Brightness(int _brightness);
 	void Exec_Set_Pixel(int _index, int R, int G, int B);
 	void Exec_Set_Color_All(int R, int G, int B);
+	void Exec_Set_Pixel_Count(int _count);
+	
 
 	Property<uint8_t, Uart_GRBW_Led_Device_Driver> led_count{ this, nullptr, &Uart_GRBW_Led_Device_Driver::GetLedCount };
-
+	void SetPixelCount(int _pixelCount);
 };
 
 #endif

@@ -18,12 +18,14 @@
 
 class OLED_Display_Device_Driver : public Display_Device_Driver
 {
+	REGISTER(OLED_Display_Device_Driver);
 public:
-	OLED_Display_Device_Driver(Module_Driver* module, uint8_t _reset_pin, uint8_t priority = TASK_PRIORITY_NORMAL);
+	OLED_Display_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 
 //Divice Driver
 private:
 	void OnInit() override;
+	void InitDisplay();
 	void DoCustomDisplayMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void OnBuild_Descriptor() override;
@@ -31,7 +33,7 @@ private:
 //OLED_Diplay_device_Driver
 private:
 	Adafruit_SSD1306 *__display;
-	uint8_t __reset_pin;
+	IO_Pin* __reset_pin;
 
 protected:
 	void DoClear();
@@ -67,6 +69,7 @@ protected:
 	void DoStopScroll();
 
 public:
+	void SetResetPin(IO_Pin * _pin);
 	void Exec_Display_Invert(uint8_t i);
 
 	//Painting

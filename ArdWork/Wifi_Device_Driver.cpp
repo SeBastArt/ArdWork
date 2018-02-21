@@ -6,6 +6,8 @@
 
 //#define DEBUG
 
+REGISTERIMPL(Wifi_Device_Driver);
+
 Led_Device_Driver *Wifi_Device_Driver::statusLED;
 bool Wifi_Device_Driver::__isOnline;
 
@@ -19,11 +21,11 @@ void Wifi_Device_Driver::callback_reply(void* arg, void *pdata) {
 	}
 }
 
-Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED, uint8_t priority) :
+Wifi_Device_Driver::Wifi_Device_Driver(Module_Driver* module, uint8_t priority) :
 	Device_Driver(module, priority)
 {
 	__DriverType = WIFI_DEVICE_DRIVER_TYPE;
-	statusLED = _statusLED;
+	statusLED = nullptr;
 	conn_delta = 0;
 	conn_delay = 500;
 	__connection_try = 0;

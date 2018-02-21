@@ -4,6 +4,8 @@
 
 #include "Luxmeter_Device_Driver.h"
 
+REGISTERIMPL(Luxmeter_Device_Driver);
+
 //#define DEBUG
 
 Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t adress, uint8_t priority) :
@@ -39,8 +41,8 @@ void Luxmeter_Device_Driver::OnBuild_Descriptor() {
 #ifdef DEBUG
 	Serial.println("Ende Select_CtrlElem *ctrlElem_autorange");
 #endif // DEBUG
-	
-	
+
+
 #ifdef DEBUG
 	Serial.println("Start Select_CtrlElem *ctrlElem_acc_rate");
 #endif // DEBUG

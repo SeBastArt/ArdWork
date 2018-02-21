@@ -27,6 +27,7 @@ struct event_msg
 
 class WebSocket_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
+	REGISTER(WebSocket_Wifi_Device_Driver);
 private:
 	static ESP8266WebServer *server;
 	static WebSocketsServer *webSocket;

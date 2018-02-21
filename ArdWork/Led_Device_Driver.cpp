@@ -1,9 +1,10 @@
 #include "Led_Device_Driver.h"
+#include "ESP8266_NodeMCU_Controller.h"
+#include <mutex>
+REGISTERIMPL(Led_Device_Driver);
 
-Led_Device_Driver::Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp, uint8_t priority) :
-	Device_Driver(module, priority),
-	__pin(_pin),
-	__hasPullUp(_hasPullUp)
+Led_Device_Driver::Led_Device_Driver(Module_Driver* module, uint8_t priority) :
+	Device_Driver(module, priority)
 {
 	__DriverType = LED_DEVICE_DRIVER_TYPE;
 };
@@ -29,17 +30,28 @@ void Led_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->Add_Descriptor_Element(ctrlElem_pulse_count);
 }
 
-void Led_Device_Driver::SetPullUp(bool _hasPullUp)
+
+void Led_Device_Driver::SetPullUp()
 {
-	__hasPullUp = _hasPullUp;
+	__hasPullUp = true;
 }
 
+void Led_Device_Driver::SetNoPullUp()
+{
+	__hasPullUp = false;
+}
+
+
+void Led_Device_Driver::SetPin(IO_Pin* _pin)
+{
+	__pin = _pin;
+	__pin->pinMode = OUTPUT;
+	Set_IO_Pin_Low();
+}
 
 void Led_Device_Driver::OnInit()
 {
 	Device_Driver::OnInit();
-	__pin->IsActive = true;
-	Set_IO_Pin_Low();
 	__blink_flag = false;
 	__sv_delay = 500;
 	__blink_delta = 0;
@@ -75,12 +87,6 @@ void Led_Device_Driver::Exec_Set_Led_Pulse(int count, int delay) {
 	message->AddParam(count);
 	message->AddParam(delay);
 	PostMessage(&message);
-}
-
-
-int Led_Device_Driver::GetPinNumber()
-{
-	return __pin->PinNumber();
 }
 
 
@@ -228,7 +234,10 @@ void Led_Device_Driver::Set_Led_On()
 void Led_Device_Driver::Set_IO_Pin_High()
 {
 	__ledStatus = true;
-	(__hasPullUp) ? __pin->SetPinState(LOW) : __pin->SetPinState(HIGH);
+	if (__pin == nullptr)
+		return;
+
+	(__hasPullUp) ? (__pin->pinState = LOW) : (__pin->pinState = HIGH) ;
 }
 
 void Led_Device_Driver::Set_Led_Off() {
@@ -240,7 +249,9 @@ void Led_Device_Driver::Set_Led_Off() {
 void Led_Device_Driver::Set_IO_Pin_Low()
 {
 	__ledStatus = false;
-	(__hasPullUp) ? __pin->SetPinState(HIGH) : __pin->SetPinState(LOW);
+	if (__pin == nullptr)
+		return;
+	(__hasPullUp) ? (__pin->pinState =  HIGH) : (__pin->pinState = LOW);
 }
 
 void Led_Device_Driver::Set_Led_Pulse(int count, int delay)

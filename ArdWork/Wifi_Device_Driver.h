@@ -28,8 +28,9 @@
 
 class Wifi_Device_Driver : public Device_Driver, public CommunicationProvider
 {
+	REGISTER(Wifi_Device_Driver);
 public:
-	Wifi_Device_Driver(Module_Driver* module, Led_Device_Driver *_statusLED = nullptr , uint8_t priority = TASK_PRIORITY_NORMAL);
+	Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 	
 private:
 	String __ssid;

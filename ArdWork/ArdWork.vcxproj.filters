@@ -58,35 +58,17 @@
     <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Distance">
       <UniqueIdentifier>{71ef85b8-33f7-4be3-87d7-8bb8d100f900}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Controller">
-      <UniqueIdentifier>{a275f23e-ec9f-450e-b710-a9e2c6d0e88a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Controller">
       <UniqueIdentifier>{d0df328f-bc39-4455-a16d-7f4079e3bb81}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Controller\Custom_Controller">
-      <UniqueIdentifier>{ea9f3bb8-d1a3-4f22-b964-0b75b4ee1e48}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Controller\Custom_Controller">
       <UniqueIdentifier>{f2f4873d-cb36-4b38-9bb0-cf65fec436a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Controller\Custom_Controller\ESP_Controller">
-      <UniqueIdentifier>{cc3ea75f-541c-4662-945d-2ac6f7103079}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Controller\Custom_Controller\I2C_Controller">
-      <UniqueIdentifier>{1e8c10b2-1758-41ac-8f6d-a7f290fdb4e3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Controller\Custom_Controller\I2C_Controller\PCF8574">
-      <UniqueIdentifier>{96ee4ccf-efec-4af2-8470-32a313a1bb5b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Controller\Custom_Controller\I2C_Controller">
       <UniqueIdentifier>{d46b71ca-40aa-4cfd-806e-d17be205fdd7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Temperature">
       <UniqueIdentifier>{ed5b91b7-21ea-4b1d-807f-0dec95aa7b7f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller">
-      <UniqueIdentifier>{151311ad-dae9-47ae-9a37-9b2065474a97}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Controller\Custom_Controller\ESP8266_Controller">
       <UniqueIdentifier>{f5ef22d1-7d9e-4444-8f18-21193dfaa4b9}</UniqueIdentifier>
@@ -142,6 +124,24 @@
     <Filter Include="Source Files\Helper\Factory">
       <UniqueIdentifier>{7932c5bc-b150-435f-a1fe-01d0acd01a32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Pin_Manager">
+      <UniqueIdentifier>{a275f23e-ec9f-450e-b710-a9e2c6d0e88a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pin_Manager\Custom_Controller">
+      <UniqueIdentifier>{ea9f3bb8-d1a3-4f22-b964-0b75b4ee1e48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pin_Manager\Custom_Controller\ESP_Controller">
+      <UniqueIdentifier>{cc3ea75f-541c-4662-945d-2ac6f7103079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pin_Manager\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller">
+      <UniqueIdentifier>{151311ad-dae9-47ae-9a37-9b2065474a97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pin_Manager\Custom_Controller\I2C_Controller">
+      <UniqueIdentifier>{1e8c10b2-1758-41ac-8f6d-a7f290fdb4e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Pin_Manager\Custom_Controller\I2C_Controller\PCF8574">
+      <UniqueIdentifier>{96ee4ccf-efec-4af2-8470-32a313a1bb5b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ArdWork.ino" />
@@ -190,25 +190,25 @@
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Distance</Filter>
     </ClInclude>
     <ClInclude Include="IO_Pin.h">
-      <Filter>Header Files\Controller</Filter>
+      <Filter>Header Files\Pin_Manager</Filter>
     </ClInclude>
     <ClInclude Include="Base_Controller.h">
-      <Filter>Header Files\Controller</Filter>
+      <Filter>Header Files\Pin_Manager</Filter>
     </ClInclude>
     <ClInclude Include="Base_Controller_Consts.h">
-      <Filter>Header Files\Controller</Filter>
+      <Filter>Header Files\Pin_Manager</Filter>
     </ClInclude>
     <ClInclude Include="I2C_Controller.h">
-      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\I2C_Controller</Filter>
     </ClInclude>
     <ClInclude Include="I2C_Controller_Consts.h">
-      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\I2C_Controller</Filter>
     </ClInclude>
     <ClInclude Include="PCF8574_Controller.h">
-      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller\PCF8574</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\I2C_Controller\PCF8574</Filter>
     </ClInclude>
     <ClInclude Include="PCF8574_Controller_Consts.h">
-      <Filter>Header Files\Controller\Custom_Controller\I2C_Controller\PCF8574</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\I2C_Controller\PCF8574</Filter>
     </ClInclude>
     <ClInclude Include="Temperature_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Temperature</Filter>
@@ -217,16 +217,16 @@
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Temperature</Filter>
     </ClInclude>
     <ClInclude Include="ESP8266_Controller_Consts.h">
-      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\ESP_Controller</Filter>
     </ClInclude>
     <ClInclude Include="ESP8266_Controller.h">
-      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\ESP_Controller</Filter>
     </ClInclude>
     <ClInclude Include="ESP8266_NodeMCU_Controller.h">
-      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller</Filter>
     </ClInclude>
     <ClInclude Include="ESP8266_01_Controller.h">
-      <Filter>Header Files\Controller\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller</Filter>
+      <Filter>Header Files\Pin_Manager\Custom_Controller\ESP_Controller\Custom_ESP8266_Controller</Filter>
     </ClInclude>
     <ClInclude Include="Uart_GRBW_Led_Device_Driver.h">
       <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Led</Filter>
@@ -333,6 +333,9 @@
     <ClInclude Include="Creator.h">
       <Filter>Header Files\Helper\Misc\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="Pin_Manager.h">
+      <Filter>Header Files\Pin_Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">
@@ -340,9 +343,6 @@
     </ClCompile>
     <ClCompile Include="Module_Driver.cpp">
       <Filter>Source Files\Driver\Module_Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="IO_Pin.cpp">
-      <Filter>Source Files\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Base_Controller.cpp">
       <Filter>Source Files\Controller</Filter>

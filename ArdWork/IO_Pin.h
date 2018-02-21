@@ -12,27 +12,38 @@
 class IO_Pin
 {
  private:
-	 bool pin_mode;
-	 bool pin_state;
-	 bool is_active;
-	 int pin_ID;
-	 uint8_t pin_number;
-	 String pin_name;
+	 bool __pinMode;
+	 bool __pinState;
+	 bool __isActive;
+	 int __pinID;
+	 uint8_t __pinGPIO;
+	 String __pinName;
 
+	 void SetPinMode(bool _pinMode) { __pinMode = _pinMode; }
+	 bool GetPinMode() const { return __pinMode; }
+
+	 void SetPinState(bool _pinState) { __pinState = _pinState; }
+	 bool GetPinState() const { return __pinState; }
+
+	 String GetPinName() const { return __pinName; }
+	 int GetPinID() const { return __pinID; }
+	 uint8_t GetPinGPIO() const { return __pinGPIO; }
  public:
-	 IO_Pin(int ID, uint8_t number, String name);
-	 
-	 bool PinMode();
-	 bool PinState();
-	 int GetID();
-
-	 uint8_t PinNumber();
-	 String PinName();
-
-	 void SetPinMode(bool type);
-	 void SetPinState(bool state);
-
+	 IO_Pin(int _PinID, uint8_t _PinGPIO, String _pinName) :
+		 __pinID(_PinID),
+		 __pinGPIO(_PinGPIO),
+		 __pinName(_pinName)
+	 {
+		 __pinMode = OUTPUT;
+		 __pinState = LOW;
+		 __isActive = false;
+	 };
 	 bool IsActive;
+	 Property<bool, IO_Pin> pinMode{this,  &IO_Pin::SetPinMode, &IO_Pin::GetPinMode };
+	 Property<bool, IO_Pin> pinState{ this,  &IO_Pin::SetPinState, &IO_Pin::GetPinState };
+	 Property<String, IO_Pin> pinName{ this,  nullptr, &IO_Pin::GetPinName };
+	 Property<int, IO_Pin> pinID{ this,  nullptr, &IO_Pin::GetPinID };
+	 Property<uint8_t, IO_Pin> pinGPIO{ this,  nullptr, &IO_Pin::GetPinGPIO };
 };
 
 #endif

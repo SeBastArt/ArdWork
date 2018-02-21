@@ -18,6 +18,7 @@
 
 class GPS_Device_Driver : public Device_Driver
 {
+	REGISTER(GPS_Device_Driver);
 private:
 	SoftwareSerial *SerialGPS;
 	TinyGPS *gps;

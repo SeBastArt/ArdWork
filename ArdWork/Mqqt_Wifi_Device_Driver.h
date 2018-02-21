@@ -15,6 +15,7 @@
 
 class Mqqt_Wifi_Device_Driver : public Device_Driver, public CommunicationClient
 {
+	REGISTER(Mqqt_Wifi_Device_Driver);
 public:
 	Mqqt_Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:

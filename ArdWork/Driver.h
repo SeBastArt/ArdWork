@@ -15,6 +15,9 @@
 #include "Int_Task_Msg_Sys.h"
 #include "Base_Consts.h"
 #include "Publisher.h"
+#include "Pin_Manager.h"
+
+static Pin_Manager pinManager;
 
 class Driver : public Task, public Int_Task_Msg_Sys
 {

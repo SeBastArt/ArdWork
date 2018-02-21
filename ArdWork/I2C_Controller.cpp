@@ -33,24 +33,24 @@ void I2C_Controller::DoUpdatePins(uint32_t deltaTime) {
 	byte data = ExpanderRead(controller_adress);
 	if (data > -1) {
 		for (int i = 0; i < pins.Size(); i++) {
-			if (pins[i]->PinMode() == INPUT) {
-				pins[i]->SetPinState(data & (1 << i) ? HIGH : LOW);
+			if (pins[i]->pinMode == INPUT) {
+				pins[i]->pinState = (data & (1 << i) ? HIGH : LOW);
 			}
 		}
 	}
 
 	byte daten = 0;
 	for (int i = 0; i < pins.Size(); ++i) {
-		if (pins[pins.Size() - 1 - i]->PinMode() == OUTPUT) {
-			if (pins[pins.Size() - 1 - i]->PinState() == 1)
+		if (pins[pins.Size() - 1 - i]->pinMode == OUTPUT) {
+			if (pins[pins.Size() - 1 - i]->pinState == HIGH)
 				daten *= 2;
-			else if (pins[pins.Size() - 1 - i]->PinState() == 0)
+			else if (pins[pins.Size() - 1 - i]->pinState == LOW)
 				daten = daten * 2 + 1;
 		}
 		else {
-			if (pins[pins.Size() - 1 - i]->PinState() == 1)
+			if (pins[pins.Size() - 1 - i]->pinState == HIGH)
 				daten = daten * 2 + 1;
-			else if (pins[pins.Size() - 1 - i]->PinState() == 0)
+			else if (pins[pins.Size() - 1 - i]->pinState == LOW)
 				daten *= 2;
 		}
 	}

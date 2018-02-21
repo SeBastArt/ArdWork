@@ -16,6 +16,7 @@
 
 class Button_Device_Driver : public Device_Driver
 {
+	REGISTER(Button_Device_Driver);
 private:
 	IO_Pin* __pin ;
 	static const uint16_t __next_msg = 200; // (30-100) are good values
@@ -34,12 +35,15 @@ private:
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void OnBuild_Descriptor() override;
+	void Push_Button();
 public:
-	Button_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp = false, uint8_t priority = TASK_PRIORITY_NORMAL);
-	void SetPullUp(bool _hasPullUp);
+	Button_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 	int GetButtonPinID();
-
+	void SetPin(IO_Pin * _pin);
+	void SetPullUp();
+	void SetNoPullUp();
 	void Exec_Push_Button();
+
 };
 
 #endif

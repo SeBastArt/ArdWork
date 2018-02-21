@@ -8,6 +8,8 @@ ESP8266WebServer *WebSocket_Wifi_Device_Driver::server;
 WebSocketsServer *WebSocket_Wifi_Device_Driver::webSocket;
 event_msg WebSocket_Wifi_Device_Driver::__event_msg;
 
+REGISTERIMPL(WebSocket_Wifi_Device_Driver);
+
 String WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey(String _text, String _key) {
 #ifdef DEBUG
 	Serial.println("Start WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey");

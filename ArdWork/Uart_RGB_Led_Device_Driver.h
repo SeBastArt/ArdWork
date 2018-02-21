@@ -24,8 +24,9 @@ struct RGBAnimationState
 
 class Uart_RGB_Led_Device_Driver : public Device_Driver
 {	
+	REGISTER(Uart_RGB_Led_Device_Driver);
 private:
-	static uint8_t pixelCount;
+	static uint8_t __pixelCount;
 	unsigned int actAnimation;
 	static HslColor mainColor;
 	uint8_t __brightness;
@@ -46,12 +47,14 @@ private:
 
 	static Vector <RGBAnimationState*> animationState_list;
 public:
-	Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority = TASK_PRIORITY_NORMAL);
+	Uart_RGB_Led_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	void OnInit() override;
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void OnBuild_Descriptor() override;
+
+	void InitStrip();
 
 protected:
 	void Animation_Off();
@@ -66,6 +69,8 @@ protected:
 	void Animation_Color(uint8_t R, uint8_t G, uint8_t B);
 	void SetBrightness(uint8_t _brightness);
 public:
+	void SetPixelCount(int _pixelCount);
+
 	void Exec_Animation_Off();
 	void Exec_Animation_Shine();
 	void Exec_Animation_Random();

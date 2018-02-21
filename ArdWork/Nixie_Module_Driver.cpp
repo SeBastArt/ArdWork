@@ -9,6 +9,9 @@
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
+#include "ESP8266_NodeMCU_Controller.h"
+
+
 
 //#define DEBUG
 
@@ -26,6 +29,9 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__AnimationCount = 6;
 	__activeAnimaton = 5;
 	SetTimerDelay(1000);
+
+	Button_Device_Driver* button = (Button_Device_Driver*)(create("Button_Device_Driver"));
+	button->SetPin(pinManager.GetPin("D3"));
 }
 
 void Nixie_Module_Driver::Build_Discriptor() {

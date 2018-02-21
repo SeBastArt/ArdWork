@@ -2,6 +2,9 @@
 //#define SLEEP
 //#define COMPILE_TEST
 
+#include <TaskMacros.h>
+#include <MessageTask.h>
+#include <FunctionTask.h>
 #include <espsoftwareserial\SoftwareSerial.h>
 #include <WiFiUdp.h>
 #include <WiFiServer.h>
@@ -69,6 +72,8 @@
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
 #include "GPS_Device_Driver.h"
+
+ESP8266_NodeMCU_Controller esp8266_NodeMCU_controller;
 #endif // PICTUNIXIE_NodeMCU_GRBWRE_NodeMCU_GRBW
 
 
@@ -113,7 +118,7 @@ void setup() {
 	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28);	
 	//Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 4);
 	ESP8266_NodeMCU_Controller* esp8266_NodeMCU_controller = new ESP8266_NodeMCU_Controller();
-	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D5"), true);
+	Button_Device_Driver *button = new Button_Device_Driver(picture_module);
 	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
 	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(picture_module);
 	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(picture_module);
@@ -127,9 +132,9 @@ void setup() {
 	Nixie_Module_Driver *nixie_module = new Nixie_Module_Driver();
 	nixie_module->create("Ntp_Wifi_Device_Driver");
 	//Driver
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(nixie_module, 120);
-	ESP8266_NodeMCU_Controller* esp8266_NodeMCU_controller = new ESP8266_NodeMCU_Controller();
-	Button_Device_Driver *button = new Button_Device_Driver(nixie_module, esp8266_NodeMCU_controller->Pin("D5"), true);
+	//Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(nixie_module, 120);
+	//ESP8266_NodeMCU_Controller* esp8266_NodeMCU_controller = new ESP8266_NodeMCU_Controller();
+	Button_Device_Driver *button = new Button_Device_Driver(nixie_module);
 	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(nixie_module);
 	GPS_Device_Driver *gps_device = new GPS_Device_Driver(nixie_module);
 	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(nixie_module);
@@ -163,7 +168,7 @@ void setup() {
 
 #ifdef NIXIE_NodeMCU_GRBW
 	nixie_module->AddDevice(button);
-	nixie_module->AddDevice(strip);
+	//nixie_module->AddDevice(strip);
 	nixie_module->AddDevice(wifi_device);
 	wifi_device->AddCommunicationClient(webSocket_server_wifi);
 	wifi_device->AddCommunicationClient(ntp_device);
@@ -192,8 +197,8 @@ void setup() {
 
 #ifdef NIXIE_NodeMCU_GRBW
 	taskManager.StartTask(nixie_module);
-	taskManager.StartTask(esp8266_NodeMCU_controller);
-	taskManager.StartTask(strip);
+	//taskManager.StartTask(esp8266_NodeMCU_controller);
+	//taskManager.StartTask(strip);
 	taskManager.StartTask(button);
 	taskManager.StartTask(wifi_device);
 	taskManager.StartTask(webSocket_server_wifi);

@@ -11,7 +11,7 @@ ESP8266_NodeMCU_Controller::ESP8266_NodeMCU_Controller(uint8_t priority) : ESP82
 		switch (i)
 		{
 		case 0:
-			pin = new IO_Pin(ESP_CONTROLLER_PIN_ID_START + i, 3, "D9");
+			pin = new IO_Pin(ESP_CONTROLLER_PIN_ID_START + i, 3, "RXD");
 			break;
 		case 1:
 			pin = new IO_Pin(ESP_CONTROLLER_PIN_ID_START + i, 1, "D10");
@@ -49,7 +49,6 @@ ESP8266_NodeMCU_Controller::ESP8266_NodeMCU_Controller(uint8_t priority) : ESP82
 
 		pins.PushBack(pin);
 	}
-	InitPins();
 }
 
 

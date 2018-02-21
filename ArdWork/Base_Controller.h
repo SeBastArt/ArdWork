@@ -17,16 +17,13 @@
 class Base_Controller : public Task
 {
 private:
-	void OnStartup();
-	void OnStop();
 	void OnUpdate(uint32_t deltaTime);
  protected: 
 	 Vector <IO_Pin*> pins;
-	 void InitPins();
 	 virtual void DoUpdatePins(uint32_t deltaTime) = 0;
  public:
-	 IO_Pin* Pin(uint8_t number);
-	 IO_Pin* Pin(String name);
+	 IO_Pin* GetPin(uint8_t number);
+	 IO_Pin* GetPin(String name);
 	 Base_Controller(uint8_t priority = TASK_PRIORITY_NORMAL);
 };
 #endif

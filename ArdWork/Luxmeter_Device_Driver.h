@@ -21,6 +21,7 @@ const float EPSILON = 5.0;
 
 class Luxmeter_Device_Driver : public Device_Driver
 {
+	REGISTER(Luxmeter_Device_Driver);
 public:
 	Luxmeter_Device_Driver(Module_Driver* module, uint8_t adress = TSL2561_ADDR_FLOAT, uint8_t priority = TASK_PRIORITY_NORMAL);
 	

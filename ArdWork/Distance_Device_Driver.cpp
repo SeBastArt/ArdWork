@@ -4,10 +4,10 @@
 #include "Distance_Device_Driver.h"
 #include "Module_Driver.h"
 
-Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pin_trig, uint8_t pin_echo, uint8_t priority) :
-	Device_Driver(module, priority),
-	__pin_t(pin_trig),
-	__pin_e(pin_echo)
+REGISTERIMPL(Distance_Device_Driver);
+
+Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t priority) :
+	Device_Driver(module, priority)
 {
 	__DriverType = DISTANCE_DEVICE_DRIVER_TYPE;
 	__threePins = __pin_t == __pin_e ? true : false;

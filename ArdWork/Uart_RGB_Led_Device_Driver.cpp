@@ -5,7 +5,7 @@
 #include "Uart_RGB_Led_Device_Driver.h"
 #include "math.h"
 
-uint8_t Uart_RGB_Led_Device_Driver::pixelCount;
+uint8_t Uart_RGB_Led_Device_Driver::__pixelCount;
 uint16_t Uart_RGB_Led_Device_Driver::lastPixel = 0;
 int8_t Uart_RGB_Led_Device_Driver::moveDir = 1;
 Vector <RGBAnimationState*> Uart_RGB_Led_Device_Driver::animationState_list;
@@ -15,21 +15,16 @@ NeoGamma<NeoGammaTableMethod>* Uart_RGB_Led_Device_Driver::colorGamma;
 NeoPixelBus<NeoRgbFeature, NeoEsp8266Dma800KbpsMethod>* Uart_RGB_Led_Device_Driver::strip;
 NeoPixelAnimator* Uart_RGB_Led_Device_Driver::animations;
 
-Uart_RGB_Led_Device_Driver::Uart_RGB_Led_Device_Driver(Module_Driver* module, int _pixelcount, uint8_t priority) :
+REGISTERIMPL(Uart_RGB_Led_Device_Driver);
+
+Uart_RGB_Led_Device_Driver::Uart_RGB_Led_Device_Driver(Module_Driver* module, uint8_t priority) :
 	Device_Driver(module, priority)
 {
 	__DriverType = UART_RGB_LED_DEVICE_TYPE;
-	pixelCount = _pixelcount;
+	__pixelCount = 0;
 	__brightness = 50;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
-	strip = new NeoPixelBus<NeoRgbFeature, NeoEsp8266Dma800KbpsMethod>(_pixelcount, 0);
-	animations = new NeoPixelAnimator(_pixelcount + RGB_ANIMATION_COUNT); // NeoPixel animation management object
-
-	for (uint8_t i = 0; i < _pixelcount; i++) {
-		RGBAnimationState* animationState = new RGBAnimationState();
-		animationState_list.PushBack(animationState);
-	}
-	strip->Begin();
+	
 };
 
 void Uart_RGB_Led_Device_Driver::OnBuild_Descriptor() {
@@ -72,13 +67,50 @@ void Uart_RGB_Led_Device_Driver::OnBuild_Descriptor() {
 }
 
 
+void Uart_RGB_Led_Device_Driver::SetPixelCount(int _pixelCount)
+{
+	__pixelCount = _pixelCount;
+	InitStrip();
+}
+
+void Uart_RGB_Led_Device_Driver::InitStrip()
+{
+	Animation_Off();
+
+	if (__pixelCount < 1)
+		return;
+
+	if (strip != nullptr) {
+		delete strip;
+		strip = nullptr;
+	}
+
+	if (animations != nullptr) {
+		delete animations;
+		animations = nullptr;
+	}
+
+	animationState_list.Clear();
+
+	strip = new NeoPixelBus<NeoRgbFeature, NeoEsp8266Dma800KbpsMethod>(__pixelCount, 0);
+	animations = new NeoPixelAnimator(__pixelCount + RGB_ANIMATION_COUNT); // NeoPixel animation management object
+
+	for (uint8_t i = 0; i < __pixelCount; i++) {
+		RGBAnimationState* animationState = new RGBAnimationState();
+		animationState_list.PushBack(animationState);
+	}
+	strip->Begin();
+	//sv_pattern = GRBW_ANIMATION_SHINE;
+	Animation_Off();
+	Set_Animation();
+}
+
+
 void Uart_RGB_Led_Device_Driver::OnInit()
 {
 	Device_Driver::OnInit();
 	SetRandomSeed();
-	actAnimation = RGB_ANIMATION_SHINE;
-	Animation_Off();
-	Animation_Shine();
+	InitStrip();
 	Serial.println(F("Uart_Rgb_Led-Driver initialized!"));
 }
 
@@ -197,11 +229,11 @@ void Uart_RGB_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 	uint16_t nextPixel;
 
 	float progress = NeoEase::Linear(param.progress);
-	nextPixel = round(progress * pixelCount) % pixelCount;
+	nextPixel = round(progress * __pixelCount) % __pixelCount;
 	if ((lastPixel != nextPixel)) {
 		uint8_t count = 2;
 		for (uint8_t j = 0; j < count; j++) {
-			uint8_t actpixel = (nextPixel + (j * (pixelCount / count))) % pixelCount;
+			uint8_t actpixel = (nextPixel + (j * (__pixelCount / count))) % __pixelCount;
 
 			RgbColor startingColor;
 			RgbColor tempRGBColor = mainColor;
@@ -223,7 +255,7 @@ void Uart_RGB_Led_Device_Driver::CylonAnimUpdate(const AnimationParam& param)
 	if (param.state == AnimationState_Completed)
 	{
 		// done, time to restart this position tracking animation/timer
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_CYLON - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + RGB_ANIMATION_CYLON - RGB_ANIMATION_FIRST);
 	}
 }
 
@@ -231,12 +263,12 @@ void Uart_RGB_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
-		uint8_t count = random(pixelCount);
+		uint8_t count = random(__pixelCount);
 
 		while (count > 0)
 		{
 			// pick a random pixel
-			uint16_t pixel = random(pixelCount);
+			uint16_t pixel = random(__pixelCount);
 
 			// pick random time and random color
 			// we use HslColor object as it allows us to easily pick a color
@@ -251,7 +283,7 @@ void Uart_RGB_Led_Device_Driver::RandomAnimUpdate(const AnimationParam & param)
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_RANDOM - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + RGB_ANIMATION_RANDOM - RGB_ANIMATION_FIRST);
 	}
 }
 
@@ -275,12 +307,12 @@ void Uart_RGB_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 {
 	if (param.state != AnimationState_Completed)
 	{
-		uint8_t count = random(pixelCount);
+		uint8_t count = random(__pixelCount);
 
 		while (count > 0)
 		{
 			// pick a random pixel
-			uint8_t pixel = random(pixelCount);
+			uint8_t pixel = random(__pixelCount);
 
 			// pick random time and random color
 			// we use HslColor object as it allows us to easily pick a color
@@ -305,49 +337,49 @@ void Uart_RGB_Led_Device_Driver::FireAnimUpdate(const AnimationParam & param)
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_FIRE - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + RGB_ANIMATION_FIRE - RGB_ANIMATION_FIRST);
 	}
 }
 
 void Uart_RGB_Led_Device_Driver::ShineAnimUpdate(const AnimationParam& param) {
 	if (param.state != AnimationState_Completed)
 	{
-		for (int pixel = 0; pixel < pixelCount; pixel++) {
+		for (int pixel = 0; pixel < __pixelCount; pixel++) {
 			strip->SetPixelColor(pixel, mainColor);
 		}
 	}
 	else {
-		animations->RestartAnimation(pixelCount + RGB_ANIMATION_SHINE - RGB_ANIMATION_FIRST);
+		animations->RestartAnimation(__pixelCount + RGB_ANIMATION_SHINE - RGB_ANIMATION_FIRST);
 	}
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Off() {
 	animations->StopAll();
-	for (uint8_t i = 0; i < pixelCount; i++) {
+	for (uint8_t i = 0; i < __pixelCount; i++) {
 		strip->SetPixelColor(i, RgbColor(0, 0, 0));
 	}
 	strip->Show();
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Shine() {
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_SHINE - RGB_ANIMATION_FIRST, 200, ShineAnimUpdate);
+	animations->StartAnimation(__pixelCount + RGB_ANIMATION_SHINE - RGB_ANIMATION_FIRST, 200, ShineAnimUpdate);
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Random() {
 	Animation_Off();
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_RANDOM - RGB_ANIMATION_FIRST, 200, RandomAnimUpdate);
+	animations->StartAnimation(__pixelCount + RGB_ANIMATION_RANDOM - RGB_ANIMATION_FIRST, 200, RandomAnimUpdate);
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Cyclon() {
 	Animation_Off();
 	lastPixel = 0;
 	moveDir = 1;
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_CYLON - RGB_ANIMATION_FIRST, 2000, CylonAnimUpdate);
+	animations->StartAnimation(__pixelCount + RGB_ANIMATION_CYLON - RGB_ANIMATION_FIRST, 2000, CylonAnimUpdate);
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Fire() {
 	Animation_Off();
-	animations->StartAnimation(pixelCount + RGB_ANIMATION_FIRE - RGB_ANIMATION_FIRST, 200, FireAnimUpdate);
+	animations->StartAnimation(__pixelCount + RGB_ANIMATION_FIRE - RGB_ANIMATION_FIRST, 200, FireAnimUpdate);
 }
 
 void Uart_RGB_Led_Device_Driver::Animation_Next() {

@@ -18,6 +18,7 @@ class Module_Driver;
 
 class Distance_Device_Driver : public Device_Driver
 {
+	REGISTER(Distance_Device_Driver);
 private:
 	uint8_t __pin_t;
 	uint8_t __pin_e;
@@ -41,7 +42,7 @@ protected:
 	void OnBuild_Descriptor() override;
 
  public:
-	 Distance_Device_Driver(Module_Driver* module, uint8_t pin_trig, uint8_t pin_echo, uint8_t priority = TASK_PRIORITY_NORMAL);
+	 Distance_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 	 void Exec_Set_Unit(dist_unit _unit);
 	 void Exec_Set_Timeout(int _timeout);
 

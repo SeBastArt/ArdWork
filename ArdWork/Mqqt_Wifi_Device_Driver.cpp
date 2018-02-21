@@ -4,6 +4,8 @@
 
 #include "Mqqt_Wifi_Device_Driver.h"
 
+REGISTERIMPL(Mqqt_Wifi_Device_Driver);
+
 String Mqqt_Wifi_Device_Driver::mqtt_message = ""; // initializer
 
 Mqqt_Wifi_Device_Driver::Mqqt_Wifi_Device_Driver(Module_Driver * module, uint8_t priority) : 

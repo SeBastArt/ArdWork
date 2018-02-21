@@ -9,33 +9,14 @@ Base_Controller::Base_Controller(uint8_t priority) : Task(MsToTaskTime(priority)
 	/*pins = new Vector <IO_Pin*>;*/
 };
 
-
-
-void Base_Controller::InitPins() {
-	for (int i = 0; i < pins.Size(); i++) {
-		pins[i]->SetPinMode(OUTPUT);
-		pins[i]->SetPinState(LOW);
-		pins[i]->IsActive = false;
-	}
-}
-
-
-void Base_Controller::OnStartup() {
-
-}
-
-void Base_Controller::OnStop() {
-
-}
-
 void Base_Controller::OnUpdate(uint32_t deltaTime) {
 	DoUpdatePins(deltaTime);
 }
 
-IO_Pin* Base_Controller::Pin(uint8_t number) {
+IO_Pin* Base_Controller::GetPin(uint8_t _GPIONumber) {
 	IO_Pin* result = nullptr;
 	for (int i = 0; i < pins.Size(); i++) {
-		if (pins[i]->PinNumber() == number) {
+		if (pins[i]->pinGPIO == _GPIONumber) {
 			result = pins[i];
 			result->IsActive = true;
 		}
@@ -43,10 +24,10 @@ IO_Pin* Base_Controller::Pin(uint8_t number) {
 	return result;
 }
 
-IO_Pin* Base_Controller::Pin(String name) {
+IO_Pin* Base_Controller::GetPin(String name) {
 	IO_Pin* result = nullptr;
 	for (int i = 0; i < pins.Size(); i++) {
-		if (pins[i]->PinName() == name) {
+		if (String(pins[i]->pinName).equals(name)) {
 			result = pins[i];
 			result->IsActive = true;
 		}

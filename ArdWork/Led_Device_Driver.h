@@ -15,9 +15,9 @@
 
 class Led_Device_Driver : public Device_Driver
 {
+	REGISTER(Led_Device_Driver);
 public:
-	Led_Device_Driver(Module_Driver* module, IO_Pin* _pin, bool _hasPullUp = false, uint8_t priority = TASK_PRIORITY_NORMAL);
-	void SetPullUp(bool _hasPullUp);
+	Led_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	int __sv_mode;
 	float __sv_delay;
@@ -37,6 +37,7 @@ private:
 	int __pulse_delta;
 
 	int __pulse_counter;
+
 
 	void OnInit() override;
 	void DoDeviceMessage(Int_Task_Msg message);
@@ -61,7 +62,11 @@ public:
 	void Exec_Set_Led_Off();
 	void Exec_Set_Led_Blink(int delay);
 	void Exec_Set_Led_Pulse(int count, int delay);
-	int GetPinNumber();
+
+	void SetPin(IO_Pin * _pin);
+	void SetPullUp();
+	void SetNoPullUp();
+
 };
 
 #endif

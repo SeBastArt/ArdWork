@@ -17,7 +17,9 @@ NeoGamma<NeoGammaTableMethod>* Uart_GRBW_Led_Device_Driver::colorGamma;
 NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>* Uart_GRBW_Led_Device_Driver::strip;
 NeoPixelAnimator* Uart_GRBW_Led_Device_Driver::animations;
 
-Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t _pixelCount, uint8_t priority) :
+REGISTERIMPL(Uart_GRBW_Led_Device_Driver);
+
+Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, uint8_t priority) :
 	Device_Driver(module, priority)
 {
 #ifdef DEBUG
@@ -25,21 +27,14 @@ Uart_GRBW_Led_Device_Driver::Uart_GRBW_Led_Device_Driver(Module_Driver* module, 
 	Serial.println(this->DriverId);
 #endif // DEBUG
 	__DriverType = UART_GRBW_LED_DEVICE_TYPE;
-	__pixelCount =_pixelCount;
+	__pixelCount = 0;
 	__brightness = 50;
 	colorGamma = new NeoGamma<NeoGammaTableMethod>; // for any fade animations, best to correct gamma
-	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(_pixelCount, 0);
-	animations = new NeoPixelAnimator(_pixelCount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
-
-	for (uint8_t i = 0; i < _pixelCount; i++) {
-		GRBWAnimationState* animationState = new GRBWAnimationState();
-		animationState_list.PushBack(animationState);
-	}
-	strip->Begin();
 #ifdef DEBUG
 	Serial.print("Ende Constructor Uart_GRBW_Led_Device_Driver");
 #endif // DEBUG
 };
+
 
 void Uart_GRBW_Led_Device_Driver::OnBuild_Descriptor() {
 #ifdef DEBUG
@@ -61,14 +56,54 @@ void Uart_GRBW_Led_Device_Driver::OnBuild_Descriptor() {
 	Value_CtrlElem *ctrlElem_brightess = new Value_CtrlElem(UART_GRBW_LED_DEVICE_BRIGHTNESS, &sv_relBrightness, true, F("brightness"), F("the brightness for the ambient light from 1% to 200%"));
 	ctrlElem_brightess->unit = "%";
 
+	Value_CtrlElem *ctrlElem_PixelCount = new Value_CtrlElem(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT, (float*)&__pixelCount, true, F("pixel count"), F("count of the pixel used in the LED-Strip"));
+
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);
 	__descriptor->Add_Descriptor_Element(ctrlElem_brightess);
+	__descriptor->Add_Descriptor_Element(ctrlElem_PixelCount);
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Build_Descriptor");
 #endif //DEBUG
 }
 
+void Uart_GRBW_Led_Device_Driver::SetPixelCount(int _pixelCount)
+{
+	__pixelCount = _pixelCount;
+	InitStrip();
+}
+
+void Uart_GRBW_Led_Device_Driver::InitStrip()
+{
+	Animation_Off();
+
+	if (__pixelCount < 1)
+		return;
+
+	if (strip != nullptr) {
+		delete strip;
+		strip = nullptr;
+	}
+
+	if (animations != nullptr) {
+		delete animations;
+		animations = nullptr;
+	}
+
+	animationState_list.Clear();
+
+	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(__pixelCount, 0);
+	animations = new NeoPixelAnimator(__pixelCount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
+
+	for (uint8_t i = 0; i < __pixelCount; i++) {
+		GRBWAnimationState* animationState = new GRBWAnimationState();
+		animationState_list.PushBack(animationState);
+	}
+	strip->Begin();
+	sv_pattern = GRBW_ANIMATION_SHINE;
+	Animation_Off();
+	Set_Animation();
+}
 
 void Uart_GRBW_Led_Device_Driver::OnInit()
 {
@@ -77,9 +112,7 @@ void Uart_GRBW_Led_Device_Driver::OnInit()
 #endif // DEBUG
 	Device_Driver::OnInit();
 	SetRandomSeed();
-	sv_pattern = GRBW_ANIMATION_SHINE;
-	Animation_Off();
-	Set_Animation();
+	InitStrip();
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::OnInit");
 #endif // DEBUG
@@ -211,6 +244,15 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 		uint8_t G = message.GetIntParamByIndex(2);
 		uint8_t B = message.GetIntParamByIndex(3);
 		SetPixel(index, R, G, B);
+	}
+	break;
+	case UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT:
+	{
+#ifdef DEBUG
+		Serial.println("Start Uart_GRBW_Led_Device_Driver::DoDeviceMessage - UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT");
+#endif // DEBUG
+		int count = message.GetIntParamByIndex(0);
+		SetPixelCount(count);
 	}
 	break;
 	}
@@ -655,3 +697,9 @@ void Uart_GRBW_Led_Device_Driver::Exec_Set_Color_All(int R, int G, int B)
 	PostMessage(&message);
 }
 
+void Uart_GRBW_Led_Device_Driver::Exec_Set_Pixel_Count(int _count)
+{
+	Int_Task_Msg *message = new Int_Task_Msg(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT);
+	message->AddParam(_count);
+	PostMessage(&message);
+}

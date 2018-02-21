@@ -5,6 +5,8 @@ TimeChangeRule CEST1 = { "CEST", Last, Sun, Mar, 2, 120 };     //Central Europea
 TimeChangeRule CET1 = { "CET ", Last, Sun, Oct, 3, 60 };       //Central European Standard Time
 Timezone CE1(CEST1, CET1);
 
+REGISTERIMPL(GPS_Device_Driver);
+
 //#define DEBUG
 
 GPS_Device_Driver::GPS_Device_Driver(Module_Driver * module, uint8_t priority) :

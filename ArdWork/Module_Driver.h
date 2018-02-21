@@ -31,6 +31,7 @@ class GPS_Device_Driver;
 
 class Module_Driver : public Driver, public Observer
 {
+	friend class Device_Driver;
 private:
 	int __isdebug;
 	Vector<TaskMessage*> queue;

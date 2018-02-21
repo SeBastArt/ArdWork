@@ -6,10 +6,12 @@
 #include "OLED_Display_Device_Driver_Consts.h"
 #include "Fonts\FreeMono9pt7b.h"
 
-OLED_Display_Device_Driver::OLED_Display_Device_Driver(Module_Driver* module, uint8_t _reset_pin, uint8_t priority) : Display_Device_Driver(module, priority) {
+REGISTERIMPL(OLED_Display_Device_Driver);
+
+OLED_Display_Device_Driver::OLED_Display_Device_Driver(Module_Driver* module, uint8_t priority) : Display_Device_Driver(module, priority) {
 	__DriverType = OLED_DISPLAY_DEVICE_DRIVER_TYPE;
-	__reset_pin = _reset_pin;
-	__display = new Adafruit_SSD1306(__reset_pin);
+	__reset_pin = nullptr;
+
 };
 
 void OLED_Display_Device_Driver::OnBuild_Descriptor() {
@@ -17,12 +19,34 @@ void OLED_Display_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->descr = F("a monochrome Display");
 }
 
+void OLED_Display_Device_Driver::SetResetPin(IO_Pin* _pin)
+{
+	__reset_pin = _pin;
+	InitDisplay();
+}
+
 void OLED_Display_Device_Driver::OnInit()
 {
 	Device_Driver::OnInit();
-	__display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
-	DoClear();
-	Serial.println(F("OLED-Driver initialized!"));
+	InitDisplay();
+}
+
+void OLED_Display_Device_Driver::InitDisplay()
+{
+	if (__reset_pin == nullptr)
+	{
+		Serial.println(F("OLED-Driver missing reset pin definition!"));
+		return;
+	}
+	if (__display != nullptr) {
+		delete __display;
+		__display == nullptr;
+	}
+
+		__display = new Adafruit_SSD1306(__reset_pin->pinGPIO);
+		__display->begin(SSD1306_SWITCHCAPVCC, 0x3C);
+		DoClear();
+		Serial.println(F("OLED-Driver initialized!"));		
 }
 
 
