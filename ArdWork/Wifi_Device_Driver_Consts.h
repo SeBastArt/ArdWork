@@ -5,7 +5,7 @@
 
 #include "Device_Driver_Consts.h"
 
-static unsigned int const WIFI_DEVICE_DRIVER_TYPE = DEVICE_DRIVER_LAST_MESSAGE + 1005000;
+static unsigned int const WIFI_DEVICE_DRIVER_TYPE = DEVICE_DRIVER_LAST_MESSAGE + 1011000;
 static unsigned int const WIFI_DEVICE_DRIVER_SET_SSID = WIFI_DEVICE_DRIVER_TYPE + 1;
 static unsigned int const WIFI_DEVICE_DRIVER_SET_PASSWORD = WIFI_DEVICE_DRIVER_TYPE + 2;
 static unsigned int const WIFI_DEVICE_DRIVER_SET_MODE = WIFI_DEVICE_DRIVER_TYPE + 3;

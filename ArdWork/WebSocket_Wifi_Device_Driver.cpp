@@ -2,7 +2,7 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 
-//#define DEBUG
+#define DEBUG
 
 ESP8266WebServer *WebSocket_Wifi_Device_Driver::server;
 WebSocketsServer *WebSocket_Wifi_Device_Driver::webSocket;

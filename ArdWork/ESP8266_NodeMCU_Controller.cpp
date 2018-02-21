@@ -38,7 +38,10 @@ ESP8266_NodeMCU_Controller::ESP8266_NodeMCU_Controller(uint8_t priority) : ESP82
 			pin = new IO_Pin(ESP_CONTROLLER_PIN_ID_START + i, 12, "D6");
 			break;
 		case 9:
+		{
 			pin = new IO_Pin(ESP_CONTROLLER_PIN_ID_START + i, 13, "D7");
+			Serial.println("ist drin");
+		}
 			break;
 		case 10:
 			pin = new IO_Pin(ESP_CONTROLLER_PIN_ID_START + i, 15, "D8");

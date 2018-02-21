@@ -6,12 +6,10 @@
 #include "Nixie_Module_Driver_Consts.h"
 #include "Button_Device_Driver.h"
 #include "Led_Device_Driver.h"
+#include "Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
-#include "ESP8266_NodeMCU_Controller.h"
-
-
 
 //#define DEBUG
 
@@ -29,9 +27,36 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__AnimationCount = 6;
 	__activeAnimaton = 5;
 	SetTimerDelay(1000);
+#ifdef DEBUG
+	Serial.println("create(\"Button_Device_Driver\")");
+#endif
+	__button = (Button_Device_Driver*)(create("Button_Device_Driver"));
+	IO_Pin* _button_pin = pinManager.GetPin("D7");
+	__button->SetPin(_button_pin);
+	__button->SetPullUp();
 
-	Button_Device_Driver* button = (Button_Device_Driver*)(create("Button_Device_Driver"));
-	button->SetPin(pinManager.GetPin("D3"));
+#ifdef DEBUG
+	Serial.println("create(\"Wifi_Device_Driver\")");
+#endif
+	Wifi_Device_Driver* wifi_device = (Wifi_Device_Driver*)create("Wifi_Device_Driver");
+
+#ifdef DEBUG
+	Serial.println("create(\"WebSocket_Wifi_Device_Driver\")");
+#endif
+	WebSocket_Wifi_Device_Driver * temp = (WebSocket_Wifi_Device_Driver*)create("WebSocket_Wifi_Device_Driver");
+	wifi_device->AddCommunicationClient(temp);
+	
+#ifdef DEBUG
+	Serial.println("create(\"Ntp_Wifi_Device_Driver\")");
+#endif
+	__ntp = (Ntp_Wifi_Device_Driver*)create("Ntp_Wifi_Device_Driver");
+	wifi_device->AddCommunicationClient(__ntp);
+
+#ifdef DEBUG
+	Serial.print("create(\"Uart_GRBW_Led_Device_Driver\")");
+#endif
+	__strip = (Uart_GRBW_Led_Device_Driver*)create("Uart_GRBW_Led_Device_Driver");
+	__strip->SetPixelCount(28);
 }
 
 void Nixie_Module_Driver::Build_Discriptor() {
@@ -70,20 +95,20 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 		ButtonMessage* pButton = (ButtonMessage*)(message);
 		if (pButton->State == TASK_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
-			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
-				//Pattern_Next();
+			if (pButton->Id == __button->GetButtonPinID()) {
+				Pattern_Next();
 			}
 		}
 		else if (pButton->State == TASK_MSG_BUTTONSTATE_RELEASED)
 		{
-			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
+			if (pButton->Id == __button->GetButtonPinID()) {
 				//
 			}
 		}
 		else if (pButton->State == TASK_MSG_BUTTONSTATE_AUTOREPEAT)
 		{
-			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
-				//Pattern_Off();
+			if (pButton->Id == __button->GetButtonPinID()) {
+				Pattern_Off();
 			}
 		}
 		break;
@@ -147,8 +172,7 @@ void Nixie_Module_Driver::DigiClock() {
 #ifdef DEBUG
 	Serial.println("Start Nixie_Module_Driver::DigiClock");
 #endif // DEBUG	
-	time_t tTlocal = Get_Ntp_Wifi_Device_DevDrv(0)->local_time;
-	int Led_Count = Get_Uart_GRBW_Led_DevDrv(0)->led_count;
+	time_t tTlocal = __ntp->local_time;
 
 	int lookUp[10][2] = {
 		{ 10, 20 } ,	//0
@@ -195,7 +219,7 @@ void Nixie_Module_Driver::DigiClock() {
 	timeArray[3] = minute(tTlocal) % 10;
 #endif
 
-	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Color_All(0, 0, 0);
+	__strip->Exec_Set_Color_All(0, 0, 0);
 
 	int tubeindex = 0;
 
@@ -227,8 +251,8 @@ void Nixie_Module_Driver::DigiClock() {
 		Serial.print(lookUp[timeArray[i]][1] + tubeindex);
 		Serial.println(" ");
 #endif // DEBUG	
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(lookUp[timeArray[i]][0] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(lookUp[timeArray[i]][1] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
+		__strip->Exec_Set_Pixel(lookUp[timeArray[i]][0] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
+		__strip->Exec_Set_Pixel(lookUp[timeArray[i]][1] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
 		tubeindex = tubeindex + 20;
 	}
 #ifdef DEBUG
@@ -243,7 +267,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #endif // DEBUG
 	__activeAnimaton = _number;
 	__activeAnimaton = __activeAnimaton % __AnimationCount;
-	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr) {
+	if (__strip != nullptr) {
 		switch (__activeAnimaton)
 		{
 		case 0:
@@ -251,7 +275,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #ifdef DEBUG
 			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Off");
 #endif // DEBUG
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Off();
+			__strip->Exec_Animation_Off();
 		}
 		break;
 		case 1:
@@ -259,7 +283,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #ifdef DEBUG
 			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Fire");
 #endif // DEBUG
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Fire();
+			__strip->Exec_Animation_Fire();
 		}
 		break;
 		case 2:
@@ -267,7 +291,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #ifdef DEBUG
 			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Cyclon");
 #endif // DEBUG
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Cyclon();
+			__strip->Exec_Animation_Cyclon();
 		}
 		break;
 		case 3:
@@ -275,7 +299,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #ifdef DEBUG
 			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Shine");
 #endif // DEBUG
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Shine();
+			__strip->Exec_Animation_Shine();
 		}
 		break;
 		case 4:
@@ -283,7 +307,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #ifdef DEBUG
 			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Random");
 #endif // DEBUG
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Random();
+			__strip->Exec_Animation_Random();
 		}
 		break;
 		case 5:
@@ -291,7 +315,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #ifdef DEBUG
 			Serial.println("Nixie_Module_Driver::SwitchPattern - Nixie");
 #endif // DEBUG
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Off();
+			__strip->Exec_Animation_Off();
 			//Nixie will be animated
 		}
 		break;
@@ -306,8 +330,8 @@ void Nixie_Module_Driver::Set_Pattern_Color(int _r, int _g, int _b) {
 #ifdef DEBUG
 	Serial.println("Start Nixie_Module_Driver::Set_Pattern_Color");
 #endif // DEBUG	
-	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Color(_r, _g, _b);
+	if (__strip != nullptr)
+		__strip->Exec_Animation_Color(_r, _g, _b);
 #ifdef DEBUG
 	Serial.println("Ende Nixie_Module_Driver::Set_Pattern_Color");
 #endif // DEBUG	

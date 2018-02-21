@@ -3,7 +3,7 @@
 
 #include "Wifi_Device_Driver_Consts.h"
 
-static unsigned int const WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE = WIFI_DEVICE_DRIVER_TYPE + 200;
+static unsigned int const WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE = DEVICE_DRIVER_LAST_MESSAGE + 1010000;
 static unsigned int const WEBSOCKET_WIFI_DEVICE_DRIVER_LAST_MESSAGE = WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE;
 
 static void SendHeader(WiFiClient *_client) {

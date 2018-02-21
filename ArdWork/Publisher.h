@@ -16,7 +16,6 @@
 
 
 
-
 struct Color
 {
 	int R;

@@ -225,6 +225,7 @@ void Wifi_Device_Driver::ConnectToWifi() {
 #ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::ConnectToWifi");
 #endif // DEBUG
+
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
 	Serial.print("Try to Connect to [");
@@ -245,7 +246,7 @@ void Wifi_Device_Driver::ConnectToWifi() {
 
 void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 #ifdef DEBUG
-	//Serial.println("Start Wifi_Device_Driver::DoUpdate");
+	Serial.println("Start Wifi_Device_Driver::DoUpdate");
 #endif // DEBUG
 	if ((WiFi.status() != WL_CONNECTED) && !__AP_isConnected) {
 		if (__WiFi_isConnected == true) {
@@ -299,7 +300,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 	}
 #ifdef DEBUG
-	//Serial.println("Ende Wifi_Device_Driver::DoUpdate");
+	Serial.println("Ende Wifi_Device_Driver::DoUpdate");
 #endif // DEBUG
 }
 

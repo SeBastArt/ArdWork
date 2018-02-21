@@ -8,6 +8,8 @@
 
 int Driver::driver_count = 1000;
 Descriptor_List *Driver::__descriptor_list = new Descriptor_List;
+TaskManager Driver::taskManager;
+Pin_Manager Driver::pinManager;
 
 Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 	Task(MsToTaskTime(priority))
@@ -30,6 +32,7 @@ Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 	__isInactive = true;
 	timer_delay = 2000;
 	timer_delta = 0;
+	taskManager.StartTask(this);
 #ifdef DEBUG
 	Serial.print("Ende Constructor Driver");
 #endif // DEBUG

@@ -56,12 +56,12 @@ void Uart_GRBW_Led_Device_Driver::OnBuild_Descriptor() {
 	Value_CtrlElem *ctrlElem_brightess = new Value_CtrlElem(UART_GRBW_LED_DEVICE_BRIGHTNESS, &sv_relBrightness, true, F("brightness"), F("the brightness for the ambient light from 1% to 200%"));
 	ctrlElem_brightess->unit = "%";
 
-	Value_CtrlElem *ctrlElem_PixelCount = new Value_CtrlElem(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT, (float*)&__pixelCount, true, F("pixel count"), F("count of the pixel used in the LED-Strip"));
+	//Value_CtrlElem *ctrlElem_PixelCount = new Value_CtrlElem(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT, (float*)&__pixelCount, true, F("pixel count"), F("count of the pixel used in the LED-Strip"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);
 	__descriptor->Add_Descriptor_Element(ctrlElem_brightess);
-	__descriptor->Add_Descriptor_Element(ctrlElem_PixelCount);
+	//__descriptor->Add_Descriptor_Element(ctrlElem_PixelCount);
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Build_Descriptor");
 #endif //DEBUG
@@ -75,8 +75,6 @@ void Uart_GRBW_Led_Device_Driver::SetPixelCount(int _pixelCount)
 
 void Uart_GRBW_Led_Device_Driver::InitStrip()
 {
-	Animation_Off();
-
 	if (__pixelCount < 1)
 		return;
 
@@ -91,10 +89,8 @@ void Uart_GRBW_Led_Device_Driver::InitStrip()
 	}
 
 	animationState_list.Clear();
-
 	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(__pixelCount, 0);
 	animations = new NeoPixelAnimator(__pixelCount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
-
 	for (uint8_t i = 0; i < __pixelCount; i++) {
 		GRBWAnimationState* animationState = new GRBWAnimationState();
 		animationState_list.PushBack(animationState);

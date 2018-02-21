@@ -3,7 +3,7 @@
 
 #include "Device_Driver_Consts.h"
 																								   
-static unsigned int const UART_GRBW_LED_DEVICE_TYPE = DEVICE_DRIVER_LAST_MESSAGE + 1003100;
+static unsigned int const UART_GRBW_LED_DEVICE_TYPE = DEVICE_DRIVER_LAST_MESSAGE + 1009000;
 static unsigned int const UART_GRBW_LED_DEVICE_OFF = UART_GRBW_LED_DEVICE_TYPE + 1;
 static unsigned int const UART_GRBW_LED_DEVICE_CYCLON = UART_GRBW_LED_DEVICE_TYPE + 2;
 static unsigned int const UART_GRBW_LED_DEVICE_RANDOM = UART_GRBW_LED_DEVICE_TYPE + 3;

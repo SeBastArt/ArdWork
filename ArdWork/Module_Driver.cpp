@@ -5,41 +5,31 @@
 #include "Module_Driver.h"
 #include "Device_Driver.h"
 #include "Creator.h"
+#include "Button_Device_Driver.h"
 //#define DEBUG
 
 extern "C" {
 #include "user_interface.h"
 }
 
-#include "Button_Device_Driver.h"
-#include "Led_Device_Driver.h"
-#include "Luxmeter_Device_Driver.h"
-#include "Mqqt_Wifi_Device_Driver.h"
-#include "WebSocket_Wifi_Device_Driver.h"
-#include "Uart_RGB_Led_Device_Driver.h"
-#include "Uart_GRBW_Led_Device_Driver.h"
-#include "OLED_Display_Device_Driver.h"
-#include "Distance_Device_Driver.h"
-#include "Temperature_Device_Driver.h"
-#include "Ntp_Wifi_Device_Driver.h"
-#include "GPS_Device_Driver.h"
-
-
 void Module_Driver::registerit(const std::string& classname, Creator* creator)
 {
-	get_table()[classname] = creator;
+	Serial.print("register: ");
+	Serial.println(classname.c_str());
+	get_table()[classname.c_str()] = creator;
 }
 
 Device_Driver* Module_Driver::create(const std::string& classname)
 {
 	for (std::map<std::string, Creator*>::iterator it = get_table().begin(); it != get_table().end(); ++it) {
-		if (it->first.compare(classname))
+		if (String(it->first.c_str()).equals(classname.c_str()))
 		{
 			Device_Driver* temp = it->second->create(this);
-			device_list->PushBack(temp);
+			this->AddDevice(temp);
 			return temp;
 		}
 	}
+	Serial.println("Class not found");
 	return (Device_Driver*)NULL;
 }
 
@@ -83,7 +73,7 @@ void Module_Driver::OnBuild_Descriptor() {
 
 	Group_CtrlElem *ctrlElem_save = new Group_CtrlElem(MODULE_DRIVER_SAVE, F("Save Config"), F("Save the configuration from all devices"));
 	ctrlElem_save->AddMember("Save");
-		
+
 	__descriptor->Add_Descriptor_Element(ctrlElem_debug);
 	__descriptor->Add_Descriptor_Element(ctrlElem_save);
 #ifdef DEBUG
@@ -129,7 +119,7 @@ void Module_Driver::OnMessage(Int_Task_Msg message) {
 		Serial.println("Start Module_Driver::DoMessage- MODULE_DRIVER_SAVE");
 #endif // DEBUG
 		__descriptor_list->Save();
-	}
+}
 	break;
 	}
 
@@ -152,7 +142,7 @@ void Module_Driver::OnInit() {
 #ifdef DEBUG
 	Serial.println("Start Module_Driver::DoInit");
 #endif // DEBUG
-	//OnInit
+	pinManager.SetTaskContext(&taskManager);
 #ifdef DEBUG
 	Serial.println("Ende Module_Driver::DoInit");
 #endif // DEBUG
@@ -218,7 +208,7 @@ void Module_Driver::Set_Debug_Mode(bool _state)
 #ifdef DEBUG
 	Serial.println("Ende Module_Driver::Set_Debug_Mode");
 #endif // DEBUG
-}
+	}
 
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
@@ -253,7 +243,7 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			Serial.println("Ende Module_Driver::DoUpdate MessageClass_Extern");
 #endif // DEBUG
 			break;
-		}
+			}
 		}
 #ifdef DEBUG
 		Serial.println("Fire Module_Driver::DoUpdate DoTaskMessage");
@@ -264,9 +254,9 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			delete pMessage; //objekt löschen 
 			pMessage = NULL;
 		}
-	}
+		}
 	OnModuleUpdate(deltaTime);
-}
+	}
 
 
 bool Module_Driver::SendAsyncTaskMessage(TaskMessage* message, bool withinIsr) {
@@ -290,7 +280,7 @@ bool Module_Driver::SendAsyncTaskMessage(TaskMessage* message, bool withinIsr) {
 	Serial.println("Ende Module_Driver::SendAsyncTaskMessage");
 #endif // DEBUG
 	return result;
-}
+	}
 
 
 void Module_Driver::Exec_Set_Debug_Mode(bool _state)
@@ -306,192 +296,9 @@ void Module_Driver::Exec_Set_Debug_Mode(bool _state)
 #endif // DEBUG
 }
 
-
-
-
 void Module_Driver::AddDevice(Device_Driver* device)
 {
 	device_list->PushBack(device);
-}
-
-WebSocket_Wifi_Device_Driver *Module_Driver::Get_WebSocket_Wifi_DevDrv(uint8_t _index) {
-	WebSocket_Wifi_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == WEBSOCKET_WIFI_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (WebSocket_Wifi_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Ntp_Wifi_Device_Driver * Module_Driver::Get_Ntp_Wifi_Device_DevDrv(uint8_t _index)
-{
-	Ntp_Wifi_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == NTP_WIFI_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Ntp_Wifi_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-GPS_Device_Driver * Module_Driver::Get_GPS_Device_DevDrv(uint8_t _index)
-{
-	GPS_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == GPS_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (GPS_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-
-Button_Device_Driver* Module_Driver::Get_Button_DevDrv(uint8_t _index)
-{
-	Button_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == BUTTON_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Button_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Distance_Device_Driver* Module_Driver::Get_Distance_DevDrv(uint8_t _index)
-{
-	Distance_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == DISTANCE_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Distance_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-
-Led_Device_Driver* Module_Driver::Get_LED_DevDrv(uint8_t _index)
-{
-	Led_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == LED_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Led_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Luxmeter_Device_Driver* Module_Driver::Get_Luxmeter_DevDrv(uint8_t _index)
-{
-	Luxmeter_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == LUXMETER_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Luxmeter_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Mqqt_Wifi_Device_Driver* Module_Driver::Get_Mqqt_Wifi_DevDrv(uint8_t _index)
-{
-	Mqqt_Wifi_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == MQQT_WIFI_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Mqqt_Wifi_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-OLED_Display_Device_Driver* Module_Driver::Get_OLED_Display_DevDrv(uint8_t _index)
-{
-	OLED_Display_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == OLED_DISPLAY_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (OLED_Display_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Temperature_Device_Driver* Module_Driver::Get_Temperatur_DevDrv(uint8_t _index)
-{
-	Temperature_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == TEMPERATURE_DEVICE_DRIVER_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Temperature_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Uart_RGB_Led_Device_Driver* Module_Driver::Get_Uart_RGB_Led_DevDrv(uint8_t _index)
-{
-	Uart_RGB_Led_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == UART_RGB_LED_DEVICE_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Uart_RGB_Led_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
-}
-
-Uart_GRBW_Led_Device_Driver* Module_Driver::Get_Uart_GRBW_Led_DevDrv(uint8_t _index) {
-	Uart_GRBW_Led_Device_Driver *result = nullptr;
-	uint8_t match = -1;
-	for (int i = 0; i < device_list->Size(); i++) {
-		if ((*device_list)[i]->DriverType == UART_GRBW_LED_DEVICE_TYPE) {
-			match++;
-			if (match == _index) {
-				result = (Uart_GRBW_Led_Device_Driver *)(*device_list)[i];
-			}
-		}
-	}
-	return result;
 }
 
 bool Module_Driver::HasDeviceWithId(int _id)
@@ -515,7 +322,7 @@ bool Module_Driver::HasDeviceWithId(int _id)
 	Serial.println("Ende Module_Driver::HasDeviceWithId");
 #endif // DEBUG
 	return return_value;
-}
+	}
 
 
 Driver *Module_Driver::GetDeviceById(int _id)
@@ -539,4 +346,4 @@ Driver *Module_Driver::GetDeviceById(int _id)
 	Serial.println("Ende Module_Driver::GetDeviceById");
 #endif // DEBUG
 	return result;
-}
+	}

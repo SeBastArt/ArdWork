@@ -5,6 +5,7 @@
 #include "Base_Controller.h"
 
 
+
 Base_Controller::Base_Controller(uint8_t priority) : Task(MsToTaskTime(priority)) {
 	/*pins = new Vector <IO_Pin*>;*/
 };
@@ -30,6 +31,9 @@ IO_Pin* Base_Controller::GetPin(String name) {
 		if (String(pins[i]->pinName).equals(name)) {
 			result = pins[i];
 			result->IsActive = true;
+			Serial.println("gefunden");
+			result->pinMode = INPUT;
+			Serial.println("und gesetzt");
 		}
 	}
 	return result;

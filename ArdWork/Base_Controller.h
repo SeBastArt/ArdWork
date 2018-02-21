@@ -18,11 +18,12 @@ class Base_Controller : public Task
 {
 private:
 	void OnUpdate(uint32_t deltaTime);
+
  protected: 
 	 Vector <IO_Pin*> pins;
 	 virtual void DoUpdatePins(uint32_t deltaTime) = 0;
  public:
-	 IO_Pin* GetPin(uint8_t number);
+	 IO_Pin * GetPin(uint8_t _GPIONumber) ;
 	 IO_Pin* GetPin(String name);
 	 Base_Controller(uint8_t priority = TASK_PRIORITY_NORMAL);
 };

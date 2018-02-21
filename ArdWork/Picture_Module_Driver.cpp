@@ -28,6 +28,20 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	__activeAnimaton = 5;
 	__sv_relBrightness = 50;
 	SetTimerDelay(1000);
+
+	__button = (Button_Device_Driver*)(create("Button_Device_Driver"));
+	__button->SetPin(pinManager.GetPin("D7"));
+
+	Wifi_Device_Driver* wifi_device = (Wifi_Device_Driver*)create("Wifi_Device_Driver");
+	wifi_device->AddCommunicationClient((WebSocket_Wifi_Device_Driver*)create("WebSocket_Wifi_Device_Driver"));
+
+	__ntp = (Ntp_Wifi_Device_Driver*)create("Ntp_Wifi_Device_Driver");
+	wifi_device->AddCommunicationClient(__ntp);
+
+	__strip = (Uart_GRBW_Led_Device_Driver*)create("Uart_GRBW_Led_Device_Driver");
+	__strip->SetPixelCount(28);
+
+	__lux = (Luxmeter_Device_Driver*)create("Luxmeter_Device_Driver");
 }
 
 void Picture_Module_Driver::Build_Discriptor() {
@@ -80,7 +94,7 @@ void Picture_Module_Driver::DoTaskMessage(TaskMessage * message)
 		Serial.println("Start Picture_Module_Driver::DoTaskMessage - MessageClass_Float");
 #endif // DEBUG
 		FloatMessage* pFMessage = (FloatMessage*)(message);
-		if (pFMessage->__id == Get_Luxmeter_DevDrv(0)->DriverId) {
+		if (pFMessage->__id == __lux->DriverId) {
 			__envBrightness = pFMessage->__absValue;
 			SetStripBrightness();
 		}
@@ -95,19 +109,19 @@ void Picture_Module_Driver::DoTaskMessage(TaskMessage * message)
 		ButtonMessage* pButton = (ButtonMessage*)(message);
 		if (pButton->State == TASK_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
-			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
+			if (pButton->Id == __button->GetButtonPinID()) {
 				Pattern_Next();
 			}
 		}
 		else if (pButton->State == TASK_MSG_BUTTONSTATE_RELEASED)
 		{
-			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
+			if (pButton->Id == __button->GetButtonPinID()) {
 				//
 			}
 		}
 		else if (pButton->State == TASK_MSG_BUTTONSTATE_AUTOREPEAT)
 		{
-			if (pButton->Id == Get_Button_DevDrv(0)->GetButtonPinID()) {
+			if (pButton->Id == __button->GetButtonPinID()) {
 				Pattern_Off();
 			}
 		}
@@ -199,88 +213,14 @@ void Picture_Module_Driver::TimerTick() {
 		AnimateClock();
 	}
 	break;
-	case 6:
-	{
-		DigiClock();
 	}
-	break;
-	}
-}
-
-void Picture_Module_Driver::DigiClock() {
-	time_t tTlocal = Get_Ntp_Wifi_Device_DevDrv(0)->local_time;
-	int Led_Count = Get_Uart_GRBW_Led_DevDrv(0)->led_count;
-
-	int lookUp[10][2] = {
-		{ 10, 20 } ,	//0
-		{ 1, 11 } ,		//1
-		{ 9, 19 } ,		//2
-		{ 2, 12 } ,		//3
-		{ 8, 18 } ,		//4
-		{ 3, 13 } ,		//5
-		{ 7, 17 } ,		//6
-		{ 4, 14 } ,		//7
-		{ 6, 16 } ,		//8
-		{ 5, 15 }		//9
-	};
-
-	int timeArray[6] = {	0, //hour first digit
-							0, //hour second digit
-							0, //minutes first digit
-							0, //minutes second digit
-							0, //seconds first digit
-							0  //seconds second digit
-	};
-
-	timeArray[0] = (hour(tTlocal) % 12) / 10;
-	timeArray[1] = (hour(tTlocal) % 12) % 10;
-	timeArray[2] = minute(tTlocal) / 10;
-	timeArray[3] = minute(tTlocal) % 10;
-	timeArray[4] = second(tTlocal) / 10;
-	timeArray[5] = second(tTlocal) % 10;
-
-
-
-	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Color_All(0, 0, 0);
-
-	int tubeindex = 0;
-
-	String sResponse = "";
-	sResponse += hour(tTlocal); sResponse += (":");
-	sResponse += minute(tTlocal) / 10; sResponse += minute(tTlocal) % 10; sResponse += (":");
-	sResponse += second(tTlocal) / 10; sResponse += second(tTlocal) % 10; sResponse += (" - ");;
-	Serial.print(sResponse);
-
-	Serial.print(timeArray[0]);
-	Serial.print(timeArray[1]);
-	Serial.print(":");
-	Serial.print(timeArray[2]);
-	Serial.print(timeArray[3]);
-	Serial.print(":");
-	Serial.print(timeArray[4]);
-	Serial.print(timeArray[5]);
-	Serial.print(" - ");
-
-	for (int i = 5; i >= 0; --i)
-	{
-		Serial.println(i);
-		Serial.print(lookUp[timeArray[i]][0] + tubeindex);
-		Serial.print(" ");
-		Serial.print(lookUp[timeArray[i]][1] + tubeindex);
-		Serial.print(" ");
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(lookUp[timeArray[i]][0] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(lookUp[timeArray[i]][1] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
-		tubeindex = tubeindex + 20;
-		Serial.print(" ");
-	}
-	Serial.println();
 }
 
 void Picture_Module_Driver::AnimateClock() {
-	time_t tTlocal = Get_Ntp_Wifi_Device_DevDrv(0)->local_time;
-	int Led_Count = Get_Uart_GRBW_Led_DevDrv(0)->led_count;
+	time_t tTlocal = __ntp->local_time;
+	int Led_Count = __strip->led_count;
 
-	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Color_All(__sv_color.R, __sv_color.G, __sv_color.B);
+	__strip->Exec_Set_Color_All(__sv_color.R, __sv_color.G, __sv_color.B);
 	int hour_index = round(Led_Count * (hour(tTlocal) % 12) / 12.0 + 17) % Led_Count;
 	int min_index = round(Led_Count * minute(tTlocal) / 60.0 + 17) % Led_Count;
 	double sec_index = Led_Count * second(tTlocal) / 60.0 + 17;
@@ -299,19 +239,19 @@ void Picture_Module_Driver::AnimateClock() {
 		licht = max(0, licht);
 		licht = min(255, licht);
 		if (licht > 1)
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(led, 5, licht, 5);
+			__strip->Exec_Set_Pixel(led, 5, licht, 5);
 	}
-	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(min_index, 240, 5, 5);
-	Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(hour_index, 5, 5, 240);
+	__strip->Exec_Set_Pixel(min_index, 240, 5, 5);
+	__strip->Exec_Set_Pixel(hour_index, 5, 5, 240);
 
 	if (sec_index == min_index)
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(min_index, __sv_color.G, __sv_color.G, __sv_color.G);
+		__strip->Exec_Set_Pixel(min_index, __sv_color.G, __sv_color.G, __sv_color.G);
 
 	if (sec_index == min_index == hour_index)
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(hour_index, 240, 240, 240);
+		__strip->Exec_Set_Pixel(hour_index, 240, 240, 240);
 
 	if (min_index == hour_index)
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Pixel(hour_index, __sv_color.B, __sv_color.B, __sv_color.B);
+		__strip->Exec_Set_Pixel(hour_index, __sv_color.B, __sv_color.B, __sv_color.B);
 
 }
 
@@ -321,37 +261,37 @@ void Picture_Module_Driver::SwitchPattern(uint8_t _number) {
 #endif // DEBUG
 	__activeAnimaton = _number;
 	__activeAnimaton = __activeAnimaton % __AnimationCount;
-	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr) {
+	if (__strip != nullptr) {
 		switch (_number)
 		{
 		case 0:
 		{
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Off();
+			__strip->Exec_Animation_Off();
 		}
 		break;
 		case 1:
 		{
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Fire();
+			__strip->Exec_Animation_Fire();
 		}
 		break;
 		case 2:
 		{
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Cyclon();
+			__strip->Exec_Animation_Cyclon();
 		}
 		break;
 		case 3:
 		{
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Shine();
+			__strip->Exec_Animation_Shine();
 		}
 		break;
 		case 4:
 		{
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Random();
+			__strip->Exec_Animation_Random();
 		}
 		break;
 		case 5:
 		{
-			Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Off();
+			__strip->Exec_Animation_Off();
 			//Clock will be animated
 		}
 		break;
@@ -375,11 +315,8 @@ void Picture_Module_Driver::SetStripBrightness() {
 		brightness = round(__sv_relBrightness / 2);
 	}
 
-	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr)
-		Get_Uart_RGB_Led_DevDrv(0)->Exec_Set_Brightness(brightness);
-
-	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Set_Brightness(brightness);
+	if (__strip != nullptr)
+		__strip->Exec_Set_Brightness(brightness);
 #ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::SetStripBrightness");
 #endif // DEBUG
@@ -412,11 +349,9 @@ void Picture_Module_Driver::Set_Pattern_Color(int _r, int _g, int _b) {
 #ifdef DEBUG
 	Serial.println("Start Picture_Module_Driver::Set_Pattern_Color");
 #endif // DEBUG	
-	if (Get_Uart_RGB_Led_DevDrv(0) != nullptr)
-		Get_Uart_RGB_Led_DevDrv(0)->Exec_Animation_Color(_r, _g, _b);
 
-	if (Get_Uart_GRBW_Led_DevDrv(0) != nullptr)
-		Get_Uart_GRBW_Led_DevDrv(0)->Exec_Animation_Color(_r, _g, _b);
+	if (__strip != nullptr)
+		__strip->Exec_Animation_Color(_r, _g, _b);
 #ifdef DEBUG
 	Serial.println("Ende Picture_Module_Driver::Set_Pattern_Color");
 #endif // DEBUG	

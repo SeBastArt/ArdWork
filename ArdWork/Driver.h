@@ -17,7 +17,7 @@
 #include "Publisher.h"
 #include "Pin_Manager.h"
 
-static Pin_Manager pinManager;
+
 
 class Driver : public Task, public Int_Task_Msg_Sys
 {
@@ -39,6 +39,8 @@ private:
 	uint timer_delta;
 	uint timer_delay;
 protected:
+
+	static Pin_Manager pinManager;
 	static Descriptor_List *__descriptor_list;
 	unsigned int __DriverType;
 	Descriptor *__descriptor;
@@ -65,6 +67,7 @@ protected:
 
 public:
 	Driver(uint8_t priority);
+	static TaskManager taskManager;
 	virtual ~Driver() {}
 	Property<int, Driver> DriverId{ this,nullptr,&Driver::GetDriverId };
 	Property<unsigned int, Driver> DriverType{ this,nullptr,&Driver::GetDriverType };

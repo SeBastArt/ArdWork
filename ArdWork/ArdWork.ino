@@ -30,7 +30,7 @@
 #include <ArduinoJson.h>
 #include "Timezone.h" //https://github.com/JChristensen/Timezone
 #include "Driver.h"
-
+#include "Publisher.h"
 
 //#define PICTURE_NodeMCU_GRBW
 #define NIXIE_NodeMCU_GRBW
@@ -63,18 +63,7 @@
 #ifdef NIXIE_NodeMCU_GRBW
 //Module
 #include "Nixie_Module_Driver.h"
-#include "ESP8266_NodeMCU_Controller.h"
-#include "Uart_GRBW_Led_Device_Driver.h"
-//Driver
-#include "Button_Device_Driver.h"
-#include "Led_Device_Driver.h"
-#include "Wifi_Device_Driver.h"
-#include "WebSocket_Wifi_Device_Driver.h"
-#include "Ntp_Wifi_Device_Driver.h"
-#include "GPS_Device_Driver.h"
-
-ESP8266_NodeMCU_Controller esp8266_NodeMCU_controller;
-#endif // PICTUNIXIE_NodeMCU_GRBWRE_NodeMCU_GRBW
+#endif // NIXIE_NodeMCU_GRBW
 
 
 #ifdef PICTURE_NodeMCU_GRBW
@@ -95,7 +84,7 @@ ESP8266_NodeMCU_Controller esp8266_NodeMCU_controller;
 #endif // PICTURE_NodeMCU_GRBW
 
 
-TaskManager taskManager;
+
 uint32_t start;
 
 void setup() {
@@ -126,19 +115,7 @@ void setup() {
 #endif // PICTURE_NodeMCU_GRBW
 
 #ifdef NIXIE_NodeMCU_GRBW
-	//Driver* p;
-	//p = DeviceDriverFactory::create("Ntp_Wifi_Device_Driver");
-
 	Nixie_Module_Driver *nixie_module = new Nixie_Module_Driver();
-	nixie_module->create("Ntp_Wifi_Device_Driver");
-	//Driver
-	//Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(nixie_module, 120);
-	//ESP8266_NodeMCU_Controller* esp8266_NodeMCU_controller = new ESP8266_NodeMCU_Controller();
-	Button_Device_Driver *button = new Button_Device_Driver(nixie_module);
-	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(nixie_module);
-	GPS_Device_Driver *gps_device = new GPS_Device_Driver(nixie_module);
-	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(nixie_module);
-	WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(nixie_module);
 #endif // NIXIE_NodeMCU_GRBW
 
 #ifdef COMPILE_TEST
@@ -165,18 +142,6 @@ void setup() {
 	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(picture_module);
 #endif // COMPILE_TEST
 
-
-#ifdef NIXIE_NodeMCU_GRBW
-	nixie_module->AddDevice(button);
-	//nixie_module->AddDevice(strip);
-	nixie_module->AddDevice(wifi_device);
-	wifi_device->AddCommunicationClient(webSocket_server_wifi);
-	wifi_device->AddCommunicationClient(ntp_device);
-	nixie_module->AddDevice(webSocket_server_wifi);
-	nixie_module->AddDevice(ntp_device);
-	nixie_module->AddDevice(gps_device);
-#endif // NIXIE_NodeMCU_GRBW
-
 #ifdef PICTURE_NodeMCU_GRBW
 	//mqqt_wifi->SetHostName("ESP_MQQT_RGB_WZ");
 	//mqqt_wifi->SetInTopic("esp/wohnzimmer/rgb");
@@ -193,18 +158,6 @@ void setup() {
 #endif
 
 	Serial.println(F("Try to start resident driver..."));
-
-
-#ifdef NIXIE_NodeMCU_GRBW
-	taskManager.StartTask(nixie_module);
-	//taskManager.StartTask(esp8266_NodeMCU_controller);
-	//taskManager.StartTask(strip);
-	taskManager.StartTask(button);
-	taskManager.StartTask(wifi_device);
-	taskManager.StartTask(webSocket_server_wifi);
-	taskManager.StartTask(ntp_device);
-	taskManager.StartTask(gps_device);
-#endif // NIXIE_NodeMCU_GRBW
 
 #ifdef PICTURE_NodeMCU_GRBW
 	taskManager.StartTask(picture_module);
@@ -241,5 +194,5 @@ void loop() {
 		ESP.deepSleep(0, WAKE_RFCAL); //gehe schlafen
 	}
 #endif // SLEEP
-	taskManager.Loop();
+	Driver::taskManager.Loop();
 }

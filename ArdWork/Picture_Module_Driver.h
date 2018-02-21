@@ -11,6 +11,11 @@
 
 #include "Module_Driver.h"
 
+class Button_Device_Driver;
+class Uart_GRBW_Led_Device_Driver;
+class Ntp_Wifi_Device_Driver;
+class Luxmeter_Device_Driver;
+
 class Picture_Module_Driver : public Module_Driver
 {
 public:
@@ -30,11 +35,15 @@ private:
 	void SetRelBrightness(uint8_t _relBrightness);
 	void Set_Auto_Brightness(bool _state);
 	void Set_Pattern_Color(int _r, int _g, int _b);
+
+	Button_Device_Driver *__button;
+	Uart_GRBW_Led_Device_Driver* __strip;
+	Ntp_Wifi_Device_Driver* __ntp;
+	Luxmeter_Device_Driver* __lux;
 protected:
 	void OnInit() override;
 	void DoModuleMessage(Int_Task_Msg message);
 	void TimerTick() override;
-	void DigiClock();
 	void AnimateClock();
 	void DoTaskMessage(TaskMessage *message);
 	void Build_Discriptor();

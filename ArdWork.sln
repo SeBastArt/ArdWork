@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoftwareSerial", "..\..\..\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "espsoftwareserial", "..\..\..\Documents\Arduino\libraries\espsoftwareserial\espsoftwareserial.vcxitems", "{8C533D1F-4E21-401D-8011-A24DF821A564}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Task_by_Makuna", "..\..\..\Documents\Arduino\libraries\Task_by_Makuna\Task_by_Makuna.vcxitems", "{979AA92D-91B1-4F2A-9039-A81BFE6D86B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86

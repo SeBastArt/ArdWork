@@ -11,6 +11,10 @@
 
 #include "Module_Driver.h"
 
+class Button_Device_Driver;
+class Uart_GRBW_Led_Device_Driver;
+class Ntp_Wifi_Device_Driver;
+
 class Nixie_Module_Driver : public Module_Driver
 {
 public:
@@ -25,6 +29,11 @@ private:
 	void Pattern_Next();
 	void Pattern_Off();
 	void DigiClock();
+
+	Button_Device_Driver *__button;
+	Uart_GRBW_Led_Device_Driver* __strip;
+	Ntp_Wifi_Device_Driver* __ntp;
+
 protected:
 	void DoModuleMessage(Int_Task_Msg message);
 	void TimerTick() override;

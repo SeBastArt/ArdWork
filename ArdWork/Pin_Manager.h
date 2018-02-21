@@ -10,6 +10,7 @@
 #include "PCF8574_Controller.h"
 #include "ESP8266_NodeMCU_Controller.h"
 #include "ESP8266_01_Controller.h"
+#include "TaskManager.h"
 
 class Pin_Manager
 {
@@ -33,10 +34,15 @@ public:
 	};
 
 	IO_Pin* GetPin(String _name) {
-		controller->GetPin(_name);
+		return controller->GetPin(_name);
 	}
 	IO_Pin* GetPin(uint8_t _GPIONumber) {
-		controller->GetPin(_GPIONumber);
+		return controller->GetPin(_GPIONumber);
+	}
+
+	void SetTaskContext(TaskManager* _taskmanager)
+	{
+		_taskmanager->StartTask(controller);
 	}
 };
 
