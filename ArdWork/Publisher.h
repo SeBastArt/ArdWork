@@ -104,7 +104,7 @@ private:
 
 	Vector<StringContainer*> *__string_container;
 public:
-	Select_CtrlElem(int _id, void* _supervisor, String _name = "Select Control Element", String _descr = "Description") :
+	Select_CtrlElem(int _id, void* _supervisor, String _name = "Select", String _descr = "decr") :
 		CtrlElem(_id, _supervisor, _name, _descr)
 	{
 		__type = select;
@@ -137,7 +137,7 @@ public:
 class Group_CtrlElem : public Select_CtrlElem
 {
 public:
-	Group_CtrlElem(int _id, String _name = "Group Control Element", String _descr = "Description") :
+	Group_CtrlElem(int _id, String _name = "Group", String _descr = "decr") :
 		Select_CtrlElem(_id, nullptr, _name, _descr)
 	{
 		__type = group;
@@ -151,7 +151,7 @@ public:
 class Input_CtrlElem :public CtrlElem
 {
 public:
-	Input_CtrlElem(int _id, String* _supervisor, String _name = "Text Control Element", String _descr = "Description") :
+	Input_CtrlElem(int _id, String* _supervisor, String _name = "Text", String _descr = "decr") :
 		CtrlElem(_id, (void*)_supervisor, _name, _descr)
 	{
 		__type = input;
@@ -166,7 +166,7 @@ public:
 class Password_CtrlElem :public CtrlElem
 {
 public:
-	Password_CtrlElem(int _id, String* _supervisor, String _name = "Password Control Element", String _descr = "Description") :
+	Password_CtrlElem(int _id, String* _supervisor, String _name = "Password", String _descr = "decr") :
 		CtrlElem(_id, (void*)_supervisor, _name, _descr)
 	{
 		__type = pass;
@@ -180,7 +180,7 @@ public:
 class Color_CtrlElem :public CtrlElem
 {
 public:
-	Color_CtrlElem(int _id, void* _supervisor, String _name = "Color Control Element", String _descr = "Description") :
+	Color_CtrlElem(int _id, void* _supervisor, String _name = "Color", String _descr = "decr") :
 		CtrlElem(_id, _supervisor, _name, _descr)
 	{
 		__type = color;
@@ -213,7 +213,7 @@ class Time_CtrlElem :public CtrlElem
 private:
 	bool __editable;
 public:
-	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name = "Time Control Element", String _descr = "Description") :
+	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name = "Time", String _descr = "decr") :
 		CtrlElem(_id, (void*)_supervisor, _name, _descr),
 		__editable(_editable)
 	{
@@ -248,12 +248,12 @@ public:
 };
 
 
-class Value_CtrlElem :public CtrlElem
+class FValue_CtrlElem :public CtrlElem
 {
 private:
 	bool __editable;
 public:
-	Value_CtrlElem(int _id, float* _supervisor, bool _editable, String _name = "Value Control Element", String _descr = "Description") :
+	FValue_CtrlElem(int _id, float* _supervisor, bool _editable, String _name = "FValue", String _descr = "decr") :
 		CtrlElem(_id, (void*)_supervisor, _name, _descr),
 		__editable(_editable)
 	{
@@ -265,6 +265,25 @@ public:
 	String ToString() {
 		String temp = FloatToStr(*((float*)__supervisor), 0);
 		return temp;
+	};
+};
+
+class IValue_CtrlElem :public CtrlElem
+{
+private:
+	bool __editable;
+public:
+	IValue_CtrlElem(int _id, int* _supervisor, bool _editable, String _name = "IValue", String _descr = "decr") :
+		CtrlElem(_id, (void*)_supervisor, _name, _descr),
+		__editable(_editable)
+	{
+		__type = value;
+	};
+
+	bool IsEditable() { return __editable; }
+
+	String ToString() {
+		return String(*((int*)__supervisor));
 	};
 };
 

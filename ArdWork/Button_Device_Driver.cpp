@@ -15,7 +15,7 @@ void Button_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->published = false;
 	
 	Group_CtrlElem *ctrlElem_Press = new Group_CtrlElem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, F("Virtual Button"), F("You can press it, if you want"));
-	ctrlElem_Press->AddMember("Press");
+	ctrlElem_Press->AddMember(F("Press"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_Press);
 }
@@ -43,7 +43,6 @@ void Button_Device_Driver::OnInit()
 	__sys_state = buttonstate_released;
 	__last_state = buttonstate_released;
 	__lastMessage = TASK_MSG_BUTTONSTATE_RELEASED;
-	Serial.println(F("Button-Driver initialized!"));
 }
 
 

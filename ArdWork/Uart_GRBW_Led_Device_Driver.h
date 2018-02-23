@@ -29,7 +29,7 @@ private:
 	unsigned int sv_pattern = 0;
 	Color sv_color = { 255, 255, 255 };
 	float sv_relBrightness = 100;
-	static uint8_t __pixelCount;
+	static int __pixelCount;
 	unsigned int actAnimation;
 	static HslColor mainColor;
 	uint8_t __brightness;

@@ -67,7 +67,7 @@ void Picture_Module_Driver::Build_Discriptor() {
 	ctrlElem_autobrightness->AddMember("On");
 	ctrlElem_autobrightness->AddMember("Off");
 
-	Value_CtrlElem *ctrlElem_brightess = new Value_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS, &__sv_relBrightness, true, F("Brightness"), F("the brightness for the ambient light from 1% to 200%"));
+	FValue_CtrlElem *ctrlElem_brightess = new FValue_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS, &__sv_relBrightness, true, F("Brightness"), F("the brightness for the ambient light from 1% to 200%"));
 	ctrlElem_brightess->unit = "%";
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);

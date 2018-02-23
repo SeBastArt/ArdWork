@@ -14,7 +14,7 @@ extern "C" {
 
 void Module_Driver::registerit(const std::string& classname, Creator* creator)
 {
-	Serial.print("register: ");
+	Serial.print(F("register: "));
 	Serial.println(classname.c_str());
 	get_table()[classname.c_str()] = creator;
 }
@@ -29,7 +29,7 @@ Device_Driver* Module_Driver::create(const std::string& classname)
 			return temp;
 		}
 	}
-	Serial.println("Class not found");
+	Serial.println(F("Class not found"));
 	return (Device_Driver*)NULL;
 }
 
@@ -68,35 +68,17 @@ void Module_Driver::OnBuild_Descriptor() {
 	Build_Discriptor();
 
 	Select_CtrlElem *ctrlElem_debug = new Select_CtrlElem(MODULE_DRIVER_SET_DEBUG_MODE, &__isdebug, F("Debug Mode"), F("Debug Mode On or Off - need a reload of HtmlPage"));
-	ctrlElem_debug->AddMember("Off");
-	ctrlElem_debug->AddMember("On");
+	ctrlElem_debug->AddMember(F("Off"));
+	ctrlElem_debug->AddMember(F("On"));
 
 	Group_CtrlElem *ctrlElem_save = new Group_CtrlElem(MODULE_DRIVER_SAVE, F("Save Config"), F("Save the configuration from all devices"));
-	ctrlElem_save->AddMember("Save");
+	ctrlElem_save->AddMember(F("Save"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_debug);
 	__descriptor->Add_Descriptor_Element(ctrlElem_save);
 #ifdef DEBUG
 	Serial.println("Ende Module_Driver::Build_Descriptor");
 #endif // DEBUG
-}
-
-
-bool Module_Driver::PopMessage(TaskMessage** message) {
-	bool messagePopped = false;
-
-	noInterrupts();
-	TaskMessage* temp_message;
-	if (!queue.Empty()) {
-		temp_message = queue.Front();
-		*message = temp_message;
-		queue.PopBack();
-		if (temp_message->size > 0) {
-			messagePopped = true;
-		}
-	}
-	interrupts();
-	return messagePopped;
 }
 
 void Module_Driver::OnMessage(Int_Task_Msg message) {
@@ -119,7 +101,7 @@ void Module_Driver::OnMessage(Int_Task_Msg message) {
 		Serial.println("Start Module_Driver::DoMessage- MODULE_DRIVER_SAVE");
 #endif // DEBUG
 		__descriptor_list->Save();
-}
+	}
 	break;
 	}
 
@@ -190,8 +172,9 @@ void Module_Driver::Set_Debug_Mode(bool _state)
 	Serial.println("Start Module_Driver::Set_Debug_Mode");
 #endif // DEBUG
 	if (_state) {
-		for (uint8_t i = 0; i < __descriptor_list->count; i++)
+		for (uint8_t i = 0; i < __descriptor_list->count; i++) {
 			__descriptor_list->GetElemByIndex(i)->published = true;
+		}
 	}
 	else {
 		for (uint8_t i = 0; i < device_list->Size(); i++) {
@@ -208,8 +191,25 @@ void Module_Driver::Set_Debug_Mode(bool _state)
 #ifdef DEBUG
 	Serial.println("Ende Module_Driver::Set_Debug_Mode");
 #endif // DEBUG
-	}
+}
 
+
+bool Module_Driver::PopMessage(TaskMessage** message) {
+	bool messagePopped = false;
+
+	noInterrupts();
+	TaskMessage* temp_message;
+	if (!queue.Empty()) {
+		temp_message = queue.Front();
+		*message = temp_message;
+		queue.PopBack();
+		if (temp_message->size > 0) {
+			messagePopped = true;
+		}
+	}
+	interrupts();
+	return messagePopped;
+}
 
 void Module_Driver::DoUpdate(uint32_t deltaTime) {
 	TaskMessage *pMessage;
@@ -243,7 +243,7 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			Serial.println("Ende Module_Driver::DoUpdate MessageClass_Extern");
 #endif // DEBUG
 			break;
-			}
+		}
 		}
 #ifdef DEBUG
 		Serial.println("Fire Module_Driver::DoUpdate DoTaskMessage");
@@ -254,9 +254,9 @@ void Module_Driver::DoUpdate(uint32_t deltaTime) {
 			delete pMessage; //objekt löschen 
 			pMessage = NULL;
 		}
-		}
-	OnModuleUpdate(deltaTime);
 	}
+	OnModuleUpdate(deltaTime);
+}
 
 
 bool Module_Driver::SendAsyncTaskMessage(TaskMessage* message, bool withinIsr) {
@@ -280,7 +280,7 @@ bool Module_Driver::SendAsyncTaskMessage(TaskMessage* message, bool withinIsr) {
 	Serial.println("Ende Module_Driver::SendAsyncTaskMessage");
 #endif // DEBUG
 	return result;
-	}
+}
 
 
 void Module_Driver::Exec_Set_Debug_Mode(bool _state)
@@ -322,7 +322,7 @@ bool Module_Driver::HasDeviceWithId(int _id)
 	Serial.println("Ende Module_Driver::HasDeviceWithId");
 #endif // DEBUG
 	return return_value;
-	}
+}
 
 
 Driver *Module_Driver::GetDeviceById(int _id)
@@ -346,4 +346,4 @@ Driver *Module_Driver::GetDeviceById(int _id)
 	Serial.println("Ende Module_Driver::GetDeviceById");
 #endif // DEBUG
 	return result;
-	}
+}

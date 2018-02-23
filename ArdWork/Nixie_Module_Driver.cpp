@@ -26,11 +26,11 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__DriverType = NIXIE_MODULE_DRIVER_TYPE;
 	__AnimationCount = 6;
 	__activeAnimaton = 5;
-	SetTimerDelay(1000);
+	SetTimerDelay(500);
 #ifdef DEBUG
 	Serial.println("create(\"Button_Device_Driver\")");
 #endif
-	__button = (Button_Device_Driver*)(create("Button_Device_Driver"));
+	__button = (Button_Device_Driver*)(create(String(F("Button_Device_Driver")).c_str()));
 	IO_Pin* _button_pin = pinManager.GetPin("D7");
 	__button->SetPin(_button_pin);
 	__button->SetPullUp();
@@ -38,24 +38,24 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 #ifdef DEBUG
 	Serial.println("create(\"Wifi_Device_Driver\")");
 #endif
-	Wifi_Device_Driver* wifi_device = (Wifi_Device_Driver*)create("Wifi_Device_Driver");
+	Wifi_Device_Driver* wifi_device = (Wifi_Device_Driver*)create(String(F("Wifi_Device_Driver")).c_str());
 
 #ifdef DEBUG
 	Serial.println("create(\"WebSocket_Wifi_Device_Driver\")");
 #endif
-	WebSocket_Wifi_Device_Driver * temp = (WebSocket_Wifi_Device_Driver*)create("WebSocket_Wifi_Device_Driver");
+	WebSocket_Wifi_Device_Driver * temp = (WebSocket_Wifi_Device_Driver*)create(String(F("WebSocket_Wifi_Device_Driver")).c_str());
 	wifi_device->AddCommunicationClient(temp);
 	
 #ifdef DEBUG
 	Serial.println("create(\"Ntp_Wifi_Device_Driver\")");
 #endif
-	__ntp = (Ntp_Wifi_Device_Driver*)create("Ntp_Wifi_Device_Driver");
+	__ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
 	wifi_device->AddCommunicationClient(__ntp);
 
 #ifdef DEBUG
 	Serial.print("create(\"Uart_GRBW_Led_Device_Driver\")");
 #endif
-	__strip = (Uart_GRBW_Led_Device_Driver*)create("Uart_GRBW_Led_Device_Driver");
+	__strip = (Uart_GRBW_Led_Device_Driver*)create(String(F("Uart_GRBW_Led_Device_Driver")).c_str());
 	__strip->SetPixelCount(28);
 }
 
@@ -68,12 +68,12 @@ void Nixie_Module_Driver::Build_Discriptor() {
 	__descriptor->published = true;
 
 	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"), F("Switch the build in animations"));
-	ctrlElem_pattern->AddMember("Off");
-	ctrlElem_pattern->AddMember("Fire");
-	ctrlElem_pattern->AddMember("Cyclon");
-	ctrlElem_pattern->AddMember("Shine");
-	ctrlElem_pattern->AddMember("Random");
-	ctrlElem_pattern->AddMember("Nixie");
+	ctrlElem_pattern->AddMember(F("Off"));
+	ctrlElem_pattern->AddMember(F("Fire"));
+	ctrlElem_pattern->AddMember(F("Cyclon"));
+	ctrlElem_pattern->AddMember(F("Shine"));
+	ctrlElem_pattern->AddMember(F("Random"));
+	ctrlElem_pattern->AddMember(F("Nixie"));
 
 	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"), F("The main color for the ambient light pattern"));
 
@@ -83,6 +83,7 @@ void Nixie_Module_Driver::Build_Discriptor() {
 	Serial.println("Ende Nixie_Module_Driver::Build_Module_Discriptor");
 #endif // DEBUG
 }
+
 
 void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 {
@@ -159,7 +160,7 @@ void Nixie_Module_Driver::TimerTick() {
 #ifdef DEBUG
 		Serial.println("Nixie_Module_Driver::TimerTick - DigiClock");
 #endif // DEBUG	
-		DigiClock();
+		//DigiClock();
 	}
 	break;
 	}

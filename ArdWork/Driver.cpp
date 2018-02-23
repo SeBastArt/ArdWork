@@ -15,7 +15,7 @@ Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 	Task(MsToTaskTime(priority))
 {
 #ifdef DEBUG
-	Serial.print("Start Constructor Driver with ID: ");
+	Serial.print(F("Start Constructor Driver with ID: "));
 	Serial.println(this->DriverId);
 #endif // DEBUG
 	driver_count++;

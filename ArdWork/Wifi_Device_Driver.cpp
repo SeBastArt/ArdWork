@@ -225,7 +225,6 @@ void Wifi_Device_Driver::ConnectToWifi() {
 #ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::ConnectToWifi");
 #endif // DEBUG
-
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
 	Serial.print("Try to Connect to [");
@@ -253,8 +252,8 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			DoNotifyConnectionLost();
 			__isOnline = false;
 			__isNotifyOnline = false;
-			Serial.println("Connection lost...");
-			Serial.println("Try to reconnect...");
+			Serial.println(F("Connection lost..."));
+			Serial.println(F("Try to reconnect..."));
 			__WiFi_isConnected = false;
 			__connection_try = 0;
 		}
@@ -272,7 +271,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 
 			if ((__connection_try > 20) && (!__WiFi_isConnected)) {
 				__run_isAp = true;
-				Serial.println("Fallback to AccessPoint: ");
+				Serial.println(F("Fallback to AccessPoint: "));
 			}
 		}
 		else {
@@ -281,9 +280,9 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 	}
 	else {
 		if (!__WiFi_isConnected && !__run_isAp) {
-			Serial.print("Connected to: ");
+			Serial.print(F("Connected to: "));
 			Serial.print(__ssid);
-			Serial.print(" with IP address: ");
+			Serial.print(F(" with IP address: "));
 			Serial.println(WiFi.localIP());
 			__WiFi_isConnected = true;
 			StartMSDNServices();
@@ -345,15 +344,15 @@ void Wifi_Device_Driver::SetupOTA()
 	ArduinoOTA.onStart([]() {
 		String type;
 		if (ArduinoOTA.getCommand() == U_FLASH)
-			type = "sketch";
+			type = F("sketch");
 		else // U_SPIFFS
-			type = "filesystem";
+			type = F("filesystem");
 
 		// NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
 		Serial.println("Start updating " + type);
 	});
 	ArduinoOTA.onEnd([]() {
-		Serial.println("\nEnd");
+		Serial.println(F("\nEnd"));
 	});
 	ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
 		Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
@@ -367,6 +366,6 @@ void Wifi_Device_Driver::SetupOTA()
 		else if (error == OTA_END_ERROR) Serial.println("End Failed");
 	});
 	ArduinoOTA.begin();
-	Serial.println("OTA is Ready");
+	Serial.println(F("OTA is Ready"));
 
 }

@@ -36,8 +36,8 @@ void Luxmeter_Device_Driver::OnBuild_Descriptor() {
 	Serial.println("Start Select_CtrlElem *ctrlElem_autorange");
 #endif // DEBUG
 	Select_CtrlElem *ctrlElem_autorange = new Select_CtrlElem(LUXMETER_DEVICE_DRIVER_ENABLE_AUTORANGE, &sv_auto_range, F("Auto Range"), F("Autorange on or Off"));
-	ctrlElem_autorange->AddMember("On");
-	ctrlElem_autorange->AddMember("Off");
+	ctrlElem_autorange->AddMember(F("On"));
+	ctrlElem_autorange->AddMember(F("Off"));
 #ifdef DEBUG
 	Serial.println("Ende Select_CtrlElem *ctrlElem_autorange");
 #endif // DEBUG
@@ -47,10 +47,10 @@ void Luxmeter_Device_Driver::OnBuild_Descriptor() {
 	Serial.println("Start Select_CtrlElem *ctrlElem_acc_rate");
 #endif // DEBUG
 	Select_CtrlElem *ctrlElem_acc_rate = new Select_CtrlElem(LUXMETER_DEVICE_DRIVER_SET_ACCURACY_DELAY, &sv_acc_rate, F("update rate"), F("select rate you want the value be updated"));
-	ctrlElem_acc_rate->AddMember("1000ms");
-	ctrlElem_acc_rate->AddMember("2000ms");
-	ctrlElem_acc_rate->AddMember("5000ms");
-	ctrlElem_acc_rate->AddMember("10000ms");
+	ctrlElem_acc_rate->AddMember(F("1000ms"));
+	ctrlElem_acc_rate->AddMember(F("2000ms"));
+	ctrlElem_acc_rate->AddMember(F("5000ms"));
+	ctrlElem_acc_rate->AddMember(F("10000ms"));
 #ifdef DEBUG
 	Serial.println("Ende Select_CtrlElem *ctrlElem_acc_rate");
 #endif // DEBUG
@@ -60,9 +60,9 @@ void Luxmeter_Device_Driver::OnBuild_Descriptor() {
 #endif // DEBUG
 	Select_CtrlElem *ctrlElem_integrationtime = new Select_CtrlElem(LUXMETER_DEVICE_DRIVER_SET_INTEGRATION_TIME, &sv_integrationTime, F("Integrationtime"), F("set the time the sensor collect light"));
 	ctrlElem_integrationtime->published = false;
-	ctrlElem_integrationtime->AddMember("13ms");
-	ctrlElem_integrationtime->AddMember("101ms");
-	ctrlElem_integrationtime->AddMember("402ms");
+	ctrlElem_integrationtime->AddMember(F("13ms"));
+	ctrlElem_integrationtime->AddMember(F("101ms"));
+	ctrlElem_integrationtime->AddMember(F("402ms"));
 #ifdef DEBUG
 	Serial.println("Ende Select_CtrlElem *ctrlElem_integrationtime");
 #endif // DEBUG
@@ -71,14 +71,14 @@ void Luxmeter_Device_Driver::OnBuild_Descriptor() {
 	Serial.println("Start Select_CtrlElem *ctrlElem_gain");
 #endif // DEBUG
 	Select_CtrlElem *ctrlElem_gain = new Select_CtrlElem(LUXMETER_DEVICE_DRIVER_SET_GAIN, &sv_gain, F("Gain"), F("select the Gain for make values better fit"));
-	ctrlElem_gain->AddMember("Auto");
-	ctrlElem_gain->AddMember("1X");
-	ctrlElem_gain->AddMember("16X");
+	ctrlElem_gain->AddMember(F("Auto"));
+	ctrlElem_gain->AddMember(F("1X"));
+	ctrlElem_gain->AddMember(F("16X"));
 #ifdef DEBUG
 	Serial.println("Ende Select_CtrlElem *ctrlElem_gain");
 #endif // DEBUG
 
-	Value_CtrlElem *ctrlElem_lux = new Value_CtrlElem(LUXMETER_DEVICE_DRIVER_LUX_VALUE, &lastLux, false, F("Lux-Value"), F("the value of the ambient light"));
+	FValue_CtrlElem *ctrlElem_lux = new FValue_CtrlElem(LUXMETER_DEVICE_DRIVER_LUX_VALUE, &lastLux, false, F("Lux-Value"), F("the value of the ambient light"));
 	ctrlElem_lux->unit = F("Lux");
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_acc_rate);

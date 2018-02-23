@@ -15,15 +15,15 @@ void Led_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->published = true;
 
 	Select_CtrlElem *ctrlElem_mode = new Select_CtrlElem(LED_DEVICE_DRIVER_LED_SET_MODE, &__sv_mode, F("LED-Mode"), F("Select the Mode of the LED"));
-	ctrlElem_mode->AddMember("On");
-	ctrlElem_mode->AddMember("OFF");
-	ctrlElem_mode->AddMember("Blink");
-	ctrlElem_mode->AddMember("Pulse");
+	ctrlElem_mode->AddMember(F("On"));
+	ctrlElem_mode->AddMember(F("OFF"));
+	ctrlElem_mode->AddMember(F("Blink"));
+	ctrlElem_mode->AddMember(F("Pulse"));
 
-	Value_CtrlElem *ctrlElem_delay = new Value_CtrlElem(LED_DEVICE_DRIVER_LED_SET_DELAY, &__sv_delay, true, F("Delay"), F("Blink Delay is the delay between status change On/Off"));
+	FValue_CtrlElem *ctrlElem_delay = new FValue_CtrlElem(LED_DEVICE_DRIVER_LED_SET_DELAY, &__sv_delay, true, F("Delay"), F("Blink Delay is the delay between status change On/Off"));
 	ctrlElem_delay->unit = F("ms");
 
-	Value_CtrlElem *ctrlElem_pulse_count = new Value_CtrlElem(LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT, &__sv_pulse_count, true, F("Pulse count"), F("change the count how often die led is blinking during pulse"));
+	FValue_CtrlElem *ctrlElem_pulse_count = new FValue_CtrlElem(LED_DEVICE_DRIVER_LED_SET_PULSE_COUNT, &__sv_pulse_count, true, F("Pulse count"), F("change the count how often die led is blinking during pulse"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_mode);
 	__descriptor->Add_Descriptor_Element(ctrlElem_delay);

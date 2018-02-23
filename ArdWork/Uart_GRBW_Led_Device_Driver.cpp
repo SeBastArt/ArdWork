@@ -7,7 +7,7 @@
 
 //#define DEBUG
 
-uint8_t Uart_GRBW_Led_Device_Driver::__pixelCount;
+int Uart_GRBW_Led_Device_Driver::__pixelCount;
 uint16_t Uart_GRBW_Led_Device_Driver::lastPixel = 0;
 int8_t Uart_GRBW_Led_Device_Driver::moveDir = 1;
 Vector <GRBWAnimationState*> Uart_GRBW_Led_Device_Driver::animationState_list;
@@ -45,23 +45,23 @@ void Uart_GRBW_Led_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->published = false;
 
 	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(UART_GRBW_LED_DEVICE_PATTERN, &sv_pattern, F("Pattern"), F("Choose a pattern for the ambilight"));
-	ctrlElem_pattern->AddMember("Cyclon");
-	ctrlElem_pattern->AddMember("Random");
-	ctrlElem_pattern->AddMember("Fire");
-	ctrlElem_pattern->AddMember("Shine");
-	ctrlElem_pattern->AddMember("Off");
+	ctrlElem_pattern->AddMember(F("Cyclon"));
+	ctrlElem_pattern->AddMember(F("Random"));
+	ctrlElem_pattern->AddMember(F("Fire"));
+	ctrlElem_pattern->AddMember(F("Shine"));
+	ctrlElem_pattern->AddMember(F("Off"));
 
 	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(UART_GRBW_LED_DEVICE_COLOR_HEX, &sv_color, F("Color"), F("Set the main color of the pattern"));
 
-	Value_CtrlElem *ctrlElem_brightess = new Value_CtrlElem(UART_GRBW_LED_DEVICE_BRIGHTNESS, &sv_relBrightness, true, F("brightness"), F("the brightness for the ambient light from 1% to 200%"));
+	FValue_CtrlElem *ctrlElem_brightess = new FValue_CtrlElem(UART_GRBW_LED_DEVICE_BRIGHTNESS, &sv_relBrightness, true, F("brightness"), F("the brightness for the ambient light from 1% to 200%"));
 	ctrlElem_brightess->unit = "%";
 
-	//Value_CtrlElem *ctrlElem_PixelCount = new Value_CtrlElem(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT, (float*)&__pixelCount, true, F("pixel count"), F("count of the pixel used in the LED-Strip"));
+	IValue_CtrlElem *ctrlElem_PixelCount = new IValue_CtrlElem(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT, &__pixelCount, true, F("pixel count"), F("count of the pixel used in the LED-Strip"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);
 	__descriptor->Add_Descriptor_Element(ctrlElem_brightess);
-	//__descriptor->Add_Descriptor_Element(ctrlElem_PixelCount);
+	__descriptor->Add_Descriptor_Element(ctrlElem_PixelCount);
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Build_Descriptor");
 #endif //DEBUG
@@ -75,19 +75,25 @@ void Uart_GRBW_Led_Device_Driver::SetPixelCount(int _pixelCount)
 
 void Uart_GRBW_Led_Device_Driver::InitStrip()
 {
+	if (animations != nullptr)
+		animations->StopAll();
+	
 	if (__pixelCount < 1)
 		return;
 
 	if (strip != nullptr) {
 		delete strip;
-		strip = nullptr;
+		//strip = nullptr;
 	}
 
 	if (animations != nullptr) {
 		delete animations;
-		animations = nullptr;
+		//animations = nullptr;
 	}
-
+	for (uint8_t i = 0; i < animationState_list.Size(); i++) {
+		GRBWAnimationState* animationState = animationState_list[i];
+		delete animationState;
+	}
 	animationState_list.Clear();
 	strip = new NeoPixelBus<NeoGrbwFeature, Neo800KbpsMethod>(__pixelCount, 0);
 	animations = new NeoPixelAnimator(__pixelCount + GRBW_ANIMATION_COUNT); // NeoPixel animation management object
@@ -133,7 +139,7 @@ void Uart_GRBW_Led_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 		Serial.println("Start Uart_GRBW_Led_Device_Driver::DoDeviceMessage - UART_GRBW_LED_DEVICE_CYCLON");
 #endif // DEBUG
 		Animation_Cyclon();
-	}
+}
 	break;
 	case UART_GRBW_LED_DEVICE_RANDOM:
 	{
@@ -458,7 +464,7 @@ void Uart_GRBW_Led_Device_Driver::Animation_Off() {
 #ifdef DEBUG
 	Serial.println("Ende Uart_GRBW_Led_Device_Driver::Animation_Off");
 #endif // DEBUG
-}
+	}
 
 void Uart_GRBW_Led_Device_Driver::Animation_Shine() {
 #ifdef DEBUG

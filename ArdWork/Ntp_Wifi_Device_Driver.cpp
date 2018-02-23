@@ -29,13 +29,13 @@ void Ntp_Wifi_Device_Driver::OnBuild_Descriptor() {
 #ifdef DEBUG
 	Serial.println("Start Ntp_Wifi_Device_Driver::Build_Descriptor");
 #endif // DEBUG
-	__descriptor->name = ("NTP-Driver");
-	__descriptor->descr = ("Sync with ntp-server for real time");
+	__descriptor->name = (F("NTP-Driver"));
+	__descriptor->descr = (F("Sync with ntp-server for real time"));
 	__descriptor->published = true;
 
-	Time_CtrlElem *ctrlElem_utc_time = new Time_CtrlElem(NTP_WIFI_DEVICE_DRIVER_UTC_TIME, &__utc_time, false, ("UTC Time"), ("world time"));
+	Time_CtrlElem *ctrlElem_utc_time = new Time_CtrlElem(NTP_WIFI_DEVICE_DRIVER_UTC_TIME, &__utc_time, false, F("UTC Time"), F("world time"));
 
-	Time_CtrlElem *ctrlElem_local_time = new Time_CtrlElem(NTP_WIFI_DEVICE_DRIVER_LOCAL_TIME, &__local_time, false, ("Local Time"), ("The Time in your Location"));
+	Time_CtrlElem *ctrlElem_local_time = new Time_CtrlElem(NTP_WIFI_DEVICE_DRIVER_LOCAL_TIME, &__local_time, false, F("Local Time"), F("The Time in your Location"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_utc_time);
 	__descriptor->Add_Descriptor_Element(ctrlElem_local_time);
@@ -91,14 +91,14 @@ void Ntp_Wifi_Device_Driver::OnNotifyOnline()
 
 void Ntp_Wifi_Device_Driver::SyncTimeWithNTP()
 {
-	Serial.println("Setup sync with NTP service.");
+	Serial.println(F("Setup sync with NTP service."));
 	setSyncProvider(getNTP_UTCTime1970);
 	setSyncInterval(86400); // NTP re-sync; i.e. 86400 sec would be once per day
 	yield();
 	__utc_time = now();
 	__local_time = CE.toLocal(__utc_time);
 	String sResponse = "";
-	sResponse += ("local time (Berlin) ");
+	sResponse += (F("local time (Berlin) "));
 	sResponse += hour(__local_time); sResponse += (":");
 	sResponse += minute(__local_time) / 10; sResponse += minute(__local_time) % 10; sResponse += (":");
 	sResponse += second(__local_time) / 10; sResponse += second(__local_time) % 10; sResponse += (" - ");

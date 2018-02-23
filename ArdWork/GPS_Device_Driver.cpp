@@ -22,13 +22,13 @@ void GPS_Device_Driver::OnBuild_Descriptor() {
 #ifdef DEBUG
 	Serial.println("Start GPS_Device_Driver::Build_Descriptor");
 #endif // DEBUG
-	__descriptor->name = ("GPS-Driver");
-	__descriptor->descr = ("Sync with GPS-Sattelites for real time");
+	__descriptor->name = (F("GPS-Driver"));
+	__descriptor->descr = (F("Sync with GPS-Sattelites for real time"));
 	__descriptor->published = true;
 
-	Time_CtrlElem *ctrlElem_utc_time = new Time_CtrlElem(GPS_DEVICE_DRIVER_UTC_TIME, &__utc_time, false, ("UTC Time"), ("world time"));
+	Time_CtrlElem *ctrlElem_utc_time = new Time_CtrlElem(GPS_DEVICE_DRIVER_UTC_TIME, &__utc_time, false, (F("UTC Time")), (F("world time")));
 
-	Time_CtrlElem *ctrlElem_local_time = new Time_CtrlElem(GPS_DEVICE_DRIVER_LOCAL_TIME, &__local_time, false, ("Local Time"), ("The Time in your Location"));
+	Time_CtrlElem *ctrlElem_local_time = new Time_CtrlElem(GPS_DEVICE_DRIVER_LOCAL_TIME, &__local_time, false, (F("Local Time")), (F("The Time in your Location")));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_utc_time);
 	__descriptor->Add_Descriptor_Element(ctrlElem_local_time);
