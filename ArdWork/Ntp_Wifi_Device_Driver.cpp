@@ -9,11 +9,13 @@ unsigned int ntpPort = 2390;          // local port to listen for UDP packets
 const int NTP_PACKET_SIZE = 48;       // NTP time stamp is in the first 48 bytes of the message
 byte packetBuffer[NTP_PACKET_SIZE];  //buffer to hold incoming and outgoing packets
 
+REGISTERIMPL(Ntp_Wifi_Device_Driver);
+
+
 TimeChangeRule CEST = { "CEST", Last, Sun, Mar, 2, 120 };     //Central European Summer Time
 TimeChangeRule CET = { "CET ", Last, Sun, Oct, 3, 60 };       //Central European Standard Time
 Timezone CE(CEST, CET);
 
-REGISTERIMPL(Ntp_Wifi_Device_Driver);
 
 Ntp_Wifi_Device_Driver::Ntp_Wifi_Device_Driver(Module_Driver * module, uint8_t priority) :
 	Device_Driver(module, priority)

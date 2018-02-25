@@ -49,8 +49,13 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 #ifdef DEBUG
 	Serial.println("create(\"Ntp_Wifi_Device_Driver\")");
 #endif
-	__ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
-	wifi_device->AddCommunicationClient(__ntp);
+	//__ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
+	//wifi_device->AddCommunicationClient(__ntp);
+
+#ifdef DEBUG
+	Serial.println("create(\"GPS_Device_Driver\")");
+#endif
+	__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
 
 #ifdef DEBUG
 	Serial.print("create(\"Uart_GRBW_Led_Device_Driver\")");
@@ -94,19 +99,19 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 		Serial.println("Start Nixie_Module_Driver::DoTaskMessage - MessageClass_Button");
 #endif // DEBUG
 		ButtonMessage* pButton = (ButtonMessage*)(message);
-		if (pButton->State == TASK_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
+		if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
 				Pattern_Next();
 			}
 		}
-		else if (pButton->State == TASK_MSG_BUTTONSTATE_RELEASED)
+		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_RELEASED)
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
 				//
 			}
 		}
-		else if (pButton->State == TASK_MSG_BUTTONSTATE_AUTOREPEAT)
+		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
 				Pattern_Off();

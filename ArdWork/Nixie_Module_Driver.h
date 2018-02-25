@@ -14,7 +14,7 @@
 class Button_Device_Driver;
 class Uart_GRBW_Led_Device_Driver;
 class Ntp_Wifi_Device_Driver;
-
+class GPS_Device_Driver;
 class Nixie_Module_Driver : public Module_Driver
 {
 public:
@@ -33,7 +33,7 @@ private:
 	Button_Device_Driver *__button;
 	Uart_GRBW_Led_Device_Driver* __strip;
 	Ntp_Wifi_Device_Driver* __ntp;
-
+	volatile GPS_Device_Driver* __gps;
 protected:
 	void DoModuleMessage(Int_Task_Msg message);
 	void TimerTick() override;

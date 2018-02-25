@@ -107,19 +107,19 @@ void Picture_Module_Driver::DoTaskMessage(TaskMessage * message)
 		Serial.println("Start Picture_Module_Driver::DoTaskMessage - MessageClass_Button");
 #endif // DEBUG
 		ButtonMessage* pButton = (ButtonMessage*)(message);
-		if (pButton->State == TASK_MSG_BUTTONSTATE_PRESSED) // any state that is pressed
+		if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
 				Pattern_Next();
 			}
 		}
-		else if (pButton->State == TASK_MSG_BUTTONSTATE_RELEASED)
+		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_RELEASED)
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
 				//
 			}
 		}
-		else if (pButton->State == TASK_MSG_BUTTONSTATE_AUTOREPEAT)
+		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
 				Pattern_Off();

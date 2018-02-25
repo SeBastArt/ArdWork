@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "espsoftwareserial", "..\..\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Task_by_Makuna", "..\..\..\Documents\Arduino\libraries\Task_by_Makuna\Task_by_Makuna.vcxitems", "{979AA92D-91B1-4F2A-9039-A81BFE6D86B5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TinyGPSPlus-1.0.2", "..\..\..\Documents\Arduino\libraries\TinyGPSPlus-1.0.2\TinyGPSPlus-1.0.2.vcxitems", "{22E1C36F-5A37-4FBA-AEAB-1F5A88ACA71F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86

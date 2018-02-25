@@ -1,6 +1,7 @@
 #ifndef _BASE_CONSTS_h
 #define _BASE_CONSTS_h
 
+#pragma once
 
 #include "Arduino.h"
 
@@ -13,14 +14,6 @@ static int const TASK_PRIORITY_HIGH = 3;
 static int const TASK_PRIORITY_NORMAL = 10;
 static int const TASK_PRIORITY_LOW = 25;
 static int const TASK_PRIORITY_VERY_LOW = 50;
-
-
-static unsigned int const TASK_MSG_BUTTONSTATE_TYPE = BASE_TYPE + 1000000000;
-static unsigned int const TASK_MSG_BUTTONSTATE_TRACKING = TASK_MSG_BUTTONSTATE_TYPE;
-static unsigned int const TASK_MSG_BUTTONSTATE_PRESSED = TASK_MSG_BUTTONSTATE_TYPE + 1;
-static unsigned int const TASK_MSG_BUTTONSTATE_AUTOREPEAT = TASK_MSG_BUTTONSTATE_TYPE + 2;
-static unsigned int const TASK_MSG_BUTTONSTATE_RELEASED = TASK_MSG_BUTTONSTATE_TYPE + 3;
-static unsigned int const TASK_MSG_BUTTONSTATE_LAST_MESSAGE = TASK_MSG_BUTTONSTATE_RELEASED;
 
 
 //Task Messages

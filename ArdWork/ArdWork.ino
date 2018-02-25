@@ -2,6 +2,7 @@
 //#define SLEEP
 //#define COMPILE_TEST
 
+#include <TinyGPS++.h>
 #include <TaskMacros.h>
 #include <MessageTask.h>
 #include <FunctionTask.h>
@@ -32,8 +33,8 @@
 #include "Driver.h"
 #include "Publisher.h"
 
-#define PICTURE_NodeMCU_GRBW
-//#define NIXIE_NodeMCU_GRBW
+//#define PICTURE_NodeMCU_GRBW
+#define NIXIE_NodeMCU_GRBW
 //#define COMPILE_TEST
 
 
@@ -44,19 +45,24 @@
 #include "ESP8266_NodeMCU_Controller.h"
 #include "ESP8266_01_Controller.h"
 #include "IO_Pin.h"
+#include "Pin_Manager.h"
 
 //Driver
-#include "Uart_RGB_Led_Device_Driver.h"
-#include "Distance_Device_Driver.h"
 #include "Button_Device_Driver.h"
+#include "Distance_Device_Driver.h"
+#include "GPS_Device_Driver.h"
 #include "Led_Device_Driver.h"
-#include "OLED_Display_Device_Driver.h"
-#include "Temperature_Device_Driver.h"
 #include "Luxmeter_Device_Driver.h"
 #include "Mqqt_Wifi_Device_Driver.h"
-#include "WebServer_Wifi_Device_Driver.h"
-
+#include "Ntp_Wifi_Device_Driver.h"
+#include "OLED_Display_Device_Driver.h"
+#include "Temperature_Device_Driver.h"
+#include "Uart_GRBW_Led_Device_Driver.h"
+#include "Uart_RGB_Led_Device_Driver.h"
+#include "WebSocket_Wifi_Device_Driver.h"
+#include "Wifi_Device_Driver.h"
 //Modules
+#include "Nixie_Module_Driver.h"
 #include "Picture_Module_Driver.h"
 #endif // COMPILE_TEST
 
@@ -69,18 +75,6 @@
 #ifdef PICTURE_NodeMCU_GRBW
 //Module
 #include "Picture_Module_Driver.h"
-//Controller
-#include "ESP8266_NodeMCU_Controller.h"
-#include "Uart_RGB_Led_Device_Driver.h"
-#include "Uart_GRBW_Led_Device_Driver.h"
-//Driver
-#include "Button_Device_Driver.h"
-#include "Led_Device_Driver.h"
-#include "Luxmeter_Device_Driver.h"
-#include "Wifi_Device_Driver.h"
-#include "Mqqt_Wifi_Device_Driver.h"
-#include "WebSocket_Wifi_Device_Driver.h"
-#include "Ntp_Wifi_Device_Driver.h"
 #endif // PICTURE_NodeMCU_GRBW
 
 
@@ -114,22 +108,21 @@ void setup() {
 	ESP8266_01_Controller* esp8266_01_controller = new ESP8266_01_Controller();
 
 	Picture_Module_Driver *picture_module = new Picture_Module_Driver();
+	Nixie_Module_Driver *nixie_module = new Nixie_Module_Driver();
 
-	Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 28);
-	Led_Device_Driver *led = new Led_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(BUILTIN_LED), true);
-	Button_Device_Driver *button = new Button_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin(4), true);
-
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 120);
-	Uart_RGB_Led_Device_Driver *strip = new Uart_RGB_Led_Device_Driver(picture_module, 120);
-	OLED_Display_Device_Driver *oled_display = new OLED_Display_Device_Driver(picture_module, 1);
-	Temperature_Device_Driver *temp_sensor = new Temperature_Device_Driver(picture_module, esp8266_NodeMCU_controller->Pin("D8"));
+	Button_Device_Driver *button = new Button_Device_Driver(picture_module);
+	Distance_Device_Driver *distance_sensor = new Distance_Device_Driver(picture_module);
+	GPS_Device_Driver *gps = new GPS_Device_Driver(picture_module);
+	Led_Device_Driver *led = new Led_Device_Driver(picture_module);
 	Luxmeter_Device_Driver *luxmeter_sensor = new Luxmeter_Device_Driver(picture_module);
-	Distance_Device_Driver *distance_sensor = new Distance_Device_Driver(picture_module, 8, 6);
-
-	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(picture_module);
-	Mqqt_Wifi_Device_Driver *mqqt_wifi_device = new Mqqt_Wifi_Device_Driver(picture_module, led);
-	WebSocket_Wifi_Device_Driver *server_wifi = new WebSocket_Wifi_Device_Driver(picture_module, led);
+	Mqqt_Wifi_Device_Driver *mqqt_wifi_device = new Mqqt_Wifi_Device_Driver(picture_module);
 	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(picture_module);
+	OLED_Display_Device_Driver *oled_display = new OLED_Display_Device_Driver(picture_module);
+	Temperature_Device_Driver *temp_sensor = new Temperature_Device_Driver(picture_module);
+	Uart_GRBW_Led_Device_Driver *strip_GRBW = new Uart_GRBW_Led_Device_Driver(picture_module);
+	Uart_RGB_Led_Device_Driver *strip_RGB = new Uart_RGB_Led_Device_Driver(picture_module);
+	WebSocket_Wifi_Device_Driver *server_wifi = new WebSocket_Wifi_Device_Driver(picture_module);
+	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(picture_module);	
 #endif // COMPILE_TEST
 
 	Serial.flush();
