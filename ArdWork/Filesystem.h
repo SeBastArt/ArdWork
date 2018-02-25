@@ -15,10 +15,8 @@
 class FileSystem
 {
 private:
-	File actFile;
 	bool FileIsOpen;
 	String s_file;
-	
 public:
 	FileSystem() {
 		FileIsOpen = false;
@@ -26,10 +24,12 @@ public:
 		Serial.println("Mounting FS...");
 		if (!SPIFFS.begin())
 			Serial.println("Failed to mount file system");
+
 	}
 
 	bool OpenFile(String FileName) {
-		actFile = SPIFFS.open(FileName.c_str(), "r");
+		noInterrupts();
+		File actFile = SPIFFS.open(FileName.c_str(), "r");
 		if (!actFile) {
 			Serial.println("Failed to open config file");
 			return false;
@@ -42,34 +42,38 @@ public:
 		s_file = actFile.readString();
 		FileIsOpen = true;
 		actFile.close();
+		interrupts();
 		return true;
 	}
 	bool CloseFile() {
-		actFile.close();
 		FileIsOpen = false;
 		s_file = "";
 	}
 
 
 	bool SaveToFile(String FileName, JsonObject &json) {
-		actFile = SPIFFS.open(FileName.c_str(), "w");
+		noInterrupts();
+		File actFile = SPIFFS.open(FileName.c_str(), "w");
 		if (!actFile) {
 			Serial.println("Failed to open config file for writing");
 			return false;
 		}
 		json.printTo(actFile);
 		actFile.close();
+		interrupts();
 		return true;
 	}
 
 	bool SaveToFile(String FileName, String text) {
-		actFile = SPIFFS.open(FileName.c_str(), "w");
+		noInterrupts(); 
+		File actFile = SPIFFS.open(FileName.c_str(), "w");
 		if (!actFile) {
 			Serial.println("Failed to open config file for writing");
 			return false;
 		}
 		actFile.println(text.c_str());
 		actFile.close();
+		interrupts();
 		return true;
 	}
 	

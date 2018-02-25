@@ -41,7 +41,7 @@ static void SendHeader(WiFiClient *_client) {
 	_client->println(F("                var value = jsonObject._value;"));
 	_client->println(F("                var unit = jsonObject._unit;"));
 	_client->println(F("                var search_id = deviceId.toString() + \"_\" + cmdId.toString();"));
-	_client->println(F("                document.getElementById(search_id).placeholder = value + \" \" + unit;"));
+	_client->println(F("                document.getElementById(search_id).value = value + \" \" + unit;"));
 	_client->println(F("            };"));
 	_client->println(F("        };"));
 	_client->println(F("        function SendMessage(_deviceId, _cmdId, _value) {"));

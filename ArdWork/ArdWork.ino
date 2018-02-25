@@ -32,8 +32,8 @@
 #include "Driver.h"
 #include "Publisher.h"
 
-//#define PICTURE_NodeMCU_GRBW
-#define NIXIE_NodeMCU_GRBW
+#define PICTURE_NodeMCU_GRBW
+//#define NIXIE_NodeMCU_GRBW
 //#define COMPILE_TEST
 
 
@@ -102,16 +102,6 @@ void setup() {
 #ifdef PICTURE_NodeMCU_GRBW
 	//Module
 	Picture_Module_Driver *picture_module = new Picture_Module_Driver();
-
-	//Driver
-	Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 28);	
-	//Uart_GRBW_Led_Device_Driver *strip = new Uart_GRBW_Led_Device_Driver(picture_module, 4);
-	ESP8266_NodeMCU_Controller* esp8266_NodeMCU_controller = new ESP8266_NodeMCU_Controller();
-	Button_Device_Driver *button = new Button_Device_Driver(picture_module);
-	Luxmeter_Device_Driver *luxmeter = new Luxmeter_Device_Driver(picture_module);
-	Wifi_Device_Driver *wifi_device = new Wifi_Device_Driver(picture_module);
-	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(picture_module);
-	WebSocket_Wifi_Device_Driver *webSocket_server_wifi = new WebSocket_Wifi_Device_Driver(picture_module);
 #endif // PICTURE_NodeMCU_GRBW
 
 #ifdef NIXIE_NodeMCU_GRBW
@@ -141,35 +131,6 @@ void setup() {
 	WebSocket_Wifi_Device_Driver *server_wifi = new WebSocket_Wifi_Device_Driver(picture_module, led);
 	Ntp_Wifi_Device_Driver *ntp_device = new Ntp_Wifi_Device_Driver(picture_module);
 #endif // COMPILE_TEST
-
-#ifdef PICTURE_NodeMCU_GRBW
-	//mqqt_wifi->SetHostName("ESP_MQQT_RGB_WZ");
-	//mqqt_wifi->SetInTopic("esp/wohnzimmer/rgb");
-	//mqqt_wifi->SetOutTopic("fhem/wohnzimmer/rgb/set");
-	//mqqt_wifi->SetMQQTBroker("192.168.178.33");
-	wifi_device->AddCommunicationClient(webSocket_server_wifi);
-	wifi_device->AddCommunicationClient(ntp_device);
-	picture_module->AddDevice(button);
-	picture_module->AddDevice(strip);
-	picture_module->AddDevice(wifi_device);
-	picture_module->AddDevice(webSocket_server_wifi);
-	picture_module->AddDevice(ntp_device);
-	picture_module->AddDevice(luxmeter);
-#endif
-
-	Serial.println(F("Try to start resident driver..."));
-
-#ifdef PICTURE_NodeMCU_GRBW
-	taskManager.StartTask(picture_module);
-	taskManager.StartTask(esp8266_NodeMCU_controller);
-	taskManager.StartTask(strip);
-	taskManager.StartTask(luxmeter);
-	taskManager.StartTask(button);
-	//taskManager.StartTask(mqqt_wifi);
-	taskManager.StartTask(wifi_device);
-	taskManager.StartTask(webSocket_server_wifi);
-	taskManager.StartTask(ntp_device);
-#endif
 
 	Serial.flush();
 	Serial.println(F("Initialize..."));

@@ -21,6 +21,7 @@ Ntp_Wifi_Device_Driver::Ntp_Wifi_Device_Driver(Module_Driver * module, uint8_t p
 	__DriverType = NTP_WIFI_DEVICE_DRIVER_TYPE;
 	__local_time = 0;
 	__utc_time = 0;
+	SetTimerDelay(500);
 }
 
 
@@ -62,8 +63,7 @@ void Ntp_Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 #ifdef DEBUG
 		Serial.println("Start Ntp_Wifi_Device_Driver::DoDeviceMessage - NTP_WIFI_DEVICE_DRIVER_UTC_TIME");
 #endif // DEBUG
-		//uint16 _milliseconds = message.GetIntParamByIndex(0);
-		//Set_Time(_milliseconds);
+//
 	}
 	break;
 	case NTP_WIFI_DEVICE_DRIVER_LOCAL_TIME:
@@ -71,8 +71,7 @@ void Ntp_Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 #ifdef DEBUG
 		Serial.println("Start Ntp_Wifi_Device_Driver::DoDeviceMessage - NTP_WIFI_DEVICE_DRIVER_LOCAL_TIME");
 #endif // DEBUG
-		//uint16 _milliseconds = message.GetIntParamByIndex(0);
-		//Set_Time(_milliseconds);
+//
 	}
 	break;
 	}
@@ -149,10 +148,8 @@ time_t Ntp_Wifi_Device_Driver::getNTP_UTCTime1970()
 #ifdef DEBUG
 	Serial.println("Start Ntp_Wifi_Device_Driver::getNTP_UTCTime1970");
 #endif // DEBUG
-	//bNTPStarted = false;  // invalidate; time-lib functions crash, if not initalized poperly
 	unsigned long t = getNTPTimestamp();
 	if (t == 0) return(0);
-
 	// scale to 1970 
 	// may look like back & forth with ntp code; wrote it to make needed conversions more clear
 #ifdef DEBUG

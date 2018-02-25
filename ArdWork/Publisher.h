@@ -14,8 +14,6 @@
 //#define DEBUG
 //#define LOAD_SAVE_DEBUG
 
-
-
 struct Color
 {
 	int R;
@@ -55,22 +53,24 @@ private:
 	String __description;
 	String __unit;
 	bool __published;
-
+	bool __isEditable;
 	int GetId() const { return __id; }
 	String GetName() const { return __name; }
 	String GetDescrirption() const { return __description; }
 	void SetUnit(String _unit) { __unit = _unit; }
 	String GetUnit() const { return __unit; }
 	ctrl_type GetType() const { return __type; }
+	bool GetIsEditable() const { return __isEditable; }
 	bool GetPublished() const { return __published; }
 	void SetPublished(bool _published) { __published = _published; }
 protected:
 	void *__supervisor;
 	ctrl_type __type;
 public:
-	CtrlElem(int _id, void* _supervisor = nullptr, String _name = "Control Element Name", String _description = "Control Element Description") :
+	CtrlElem(int _id, void* _supervisor = nullptr, bool _isEditable = true, String _name = "Control Element Name", String _description = "Control Element Description") :
 		__id(_id),
 		__supervisor(_supervisor),
+		__isEditable(_isEditable),
 		__name(_name),
 		__description(_description)
 	{
@@ -85,6 +85,7 @@ public:
 	Property<String, CtrlElem> name{ this, nullptr, &CtrlElem::GetName };
 	Property<ctrl_type, CtrlElem> type{ this, nullptr, &CtrlElem::GetType };
 	Property<String, CtrlElem> unit{ this, &CtrlElem::SetUnit, &CtrlElem::GetUnit };
+	Property<bool, CtrlElem> editable{ this, nullptr, &CtrlElem::GetIsEditable };
 	Property<String, CtrlElem> description{ this, nullptr, &CtrlElem::GetDescrirption };
 	Property<bool, CtrlElem> published{ this, &CtrlElem::SetPublished, &CtrlElem::GetPublished };
 };
@@ -105,7 +106,7 @@ private:
 	Vector<StringContainer*> *__string_container;
 public:
 	Select_CtrlElem(int _id, void* _supervisor, String _name = "Select", String _descr = "decr") :
-		CtrlElem(_id, _supervisor, _name, _descr)
+		CtrlElem(_id, _supervisor, false, _name, _descr)
 	{
 		__type = select;
 		__string_container = new Vector<StringContainer*>;
@@ -152,7 +153,7 @@ class Input_CtrlElem :public CtrlElem
 {
 public:
 	Input_CtrlElem(int _id, String* _supervisor, String _name = "Text", String _descr = "decr") :
-		CtrlElem(_id, (void*)_supervisor, _name, _descr)
+		CtrlElem(_id, (void*)_supervisor, true, _name, _descr)
 	{
 		__type = input;
 	};
@@ -167,7 +168,7 @@ class Password_CtrlElem :public CtrlElem
 {
 public:
 	Password_CtrlElem(int _id, String* _supervisor, String _name = "Password", String _descr = "decr") :
-		CtrlElem(_id, (void*)_supervisor, _name, _descr)
+		CtrlElem(_id, (void*)_supervisor, true, _name, _descr)
 	{
 		__type = pass;
 	};
@@ -181,7 +182,7 @@ class Color_CtrlElem :public CtrlElem
 {
 public:
 	Color_CtrlElem(int _id, void* _supervisor, String _name = "Color", String _descr = "decr") :
-		CtrlElem(_id, _supervisor, _name, _descr)
+		CtrlElem(_id, _supervisor, false, _name, _descr)
 	{
 		__type = color;
 	};
@@ -210,17 +211,12 @@ public:
 
 class Time_CtrlElem :public CtrlElem
 {
-private:
-	bool __editable;
 public:
 	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name = "Time", String _descr = "decr") :
-		CtrlElem(_id, (void*)_supervisor, _name, _descr),
-		__editable(_editable)
+		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
 	{
 		__type = zeit;
 	};
-
-	bool IsEditable() { return __editable; }
 	
 	String TimeToString() {
 		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
@@ -250,18 +246,12 @@ public:
 
 class FValue_CtrlElem :public CtrlElem
 {
-private:
-	bool __editable;
 public:
 	FValue_CtrlElem(int _id, float* _supervisor, bool _editable, String _name = "FValue", String _descr = "decr") :
-		CtrlElem(_id, (void*)_supervisor, _name, _descr),
-		__editable(_editable)
+		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
 	{
 		__type = value;
 	};
-
-	bool IsEditable() { return __editable; }
-
 	String ToString() {
 		String temp = FloatToStr(*((float*)__supervisor), 0);
 		return temp;
@@ -270,17 +260,12 @@ public:
 
 class IValue_CtrlElem :public CtrlElem
 {
-private:
-	bool __editable;
 public:
 	IValue_CtrlElem(int _id, int* _supervisor, bool _editable, String _name = "IValue", String _descr = "decr") :
-		CtrlElem(_id, (void*)_supervisor, _name, _descr),
-		__editable(_editable)
+		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
 	{
 		__type = value;
 	};
-
-	bool IsEditable() { return __editable; }
 
 	String ToString() {
 		return String(*((int*)__supervisor));
@@ -387,19 +372,21 @@ public:
 
 		filesystem.OpenFile("/testfile.json");
 		file_text = filesystem.FileAsString();
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.println("TextFile - ");
+		Serial.println(file_text);
+		Serial.println("- TextFile End");
+#endif //  LOAD_SAVE_DEBUG
 		JsonObject& root = jsonBuffer.parseObject(file_text);
-		filesystem.CloseFile();
-
+	
 		if (!root.success()) {
 			Serial.println("parseObject - failed");
 			return;
 		}
-
+		
 		JsonArray& arr_descriptors = root["Descriptors"];
 		Descriptor *ptr_descriptor;
 		for (auto obj_descriptor : arr_descriptors) {
-			//for (size_t i = 0; i < __elem_count; i++) {
-				//Descriptor * ptr_descriptor = (*__vec_descriptor_elem)[i];
 			if (_driverID == (int)obj_descriptor["id"]) {
 				JsonArray& arr_controls = obj_descriptor["Controls"];
 				for (auto obj_control : arr_controls) {
@@ -425,22 +412,22 @@ public:
 					}
 				}
 			}
-			//}
 		}
-
+		filesystem.CloseFile();
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println("Loaded!");
 		Serial.println("JSON-Text: ");
 		root.printTo(Serial);
 		Serial.println("JSON-Text Finished!");
 #endif //  LOAD_SAVE_DEBUG	
-
+		
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println("Ende Descriptor_List::Load");
 #endif //  LOAD_SAVE_DEBUG
 	}
 
 	void Save() {
+		
 		DynamicJsonBuffer jsonBuffer;
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println("JSON-File - create new one");
@@ -456,21 +443,33 @@ public:
 			{
 				JsonObject& obj_control = arr_controls.createNestedObject();
 #ifdef  LOAD_SAVE_DEBUG
-				Serial.print(" Add - ");
+				if (!((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type == group)) {
+					Serial.print(" Add - ");
+				}
+				else {
+					Serial.print(" Dont Add - ");
+				}
 				Serial.print("descriptorId: "); Serial.print((*__vec_descriptor_elem)[i]->id);
 				Serial.print("ctrlId: "); Serial.print(j);
 				Serial.print(" - id: "); Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id);
 				Serial.print(" - type: "); Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type);
 				Serial.print(" - value: "); Serial.println((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString());
 #endif //  LOAD_SAVE_DEBUG
-				obj_control["id"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id;
-				obj_control["type"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type;
-				obj_control["value"] = (String)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
+					obj_control["id"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id;
+					obj_control["type"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type;
+					obj_control["value"] = (String)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
 			}
 		}
 		String text;
 		root.printTo(text);
 		filesystem.SaveToFile("/testfile.json", text);
+
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.print("- Save to: /testfile.json ");
+		root.printTo(Serial);
+		Serial.println("Save End - ");
+#endif //  LOAD_SAVE_DEBUG
+		
 	}
 
 	void ModifySave() {

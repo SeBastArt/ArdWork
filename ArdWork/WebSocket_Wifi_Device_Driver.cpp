@@ -104,24 +104,38 @@ WebSocket_Wifi_Device_Driver::WebSocket_Wifi_Device_Driver(Module_Driver * modul
 }
 
 void WebSocket_Wifi_Device_Driver::TimerTick() {
-	if (__isConnected)
-		if (__descriptor_list->count > 0)
-			for (uint8_t I = 0; I < __descriptor_list->count; I++)
-				if (__descriptor_list->GetElemByIndex(I)->published)
-					for (uint8_t J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
-						if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) ||
-							(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == zeit))
-						{
-							String json_str;
-							StaticJsonBuffer<200> jsonBuffer;
-							JsonObject& root = jsonBuffer.createObject();
-							root[F("_deviceId")] = String(__descriptor_list->GetElemByIndex(I)->id);
-							root[F("_cmdId")] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->id);
-							root[F("_value")] = __descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->ToString();
-							root[F("_unit")] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->unit);
-							root.printTo(json_str);
-							webSocket->sendTXT(0, json_str.c_str());
-						}
+	if (!__isConnected)
+		return;
+
+	if (__descriptor_list->count <= 0)
+		return;
+
+	for (uint8_t I = 0; I < __descriptor_list->count; I++)
+	{
+
+		if (!__descriptor_list->GetElemByIndex(I)->published)
+			continue;
+
+		for (uint8_t J = 0; J < __descriptor_list->GetElemByIndex(I)->ctrl_count; J++)
+		{
+			if ((__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == value) ||
+				(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->type == zeit)) {
+
+				if (__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->editable)
+					continue;
+
+				String json_str;
+				StaticJsonBuffer<200> jsonBuffer;
+				JsonObject& root = jsonBuffer.createObject();
+				root[F("_deviceId")] = String(__descriptor_list->GetElemByIndex(I)->id);
+				root[F("_cmdId")] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->id);
+				root[F("_value")] = __descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->ToString();
+				root[F("_unit")] = String(__descriptor_list->GetElemByIndex(I)->GetCtrlElemByIndex(J)->unit);
+				root.printTo(json_str);
+				webSocket->sendTXT(0, json_str.c_str());
+			}
+		}
+	}
 }
 
 void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
@@ -145,16 +159,16 @@ void WebSocket_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 	}
 #ifdef DEBUG
-//Serial.println("Ende WebSocket_Wifi_Device_Driver::UpdateComm");
+	//Serial.println("Ende WebSocket_Wifi_Device_Driver::UpdateComm");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::OnNotifyConnectionLost()
 {
 	if (server != nullptr) {
 		server->~ESP8266WebServer();
 		server = nullptr;
-}
+	}
 
 	if (webSocket != nullptr) {
 		webSocket->~WebSocketsServer();
@@ -216,6 +230,7 @@ void WebSocket_Wifi_Device_Driver::InitializeServices()
 		Serial.println("Start WebSocket_Wifi_Device_Driver::InitializeServices server->on");
 		Serial.printf("before all heap size: %u\n", ESP.getFreeHeap());
 #endif // DEBUG
+		noInterrupts();
 		WiFiClient client = server->client();
 		//server->send(200, "text/html", "<html><head> <script> var connection = new WebSocket('ws://' + location.hostname + ':81/', ['arduino']); connection.onopen = function() { connection.send('Connect ' + new Date()); }; connection.onerror = function(error) { console.log('WebSocket Error ', error); }; connection.onmessage = function(e) { if (e.data.indexOf('subProtocol') == -1) document.getElementById('response').innerHTML = e.data + '<br/>'; }; function sendMessage(msg) { connection.send(msg); } function sendRGB() { var r = parseInt(document.getElementById('r').value).toString(16); var g = parseInt(document.getElementById('g').value).toString(16); var b = parseInt(document.getElementById('b').value).toString(16); if (r.length < 2) { r = '0' + r; } if (g.length < 2) { g = '0' + g; } if (b.length < 2) { b = '0' + b; } var rgb = '#' + r + g + b; console.log('RGB: ' + rgb); connection.send(rgb); } </script></head><body>LED Control: <br/> <br/>R: <input id='r' type='range' min='0' max='255' step='1' oninput='sendRGB(); ' /> <br/>G: <input id='g' type='range' min='0' max='255' step='1' oninput='sendRGB(); ' /> <br/>B: <input id='b' type='range' min='0' max='255' step='1' oninput='sendRGB(); ' /> <br/> <br/> <br/> <div id='response'> My Name is jWebSocketServer </div></body></html>"));
 		client.println(F("<!DOCTYPE html>"));
@@ -245,15 +260,14 @@ void WebSocket_Wifi_Device_Driver::InitializeServices()
 		client.println(F("</body>"));
 		client.println(F("</html>"));
 		client.stop();
+		interrupts();
 #ifdef DEBUG
 		Serial.printf("after all heap size: %u\n", ESP.getFreeHeap());
 		Serial.println("Ende WebSocket_Wifi_Device_Driver::InitializeServices server->on");
 #endif // DEBUG
-	});
-
+		});
 
 	server->begin();
-
 
 	if (webSocket != nullptr) {
 		webSocket->~WebSocketsServer();
@@ -271,7 +285,7 @@ void WebSocket_Wifi_Device_Driver::InitializeServices()
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::InitComm");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateNav(WiFiClient *client, Descriptor_List *_descriptor_list) {
 #ifdef DEBUG
@@ -285,18 +299,18 @@ void WebSocket_Wifi_Device_Driver::GenerateNav(WiFiClient *client, Descriptor_Li
 			if (first) {
 				client->print(F(" active"));
 				first = false;
-		}
+			}
 			client->print(F("\" "));
 			client->print(String(F("onclick=\"openTab(event, 'tab")) + String(__descriptor_list->GetElemByIndex(I)->name) + "')\">");
 			client->print(String(__descriptor_list->GetElemByIndex(I)->name));
 			client->println(F("</button>"));
-}
+		}
 	client->println(F("		</div>"));
 
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateNav");
 #endif // DEBUG
-}
+	}
 
 
 void WebSocket_Wifi_Device_Driver::OnBuild_Descriptor() {
@@ -309,7 +323,7 @@ void WebSocket_Wifi_Device_Driver::OnBuild_Descriptor() {
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::Build_Descriptor");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateTab(WiFiClient *client, Descriptor *_descriptor) {
 #ifdef DEBUG
@@ -338,7 +352,7 @@ void WebSocket_Wifi_Device_Driver::GenerateTab(WiFiClient *client, Descriptor *_
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateTab");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceId, CtrlElem* _ctrl_elem) {
 #ifdef DEBUG
@@ -387,12 +401,12 @@ void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceI
 	}
 	case value:
 	{
-		if ((bool)((FValue_CtrlElem*)_ctrl_elem)->IsEditable())
+		if (_ctrl_elem->editable)
 			client->println(F("			<div class = \"append w45 w100-sm\">"));
 		else
 			client->println(F("			<div class = \"append w35 w100-sm\">"));
 		GenerateInput(client, _deviceId, _ctrl_elem);
-		if ((bool)((FValue_CtrlElem*)_ctrl_elem)->IsEditable())
+		if (_ctrl_elem->editable)
 			GenerateSetButton(client, _deviceId, _ctrl_elem->id);
 		client->println(F("			</div>"));
 		break;
@@ -406,13 +420,13 @@ void WebSocket_Wifi_Device_Driver::GenerateForm(WiFiClient *client, int _deviceI
 	}
 	default:
 		break;
-}
+	}
 	GenerateDecending(client, _ctrl_elem);
 	client->println(F("		</div>"));
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateForm");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateDecending(WiFiClient *client, CtrlElem* _ctrl_elem) {
 #ifdef DEBUG
@@ -446,13 +460,13 @@ void WebSocket_Wifi_Device_Driver::GenerateDecending(WiFiClient *client, CtrlEle
 	{
 		break;
 	}
-}
+	}
 	client->println(String(_ctrl_elem->name));
 	client->println(F("			</div>"));
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateDecending");
 #endif // DEBUG
-}
+	}
 
 
 void WebSocket_Wifi_Device_Driver::GenerateColor(WiFiClient *client, int _deviceId, CtrlElem* _ctrl_elem) {
@@ -468,7 +482,7 @@ void WebSocket_Wifi_Device_Driver::GenerateColor(WiFiClient *client, int _device
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateColor");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateSelect(WiFiClient *client, int _deviceId, CtrlElem* _ctrl_elem) {
 #ifdef DEBUG
@@ -481,7 +495,7 @@ void WebSocket_Wifi_Device_Driver::GenerateSelect(WiFiClient *client, int _devic
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateSelect");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateMultiOption(WiFiClient *client, CtrlElem* _ctrl_elem) {
 #ifdef DEBUG
@@ -502,7 +516,7 @@ void WebSocket_Wifi_Device_Driver::GenerateMultiOption(WiFiClient *client, CtrlE
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateMultiOption");
 #endif // DEBUG
-}
+	}
 
 
 void WebSocket_Wifi_Device_Driver::GenerateInput(WiFiClient *client, int _deviceId, CtrlElem* _ctrl_elem) {
@@ -514,12 +528,9 @@ void WebSocket_Wifi_Device_Driver::GenerateInput(WiFiClient *client, int _device
 	else
 		client->print(F("					<input type=\"text\" class=\"small\" id=\""));
 	client->print(String(_deviceId) + "_" + String(_ctrl_elem->id));
-	//if (_ctrl_elem->type == pass)
-		client->print(F("\"  value=\""));
-	//else
-	//	client->print(F("\"  placeholder=\""));
-	client->print(_ctrl_elem->ToString());
-	if (((_ctrl_elem->type == value) || (_ctrl_elem->type == zeit)) && (!((FValue_CtrlElem*)_ctrl_elem)->IsEditable())) {
+	client->print(F("\"  value=\""));
+	client->print(_ctrl_elem->ToString() + _ctrl_elem->unit);
+	if (!_ctrl_elem->editable) {
 		client->println(F("\" disabled>"));
 	}
 	else {
@@ -528,7 +539,7 @@ void WebSocket_Wifi_Device_Driver::GenerateInput(WiFiClient *client, int _device
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateInput");
 #endif // DEBUG
-}
+	}
 
 void WebSocket_Wifi_Device_Driver::GenerateButtonGroup(WiFiClient *client, int _deviceId, CtrlElem* _ctrl_elem) {
 #ifdef DEBUG
@@ -543,7 +554,7 @@ void WebSocket_Wifi_Device_Driver::GenerateButtonGroup(WiFiClient *client, int _
 			if (I < (((Group_CtrlElem*)_ctrl_elem)->MembersCount() - 1)) {
 				client->print(F(" prepend "));
 			}
-			}
+		}
 		client->print(F("\">"));
 		client->print(F("				<button class=\"button small\" "));
 		client->print(F("onclick=\"SendMessage("));
@@ -554,7 +565,7 @@ void WebSocket_Wifi_Device_Driver::GenerateButtonGroup(WiFiClient *client, int _
 		client->print(String(I) + F("); \">"));
 		client->print(((Group_CtrlElem*)_ctrl_elem)->GetMember(I));
 		client->println(F("</button>"));
-		}
+	}
 	for (uint8_t I = 0; I < ((Group_CtrlElem*)_ctrl_elem)->MembersCount(); I++) {
 		client->print(F("</div>"));
 	}
@@ -575,5 +586,5 @@ void WebSocket_Wifi_Device_Driver::GenerateSetButton(WiFiClient *client, int _de
 #ifdef DEBUG
 	Serial.println("Ende WebSocket_Wifi_Device_Driver::GenerateSetButton");
 #endif // DEBUG
-}
+	}
 
