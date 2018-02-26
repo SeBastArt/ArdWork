@@ -46,7 +46,7 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 #endif
 	WebSocket_Wifi_Device_Driver * temp = (WebSocket_Wifi_Device_Driver*)create(String(F("WebSocket_Wifi_Device_Driver")).c_str());
 	wifi_device->AddCommunicationClient(temp);
-	
+
 #ifdef DEBUG
 	Serial.println("create(\"Ntp_Wifi_Device_Driver\")");
 #endif
@@ -56,8 +56,8 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 #ifdef DEBUG
 	Serial.println("create(\"GPS_Device_Driver\")");
 #endif
-	GPS_Device_Driver* gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
-	gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
+	__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
+	__gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
 #ifdef DEBUG
 	Serial.print("create(\"Uart_GRBW_Led_Device_Driver\")");
 #endif
@@ -83,8 +83,18 @@ void Nixie_Module_Driver::Build_Discriptor() {
 
 	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"), F("The main color for the ambient light pattern"));
 
+	Select_CtrlElem *ctrlElem_time_source = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE, &__sv_time_source, F("Time Source"), F("Select the source which provides system time"));
+	ctrlElem_time_source->AddMember(F("NTP-Server"));
+	ctrlElem_time_source->AddMember(F("GPS-Time"));
+
+	Select_CtrlElem *ctrlElem_time_format = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT, &__sv_time_format, F("Time Format"), F("Select time format 12h or 24h"));
+	ctrlElem_time_format->AddMember(F("12 hours"));
+	ctrlElem_time_format->AddMember(F("24 hours"));
+
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);
+	__descriptor->Add_Descriptor_Element(ctrlElem_time_source);
+	__descriptor->Add_Descriptor_Element(ctrlElem_time_format);
 #ifdef DEBUG
 	Serial.println("Ende Nixie_Module_Driver::Build_Module_Discriptor");
 #endif // DEBUG
@@ -149,11 +159,58 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 		Set_Pattern_Color(__sv_color.R, __sv_color.G, __sv_color.B);
 	}
 	break;
+	case NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE:
+	{
+#ifdef DEBUG
+		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - Nixie_Module_DRIVER_PATTERN_COLOR");
+#endif // DEBUG
+		int number = message.GetIntParamByIndex(0);
+		SetTimeSource(number);
 	}
+	break;
+	case NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT:
+	{
+#ifdef DEBUG
+		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - Nixie_Module_DRIVER_PATTERN_COLOR");
+#endif // DEBUG
+		int number = message.GetIntParamByIndex(0);
+		SetTimeFormat(number);
+	}
+	break;
+
+	}
+
+
 #ifdef DEBUG
 	Serial.println("Ende Nixie_Module_Driver::DoModuleMessage");
 #endif // DEBUG
 }
+
+
+void Nixie_Module_Driver::SetTimeFormat(int _number)
+{
+	__sv_time_format = _number;
+}
+
+void Nixie_Module_Driver::SetTimeSource(int _number)
+{
+	__sv_time_source = _number;
+	SetTimeBySource(__sv_time_source);
+}
+
+void Nixie_Module_Driver::SetTimeBySource(int _timeSource)
+{
+	switch (__sv_time_source)
+	{
+	case 0:
+		__gps->Exec_Start_Get_Time();
+		break;
+	case 1:
+		__ntp->Exec_Start_Get_Time();
+		break;
+	}
+}
+
 
 void Nixie_Module_Driver::TimerTick() {
 #ifdef DEBUG
@@ -179,7 +236,18 @@ void Nixie_Module_Driver::DigiClock() {
 #ifdef DEBUG
 	Serial.println("Start Nixie_Module_Driver::DigiClock");
 #endif // DEBUG	
-	time_t tTlocal = __ntp->local_time;
+
+
+	time_t tTlocal = 0;
+	switch (__sv_time_source)
+	{
+	case 0:
+		tTlocal = __gps->local_time;
+		break;
+	case 1:
+		tTlocal = __ntp->local_time;
+		break;
+	}
 
 	int lookUp[10][2] = {
 		{ 10, 20 } ,	//0
@@ -204,8 +272,15 @@ void Nixie_Module_Driver::DigiClock() {
 		0  //seconds second digit
 	};
 
-	timeArray[0] = (hour(tTlocal) % 12) / 10;
-	timeArray[1] = (hour(tTlocal) % 12) % 10;
+	if (__sv_time_format == 0) {
+		timeArray[0] = (hour(tTlocal) % 12) / 10;
+		timeArray[1] = (hour(tTlocal) % 12) % 10;
+	}
+	else
+	{
+		timeArray[0] = (hour(tTlocal) % 24) / 10;	//unnessessary only for reading code
+		timeArray[1] = (hour(tTlocal) % 24) % 10;	//unnessessary only for reading code
+	}
 	timeArray[2] = minute(tTlocal) / 10;
 	timeArray[3] = minute(tTlocal) % 10;
 	timeArray[4] = second(tTlocal) / 10;
@@ -220,8 +295,15 @@ void Nixie_Module_Driver::DigiClock() {
 		0, //minutes second digit
 	};
 
-	timeArray[0] = (hour(tTlocal) % 12) / 10;
-	timeArray[1] = (hour(tTlocal) % 12) % 10;
+	if (__sv_time_format == 0) {
+		timeArray[0] = (hour(tTlocal) % 12) / 10;
+		timeArray[1] = (hour(tTlocal) % 12) % 10;
+	}
+	else
+	{
+		timeArray[0] = (hour(tTlocal) % 24) / 10;	//unnessessary only for reading code
+		timeArray[1] = (hour(tTlocal) % 24) % 10;	//unnessessary only for reading code
+	}
 	timeArray[2] = minute(tTlocal) / 10;
 	timeArray[3] = minute(tTlocal) % 10;
 #endif

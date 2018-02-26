@@ -12,7 +12,7 @@ byte packetBuffer[NTP_PACKET_SIZE];  //buffer to hold incoming and outgoing pack
 
 REGISTERIMPL(Ntp_Wifi_Device_Driver);
 
-
+bool Ntp_Wifi_Device_Driver::__time_is_set = false;
 
 
 Ntp_Wifi_Device_Driver::Ntp_Wifi_Device_Driver(Module_Driver * module, uint8_t priority) :
@@ -21,6 +21,7 @@ Ntp_Wifi_Device_Driver::Ntp_Wifi_Device_Driver(Module_Driver * module, uint8_t p
 	__DriverType = NTP_WIFI_DEVICE_DRIVER_TYPE;
 	__local_time = 0;
 	__utc_time = 0;
+	__local_counter = 0;
 	SetTimerDelay(500);
 }
 
@@ -37,6 +38,15 @@ void Ntp_Wifi_Device_Driver::OnBuild_Descriptor() {
 
 	Time_CtrlElem *ctrlElem_local_time = new Time_CtrlElem(NTP_WIFI_DEVICE_DRIVER_LOCAL_TIME, &__local_time, false, F("Local Time"), F("The Time in your Location"));
 
+	Select_CtrlElem *ctrlElem_timeZone = new Select_CtrlElem(NTP_WIFI_DEVICE_DRIVER_TIMEZONE, &__sv_timezone, "Timezone", "Select the Timezone you want to display");
+	for (uint8_t i = 0; i < sizeof(timezone_Arr) / sizeof(timezone_struct); ++i)
+		ctrlElem_timeZone->AddMember(timezone_Arr[i]._name);
+
+	Group_CtrlElem *ctrlElem_SetTime = new Group_CtrlElem(NTP_WIFI_DEVICE_DRIVER_GET_TIME, "Get Time", "Get a new timestamp from NTP-Server");
+
+
+	__descriptor->Add_Descriptor_Element(ctrlElem_timeZone);
+	__descriptor->Add_Descriptor_Element(ctrlElem_SetTime);
 	__descriptor->Add_Descriptor_Element(ctrlElem_utc_time);
 	__descriptor->Add_Descriptor_Element(ctrlElem_local_time);
 #ifdef DEBUG
@@ -44,13 +54,6 @@ void Ntp_Wifi_Device_Driver::OnBuild_Descriptor() {
 #endif // DEBUG
 }
 
-void Ntp_Wifi_Device_Driver::OnNotifyConnected()
-{
-}
-
-void Ntp_Wifi_Device_Driver::OnNotifyConnectionLost()
-{
-}
 
 void Ntp_Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 {
@@ -73,15 +76,33 @@ void Ntp_Wifi_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 //
 	}
 	break;
+	case NTP_WIFI_DEVICE_DRIVER_TIMEZONE:
+	{
+#ifdef DEBUG
+		Serial.println("Start Ntp_Wifi_Device_Driver::DoDeviceMessage - NTP_WIFI_DEVICE_DRIVER_TIMEZONE");
+#endif // DEBUG
+		int timezone = message.GetIntParamByIndex(0);
+		SetTimezone(timezone);
+	}
+	break;
+	case NTP_WIFI_DEVICE_DRIVER_GET_TIME:
+	{
+#ifdef DEBUG
+		Serial.println("Start Ntp_Wifi_Device_Driver::DoDeviceMessage - NTP_WIFI_DEVICE_DRIVER_GET_TIME");
+#endif // DEBUG
+		StartGetTime();
+	}
+	break;
 	}
 }
+
 
 void Ntp_Wifi_Device_Driver::OnNotifyOnline()
 {
 #ifdef DEBUG
 	Serial.println("Start Ntp_Wifi_Device_Driver::OnNotifyOnline");
 #endif // DEBUG
-	SyncTimeWithNTP();
+	StartGetTime();
 #ifdef DEBUG
 	Serial.println("Ende Ntp_Wifi_Device_Driver::OnNotifyOnline");
 #endif // DEBUG
@@ -89,19 +110,22 @@ void Ntp_Wifi_Device_Driver::OnNotifyOnline()
 
 void Ntp_Wifi_Device_Driver::SyncTimeWithNTP()
 {
-	Serial.println(F("Setup sync with NTP service."));
 	setSyncProvider(getNTP_UTCTime1970);
 	setSyncInterval(86400); // NTP re-sync; i.e. 86400 sec would be once per day
 	yield();
-	__utc_time = now();
-	__local_time = CE.toLocal(__utc_time);
-	String sResponse = "";
-	sResponse += (F("local time (Berlin) "));
-	sResponse += hour(__local_time); sResponse += (":");
-	sResponse += minute(__local_time) / 10; sResponse += minute(__local_time) % 10; sResponse += (":");
-	sResponse += second(__local_time) / 10; sResponse += second(__local_time) % 10; sResponse += (" - ");
-	sResponse += day(__local_time); sResponse += ("."); sResponse += month(__local_time); sResponse += ("."); sResponse += year(__local_time);
-	Serial.println(sResponse);
+	//__utc_time = now();
+	//__local_time = CE.toLocal(__utc_time);
+	//String sResponse = "";
+	//sResponse += (F("local time (Berlin) "));
+	//sResponse += hour(__local_time); sResponse += (":");
+	//sResponse += minute(__local_time) / 10; sResponse += minute(__local_time) % 10; sResponse += (":");
+	//sResponse += second(__local_time) / 10; sResponse += second(__local_time) % 10; sResponse += (" - ");
+	//sResponse += day(__local_time); sResponse += ("."); sResponse += month(__local_time); sResponse += ("."); sResponse += year(__local_time);
+	//Serial.println(sResponse);
+}
+
+void Ntp_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
+{
 }
 
 void Ntp_Wifi_Device_Driver::TimerTick()
@@ -109,18 +133,29 @@ void Ntp_Wifi_Device_Driver::TimerTick()
 #ifdef DEBUG
 	Serial.println("Start Ntp_Wifi_Device_Driver::TimerTick");
 #endif // DEBUG
-	if ((__isOnline) && (__utc_time < 100000)) {
+	if ((__isOnline) && (!__time_is_set) && (__local_counter > 0)) {
 		SyncTimeWithNTP();
 	} 
+	__local_counter--;
 	__utc_time = now();
-	__local_time = CE.toLocal(__utc_time);
+	__local_time = ((Timezone)timezone_Arr[__sv_timezone]._timezone).toLocal(__utc_time);
 #ifdef DEBUG
 	Serial.println("Ende Ntp_Wifi_Device_Driver::TimerTick");
 #endif // DEBUG
 }
 
-void Ntp_Wifi_Device_Driver::DoUpdate(uint32_t deltaTime)
-{
+
+
+void Ntp_Wifi_Device_Driver::StartGetTime() {
+	__local_counter = 10;
+	__time_is_set = false;
+	if (__isOnline) {
+		setTime(0);
+	}
+}
+
+void Ntp_Wifi_Device_Driver::SetTimezone(int _timezone) {
+	__sv_timezone = _timezone;
 }
 
 
@@ -129,7 +164,7 @@ time_t Ntp_Wifi_Device_Driver::GetLocalTime() const
 	time_t utc_time;
 	time_t local_time;
 	utc_time = now();
-	local_time = CE.toLocal(utc_time);
+	local_time = ((Timezone)timezone_Arr[__sv_timezone]._timezone).toLocal(utc_time);
 	return local_time;
 }
 
@@ -137,23 +172,38 @@ time_t Ntp_Wifi_Device_Driver::GetUtcTime() const
 { 
 	time_t utc_time;
 	utc_time = now();
-	return __utc_time; 
+	return utc_time;
 }
 
 
+void Ntp_Wifi_Device_Driver::Exec_Start_Get_Time() {
+	Int_Task_Msg *message = new Int_Task_Msg(NTP_WIFI_DEVICE_DRIVER_GET_TIME);
+	PostMessage(&message);
+}
+
+void Ntp_Wifi_Device_Driver::Exec_Set_Timezone(int _timezone) {
+	Int_Task_Msg *message = new Int_Task_Msg(NTP_WIFI_DEVICE_DRIVER_TIMEZONE);
+	message->AddParam(_timezone);
+	PostMessage(&message);
+}
 
 time_t Ntp_Wifi_Device_Driver::getNTP_UTCTime1970()
 {
 #ifdef DEBUG
 	Serial.println("Start Ntp_Wifi_Device_Driver::getNTP_UTCTime1970");
 #endif // DEBUG
+	__time_is_set = false;
 	unsigned long t = getNTPTimestamp();
-	if (t == 0) return(0);
+	if (t == 0) {
+		
+		return(0);
+	}
 	// scale to 1970 
 	// may look like back & forth with ntp code; wrote it to make needed conversions more clear
 #ifdef DEBUG
 	Serial.println("Ende Ntp_Wifi_Device_Driver::getNTP_UTCTime1970");
 #endif // DEBUG
+	__time_is_set = true;
 	return(t + 946684800UL);
 }
 

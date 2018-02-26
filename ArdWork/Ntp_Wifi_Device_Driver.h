@@ -23,25 +23,29 @@ private:
 	static unsigned long getNTPTimestamp();
 	static unsigned long sendNTPpacket(IPAddress& address);
 	static time_t getNTP_UTCTime1970();
+	static bool __time_is_set;
 	time_t __local_time;
 	time_t __utc_time;
 	void SyncTimeWithNTP();
 	time_t GetLocalTime() const;
 	time_t GetUtcTime() const;
+	int __sv_timezone;
+	int __local_counter;
+	void StartGetTime();
+	void SetTimezone(int _timezone);
 protected:
+	void DoUpdate(uint32_t deltaTime);
 	void TimerTick() override; 
 	void OnBuild_Descriptor();
-	void OnNotifyConnected();
-	void OnNotifyConnectionLost();
 	void OnNotifyOnline();
 	void DoDeviceMessage(Int_Task_Msg message);
-	void DoUpdate(uint32_t deltaTime);
 public:
 	virtual ~Ntp_Wifi_Device_Driver() {};
 	Property<time_t, Ntp_Wifi_Device_Driver> local_time{ this, nullptr, &Ntp_Wifi_Device_Driver::GetLocalTime };
 	Property<time_t, Ntp_Wifi_Device_Driver> utc_time{ this, nullptr, &Ntp_Wifi_Device_Driver::GetUtcTime };
 	Ntp_Wifi_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
-
+	void Exec_Start_Get_Time();
+	void Exec_Set_Timezone(int _timezone);
 };
 
 #endif

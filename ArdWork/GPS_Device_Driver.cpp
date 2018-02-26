@@ -37,7 +37,7 @@ void GPS_Device_Driver::OnBuild_Descriptor() {
 
 	Time_CtrlElem *ctrlElem_local_time = new Time_CtrlElem(GPS_DEVICE_DRIVER_LOCAL_TIME, &__local_time, false, (F("Local Time")), (F("The Time in your Location")));
 
-	Select_CtrlElem *ctrlElem_timeZone = new Select_CtrlElem(GPS_DEVICE_DRIVER_TIMEZONE, &sv_timezone, "Timezone", "Select the Timezone you want to display");
+	Select_CtrlElem *ctrlElem_timeZone = new Select_CtrlElem(GPS_DEVICE_DRIVER_TIMEZONE, &__sv_timezone, "Timezone", "Select the Timezone you want to display");
 	for (uint8_t i = 0; i < sizeof(timezone_Arr) / sizeof(timezone_struct); ++i)
 		ctrlElem_timeZone->AddMember(timezone_Arr[i]._name);
 	
@@ -52,19 +52,46 @@ void GPS_Device_Driver::OnBuild_Descriptor() {
 #endif // DEBUG
 }
 
+void GPS_Device_Driver::OnInit()
+{
+#ifdef DEBUG
+	Serial.println("Start GPS_Device_Driver::OnInit");
+#endif // DEBUG
+	Device_Driver::OnInit();
+	StartGetTime();
+#ifdef DEBUG
+	Serial.println("Ende GPS_Device_Driver::OnInit");
+#endif // DEBUG
+}
+
+time_t GPS_Device_Driver::GetLocalTime() const
+{
+	time_t utc_time;
+	time_t local_time;
+	utc_time = now();
+	local_time = ((Timezone)timezone_Arr[__sv_timezone]._timezone).toLocal(utc_time);
+	return local_time;
+}
+
+time_t GPS_Device_Driver::GetUtcTime() const
+{
+	time_t utc_time;
+	utc_time = now();
+	return utc_time;
+}
+
 void GPS_Device_Driver::DoUpdate(uint32_t deltaTime)
 {
 	if (!__isIdle)
 		return;
 
-	if (__local_timer <= 0)
+	if (__local_timer <= 0) {
 		__time_is_set = true;
+		Serial.println("Could not revice gps-time!");
+	}
 
 	if (__time_is_set && __active) {
-		SerialGPS->end();
-		delete SerialGPS;
-		delete gps;
-		__active = false;
+		EndGPS();
 	}
 
 	if (!__active)
@@ -81,17 +108,22 @@ void GPS_Device_Driver::DoUpdate(uint32_t deltaTime)
 	}
 }
 
-void GPS_Device_Driver::OnInit()
+
+void GPS_Device_Driver::EndGPS() 
 {
-#ifdef DEBUG
-	Serial.println("Start GPS_Device_Driver::OnInit");
-#endif // DEBUG
-	Device_Driver::OnInit();
-	GetTime();
-#ifdef DEBUG
-	Serial.println("Ende GPS_Device_Driver::OnInit");
-#endif // DEBUG
+	if (SerialGPS != nullptr) {
+		SerialGPS->end();
+		delete SerialGPS;
+		SerialGPS = nullptr;
+	}
+	if (gps != nullptr) {
+		delete gps;
+		gps = nullptr;
+	}
+	__active = false;
 }
+
+
 
 void GPS_Device_Driver::TimerTick()
 {
@@ -99,7 +131,7 @@ void GPS_Device_Driver::TimerTick()
 	Serial.println("Start GPS_Device_Driver::TimerTick");
 #endif // DEBUG
 	__utc_time = now();
-	__local_time = ((Timezone)timezone_Arr[sv_timezone]._timezone).toLocal(__utc_time);
+	__local_time = ((Timezone)timezone_Arr[__sv_timezone]._timezone).toLocal(__utc_time);
 #ifdef DEBUG
 	Serial.println("Ende GPS_Device_Driver::TimerTick");
 #endif // DEBUG
@@ -132,7 +164,7 @@ void GPS_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 #ifdef DEBUG
 		Serial.println("Start GPS_Device_Driver::DoDeviceMessage - GPS_DEVICE_DRIVER_SET_TIME");
 #endif // DEBUG
-		GetTime();
+		StartGetTime();
 	}
 	break;
 	case GPS_DEVICE_DRIVER_TIMEZONE:
@@ -147,23 +179,24 @@ void GPS_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 	}
 }
 
-void GPS_Device_Driver::GetTime() {
+void GPS_Device_Driver::StartGetTime() {
 	if ((__rx == nullptr) || (__tx == nullptr))
 		return;
 
+	EndGPS();
 	SerialGPS = new SoftwareSerial(__rx->pinGPIO, __tx->pinGPIO);
 	gps = new TinyGPSPlus();
 	SerialGPS->begin(9600);
 	__active = true;
 	__time_is_set = false;
-	__local_timer = 10000;
+	__local_timer = 10000;  // try it for 10 secondy
 }
 
 void GPS_Device_Driver::SetTimezone(int _timezone) {
-	sv_timezone = _timezone;
+	__sv_timezone = _timezone;
 }
 
-void GPS_Device_Driver::Exec_Get_Time() {
+void GPS_Device_Driver::Exec_Start_Get_Time() {
 	Int_Task_Msg *message = new Int_Task_Msg(GPS_DEVICE_DRIVER_GET_TIME);
 	PostMessage(&message);
 }

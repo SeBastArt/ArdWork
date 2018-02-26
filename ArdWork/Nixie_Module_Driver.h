@@ -21,6 +21,8 @@ public:
 	Nixie_Module_Driver(uint8_t priority = TASK_PRIORITY_NORMAL);
 private:
 	Color __sv_color = { 55, 111, 222 };
+	int __sv_time_source;
+	int __sv_time_format;
 	uint8_t __AnimationCount;
 	int __activeAnimaton;
 	void SwitchPattern(uint8_t _control);
@@ -33,9 +35,12 @@ private:
 	Button_Device_Driver *__button;
 	Uart_GRBW_Led_Device_Driver* __strip;
 	Ntp_Wifi_Device_Driver* __ntp;
-
+	GPS_Device_Driver* __gps;
 protected:
 	void DoModuleMessage(Int_Task_Msg message);
+	void SetTimeFormat(int _number);
+	void SetTimeSource(int _number);
+	void SetTimeBySource(int _timeSource);
 	void TimerTick() override;
 	void DoTaskMessage(TaskMessage *message);
 	void Build_Discriptor();

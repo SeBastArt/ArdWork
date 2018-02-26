@@ -764,9 +764,9 @@ public:
 	void NotifyConnected() { __isConnected = true; __isOnline = false;  OnNotifyConnected(); };
 	void NotifyConnectionLost() { __isConnected = false; __isOnline = false;  OnNotifyConnectionLost(); };
 	void NotifyOnline() { __isConnected = true; __isOnline = true; OnNotifyOnline(); };
-	virtual void OnNotifyConnected() = 0;
-	virtual void OnNotifyConnectionLost() = 0;
-	virtual void OnNotifyOnline() = 0;
+	void OnNotifyConnected() {};
+	void OnNotifyConnectionLost() {};
+	void OnNotifyOnline() {};
 protected:
 	bool __isOnline;
 	bool __isConnected;
