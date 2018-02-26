@@ -28,6 +28,11 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__AnimationCount = 6;
 	__activeAnimaton = 5;
 	SetTimerDelay(500);
+	__date_time = false;
+	__sv_date_time = 0;
+	__sv_time_format = 0;
+	__sv_time_source = 0;
+	__timer_count = millis();
 #ifdef DEBUG
 	Serial.println("create(\"Button_Device_Driver\")");
 #endif
@@ -65,6 +70,7 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__strip->SetPixelCount(28);
 }
 
+
 void Nixie_Module_Driver::Build_Discriptor() {
 #ifdef DEBUG
 	Serial.println("Start Nixie_Module_Driver::Build_Module_Discriptor");
@@ -83,18 +89,24 @@ void Nixie_Module_Driver::Build_Discriptor() {
 
 	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"), F("The main color for the ambient light pattern"));
 
-	Select_CtrlElem *ctrlElem_time_source = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE, &__sv_time_source, F("Time Source"), F("Select the source which provides system time"));
-	ctrlElem_time_source->AddMember(F("NTP-Server"));
-	ctrlElem_time_source->AddMember(F("GPS-Time"));
+	Select_CtrlElem *ctrlElem_date_time = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME, &__sv_date_time, F("Date or Time"), F("Dsplay the Date, Time or change between both frequently"));
+	ctrlElem_date_time->AddMember(F("Time"));
+	ctrlElem_date_time->AddMember(F("Date"));
+	ctrlElem_date_time->AddMember(F("Time/Date"));
 
 	Select_CtrlElem *ctrlElem_time_format = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT, &__sv_time_format, F("Time Format"), F("Select time format 12h or 24h"));
 	ctrlElem_time_format->AddMember(F("12 hours"));
 	ctrlElem_time_format->AddMember(F("24 hours"));
 
+	Select_CtrlElem *ctrlElem_time_source = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE, &__sv_time_source, F("Time Source"), F("Select the source which provides system time"));
+	ctrlElem_time_source->AddMember(F("NTP-Server"));
+	ctrlElem_time_source->AddMember(F("GPS-Time"));
+
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);
-	__descriptor->Add_Descriptor_Element(ctrlElem_time_source);
+	__descriptor->Add_Descriptor_Element(ctrlElem_date_time);
 	__descriptor->Add_Descriptor_Element(ctrlElem_time_format);
+	__descriptor->Add_Descriptor_Element(ctrlElem_time_source);
 #ifdef DEBUG
 	Serial.println("Ende Nixie_Module_Driver::Build_Module_Discriptor");
 #endif // DEBUG
@@ -141,7 +153,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_SWITCH:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - Nixie_Module_DRIVER_PATTERN_SWITCH");
+		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_SWITCH");
 #endif // DEBUG
 		uint8_t number = message.GetIntParamByIndex(0);
 		SwitchPattern(number);
@@ -150,7 +162,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_COLOR:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - Nixie_Module_DRIVER_PATTERN_COLOR");
+		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_COLOR");
 #endif // DEBUG
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(0).c_str(), NULL, 16);
 		__sv_color.R = (uint8_t)((rgb >> 16) & 0xFF);
@@ -162,7 +174,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - Nixie_Module_DRIVER_PATTERN_COLOR");
+		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE");
 #endif // DEBUG
 		int number = message.GetIntParamByIndex(0);
 		SetTimeSource(number);
@@ -171,13 +183,21 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - Nixie_Module_DRIVER_PATTERN_COLOR");
+		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT");
 #endif // DEBUG
 		int number = message.GetIntParamByIndex(0);
 		SetTimeFormat(number);
 	}
 	break;
-
+	case NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME:
+	{
+#ifdef DEBUG
+		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME");
+#endif // DEBUG
+		int number = message.GetIntParamByIndex(0);
+		SetDateTime(number);
+	}
+	break;
 	}
 
 
@@ -186,6 +206,11 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 #endif // DEBUG
 }
 
+
+void Nixie_Module_Driver::SetDateTime(int _number)
+{
+	__sv_date_time = _number;
+}
 
 void Nixie_Module_Driver::SetTimeFormat(int _number)
 {
@@ -216,6 +241,23 @@ void Nixie_Module_Driver::TimerTick() {
 #ifdef DEBUG
 	Serial.println("Start Nixie_Module_Driver::TimerTick");
 #endif // DEBUG	
+
+	switch (__sv_date_time)
+	{
+	case 0:
+		__date_time = false;
+		break;
+	case 1:
+		__date_time = true;;
+		break;
+	case 2:
+		if (millis() - __timer_count > 30000) {
+			__timer_count = millis();
+			__date_time == true ? __date_time = false : __date_time = true;
+		}
+		break;
+	}
+
 	switch (__activeAnimaton)
 	{
 	case 5:
@@ -223,7 +265,7 @@ void Nixie_Module_Driver::TimerTick() {
 #ifdef DEBUG
 		Serial.println("Nixie_Module_Driver::TimerTick - DigiClock");
 #endif // DEBUG	
-		//DigiClock();
+		DigiClock();
 	}
 	break;
 	}
@@ -272,19 +314,33 @@ void Nixie_Module_Driver::DigiClock() {
 		0  //seconds second digit
 	};
 
-	if (__sv_time_format == 0) {
-		timeArray[0] = (hour(tTlocal) % 12) / 10;
-		timeArray[1] = (hour(tTlocal) % 12) % 10;
-	}
-	else
+	if (!__date_time) //display Time
 	{
-		timeArray[0] = (hour(tTlocal) % 24) / 10;	//unnessessary only for reading code
-		timeArray[1] = (hour(tTlocal) % 24) % 10;	//unnessessary only for reading code
+
+		timeArray[0] = second(tTlocal) % 10;
+		timeArray[1] = second(tTlocal) / 10;
+
+		timeArray[2] = minute(tTlocal) % 10;
+		timeArray[3] = minute(tTlocal) / 10;
+
+		if (__sv_time_format == 0) {
+			timeArray[4] = (hour(tTlocal) % 12) % 10;
+			timeArray[5] = (hour(tTlocal) % 12) / 10;
+		}
+		else
+		{
+			timeArray[4] = (hour(tTlocal) % 24) % 10;	//unnessessary only for reading code
+			timeArray[5] = (hour(tTlocal) % 24) / 10;	//unnessessary only for reading code
+		}
 	}
-	timeArray[2] = minute(tTlocal) / 10;
-	timeArray[3] = minute(tTlocal) % 10;
-	timeArray[4] = second(tTlocal) / 10;
-	timeArray[5] = second(tTlocal) % 10;
+	else //display Date
+	{
+		timeArray[0] = day(tTlocal) % 10;
+		timeArray[1] = day(tTlocal) / 10;
+
+		timeArray[2] = month(tTlocal) % 10;
+		timeArray[3] = month(tTlocal) / 10;
+	}
 #endif
 
 #ifdef four_digit
@@ -294,22 +350,32 @@ void Nixie_Module_Driver::DigiClock() {
 		0, //minutes first digit
 		0, //minutes second digit
 	};
+	if (!__date_time) //display Time
+	{
+		timeArray[0] = minute(tTlocal) % 10;
+		timeArray[1] = minute(tTlocal) / 10;
 
-	if (__sv_time_format == 0) {
-		timeArray[0] = (hour(tTlocal) % 12) / 10;
-		timeArray[1] = (hour(tTlocal) % 12) % 10;
+		if (__sv_time_format == 0) {
+			timeArray[2] = (hour(tTlocal) % 12) % 10;
+			timeArray[3] = (hour(tTlocal) % 12) / 10;
+		}
+		else
+		{
+			timeArray[2] = (hour(tTlocal) % 24) % 10;	//unnessessary only for reading code
+			timeArray[3] = (hour(tTlocal) % 24) / 10;	//unnessessary only for reading code
+		}
 	}
 	else
 	{
-		timeArray[0] = (hour(tTlocal) % 24) / 10;	//unnessessary only for reading code
-		timeArray[1] = (hour(tTlocal) % 24) % 10;	//unnessessary only for reading code
+		timeArray[0] = day(tTlocal) % 10;
+		timeArray[1] = day(tTlocal) / 10;
+
+		timeArray[2] = month(tTlocal) % 10;
+		timeArray[3] = month(tTlocal) / 10;
 	}
-	timeArray[2] = minute(tTlocal) / 10;
-	timeArray[3] = minute(tTlocal) % 10;
+
 #endif
-
 	__strip->Exec_Set_Color_All(0, 0, 0);
-
 	int tubeindex = 0;
 
 #ifdef DEBUG
@@ -331,7 +397,14 @@ void Nixie_Module_Driver::DigiClock() {
 	Serial.println(String(sizeof(timeArray) / sizeof(timeArray[0])));
 #endif // DEBUG	
 
-	for (int i = sizeof(timeArray) / sizeof(timeArray[0]) - 1; i >= 0; --i)
+	int digit_count = (sizeof(timeArray) / sizeof(timeArray[0]));
+#ifdef six_digit
+	if (__date_time)	//correct the digits to 4 for date and 6 for time
+		digit_count = digit_count - 2;
+#endif
+
+	for (int i = 0; i < digit_count; i++)
+		//for (int i = sizeof(timeArray) / sizeof(timeArray[0]) - 1; i >= 0; --i)
 	{
 #ifdef DEBUG
 		Serial.print(i + String(" "));

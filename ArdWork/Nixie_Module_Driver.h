@@ -23,6 +23,9 @@ private:
 	Color __sv_color = { 55, 111, 222 };
 	int __sv_time_source;
 	int __sv_time_format;
+	int __sv_date_time;
+	bool __date_time;
+	uint __timer_count;
 	uint8_t __AnimationCount;
 	int __activeAnimaton;
 	void SwitchPattern(uint8_t _control);
@@ -38,6 +41,7 @@ private:
 	GPS_Device_Driver* __gps;
 protected:
 	void DoModuleMessage(Int_Task_Msg message);
+	void SetDateTime(int _number);
 	void SetTimeFormat(int _number);
 	void SetTimeSource(int _number);
 	void SetTimeBySource(int _timeSource);
