@@ -10,6 +10,7 @@
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
 #include "Ntp_Wifi_Device_Driver.h"
+#include "GPS_Device_Driver.h"
 
 //#define DEBUG
 
@@ -33,7 +34,7 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__button = (Button_Device_Driver*)(create(String(F("Button_Device_Driver")).c_str()));
 	IO_Pin* _button_pin = pinManager.GetPin("D7");
 	__button->SetPin(_button_pin);
-	__button->SetPullUp();
+	__button->PullUp();
 
 #ifdef DEBUG
 	Serial.println("create(\"Wifi_Device_Driver\")");
@@ -49,14 +50,14 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 #ifdef DEBUG
 	Serial.println("create(\"Ntp_Wifi_Device_Driver\")");
 #endif
-	//__ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
-	//wifi_device->AddCommunicationClient(__ntp);
+	Ntp_Wifi_Device_Driver* __ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
+	wifi_device->AddCommunicationClient(__ntp);
 
 #ifdef DEBUG
 	Serial.println("create(\"GPS_Device_Driver\")");
 #endif
-	__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
-
+	GPS_Device_Driver* gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
+	gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
 #ifdef DEBUG
 	Serial.print("create(\"Uart_GRBW_Led_Device_Driver\")");
 #endif
@@ -68,8 +69,8 @@ void Nixie_Module_Driver::Build_Discriptor() {
 #ifdef DEBUG
 	Serial.println("Start Nixie_Module_Driver::Build_Module_Discriptor");
 #endif // DEBUG	
-	__descriptor->name = F("Light Control");
-	__descriptor->descr = F("control the behavior of the ambilight");
+	__descriptor->name = F("Nixie Clock");
+	__descriptor->descr = F("a stylish digital clock");
 	__descriptor->published = true;
 
 	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"), F("Switch the build in animations"));

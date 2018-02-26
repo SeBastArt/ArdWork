@@ -40,8 +40,8 @@ public:
 	Button_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
 	int GetButtonPinID();
 	void SetPin(IO_Pin * _pin);
-	void SetPullUp();
-	void SetNoPullUp();
+	void PullUp();
+	void NoPullUp();
 	void Exec_Push_Button();
 
 };

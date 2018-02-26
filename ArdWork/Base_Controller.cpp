@@ -25,10 +25,10 @@ IO_Pin* Base_Controller::GetPin(uint8_t _GPIONumber) {
 	return result;
 }
 
-IO_Pin* Base_Controller::GetPin(String name) {
+IO_Pin* Base_Controller::GetPin(String _name) {
 	IO_Pin* result = nullptr;
 	for (int i = 0; i < pins.Size(); i++) {
-		if (String(pins[i]->pinName).equals(name)) {
+		if (String(pins[i]->pinName).equals(_name)) {
 			result = pins[i];
 			result->IsActive = true;
 			result->pinMode = INPUT;

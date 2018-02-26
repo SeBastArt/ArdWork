@@ -1,26 +1,27 @@
 #include "GPS_Device_Driver.h"
-
+#include "Timezones.h"
 
 REGISTERIMPL(GPS_Device_Driver);
 
 //#define DEBUG
-
-
-TimeChangeRule CEST1 = { "CEST", Last, Sun, Mar, 2, 120 };     //Central European Summer Time
-TimeChangeRule CET1 = { "CET ", Last, Sun, Oct, 3, 60 };       //Central European Standard Time
-Timezone CE1(CEST1, CET1);
-
 
 GPS_Device_Driver::GPS_Device_Driver(Module_Driver * module, uint8_t priority) :
 	Device_Driver(module, priority) {
 	__DriverType = GPS_DEVICE_DRIVER_TYPE;
 	__local_time = 0;
 	__utc_time = 0;
-	__local_timer_delay = 2000;
-	__local_timer_delta = 0;
+	__local_timer = 0;
 	SetTimerDelay(500);
 	__time_is_set = false;
 	__active = false;
+	__rx = nullptr;
+	__tx = nullptr;
+}
+
+void GPS_Device_Driver::SetPins(IO_Pin * _rx, IO_Pin * _tx)
+{
+	__rx = _rx;
+	__tx = _tx;
 }
 
 
@@ -36,6 +37,14 @@ void GPS_Device_Driver::OnBuild_Descriptor() {
 
 	Time_CtrlElem *ctrlElem_local_time = new Time_CtrlElem(GPS_DEVICE_DRIVER_LOCAL_TIME, &__local_time, false, (F("Local Time")), (F("The Time in your Location")));
 
+	Select_CtrlElem *ctrlElem_timeZone = new Select_CtrlElem(GPS_DEVICE_DRIVER_TIMEZONE, &sv_timezone, "Timezone", "Select the Timezone you want to display");
+	for (uint8_t i = 0; i < sizeof(timezone_Arr) / sizeof(timezone_struct); ++i)
+		ctrlElem_timeZone->AddMember(timezone_Arr[i]._name);
+	
+	Group_CtrlElem *ctrlElem_SetTime = new Group_CtrlElem(GPS_DEVICE_DRIVER_GET_TIME, "Get Time", "Get a new timestamp from GPS-Module");
+
+	__descriptor->Add_Descriptor_Element(ctrlElem_timeZone);
+	__descriptor->Add_Descriptor_Element(ctrlElem_SetTime);
 	__descriptor->Add_Descriptor_Element(ctrlElem_utc_time);
 	__descriptor->Add_Descriptor_Element(ctrlElem_local_time);
 #ifdef DEBUG
@@ -45,9 +54,11 @@ void GPS_Device_Driver::OnBuild_Descriptor() {
 
 void GPS_Device_Driver::DoUpdate(uint32_t deltaTime)
 {
-	//timer_delta += deltaTime;
-	//if (timer_delta > timer_delay) {
-	//	timer_delta = 0;
+	if (!__isIdle)
+		return;
+
+	if (__local_timer <= 0)
+		__time_is_set = true;
 
 	if (__time_is_set && __active) {
 		SerialGPS->end();
@@ -56,71 +67,18 @@ void GPS_Device_Driver::DoUpdate(uint32_t deltaTime)
 		__active = false;
 	}
 
-	if (__isIdle) {
-		if (__active)
-		while (SerialGPS->available() > 0) {
-			if (gps->encode(SerialGPS->read())) { // process gps messages
-				__local_timer_delta += deltaTime;
-				//Serial.println("Timer Delay: " + String(__local_timer_delay) + "Timer Delta: " + String(__local_timer_delta));
-				if (__local_timer_delta > __local_timer_delay) {
-					__local_timer_delta = 0;
-					setTime(gps->time.hour(), gps->time.minute(), gps->time.second(), gps->date.day(), gps->date.month(), gps->date.year());
-					__time_is_set = true;
-				}
-			}
+	if (!__active)
+		return;
+
+	if (!__time_is_set)
+		__local_timer -= deltaTime;
+
+	while (SerialGPS->available() > 0) {
+		if (gps->encode(SerialGPS->read())) { // process gps messages
+			setTime(gps->time.hour(), gps->time.minute(), gps->time.second(), gps->date.day(), gps->date.month(), gps->date.year());
+			__time_is_set = true;
 		}
 	}
-}
-
-void GPS_Device_Driver::displayInfo()
-{
-	Serial.print(F("Location: "));
-	if (gps->location.isValid())
-	{
-		Serial.print(gps->location.lat(), 6);
-		Serial.print(F(","));
-		Serial.print(gps->location.lng(), 6);
-	}
-	else
-	{
-		Serial.print(F("INVALID"));
-	}
-
-	Serial.print(F("  Date/Time: "));
-	if (gps->date.isValid())
-	{
-		Serial.print(gps->date.month());
-		Serial.print(F("/"));
-		Serial.print(gps->date.day());
-		Serial.print(F("/"));
-		Serial.print(gps->date.year());
-	}
-	else
-	{
-		Serial.print(F("INVALID"));
-	}
-
-	Serial.print(F(" "));
-	if (gps->time.isValid())
-	{
-		if (gps->time.hour() < 10) Serial.print(F("0"));
-		Serial.print(gps->time.hour());
-		Serial.print(F(":"));
-		if (gps->time.minute() < 10) Serial.print(F("0"));
-		Serial.print(gps->time.minute());
-		Serial.print(F(":"));
-		if (gps->time.second() < 10) Serial.print(F("0"));
-		Serial.print(gps->time.second());
-		Serial.print(F("."));
-		if (gps->time.centisecond() < 10) Serial.print(F("0"));
-		Serial.print(gps->time.centisecond());
-	}
-	else
-	{
-		Serial.print(F("INVALID"));
-	}
-
-	Serial.println();
 }
 
 void GPS_Device_Driver::OnInit()
@@ -129,10 +87,7 @@ void GPS_Device_Driver::OnInit()
 	Serial.println("Start GPS_Device_Driver::OnInit");
 #endif // DEBUG
 	Device_Driver::OnInit();
-	SerialGPS = new SoftwareSerial(5, 4);
-	gps = new TinyGPSPlus();
-	SerialGPS->begin(9600);
-	__active = true;
+	GetTime();
 #ifdef DEBUG
 	Serial.println("Ende GPS_Device_Driver::OnInit");
 #endif // DEBUG
@@ -144,7 +99,7 @@ void GPS_Device_Driver::TimerTick()
 	Serial.println("Start GPS_Device_Driver::TimerTick");
 #endif // DEBUG
 	__utc_time = now();
-	__local_time = CE1.toLocal(__utc_time);
+	__local_time = ((Timezone)timezone_Arr[sv_timezone]._timezone).toLocal(__utc_time);
 #ifdef DEBUG
 	Serial.println("Ende GPS_Device_Driver::TimerTick");
 #endif // DEBUG
@@ -159,7 +114,7 @@ void GPS_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 	case GPS_DEVICE_DRIVER_UTC_TIME:
 	{
 #ifdef DEBUG
-		Serial.println("Start Ntp_Wifi_Device_Driver::DoDeviceMessage - NTP_WIFI_DEVICE_DRIVER_UTC_TIME");
+		Serial.println("Start GPS_Device_Driver::DoDeviceMessage - GPS_DEVICE_DRIVER_UTC_TIME");
 #endif // DEBUG
 		//
 	}
@@ -167,11 +122,54 @@ void GPS_Device_Driver::DoDeviceMessage(Int_Task_Msg message)
 	case GPS_DEVICE_DRIVER_LOCAL_TIME:
 	{
 #ifdef DEBUG
-		Serial.println("Start Ntp_Wifi_Device_Driver::DoDeviceMessage - NTP_WIFI_DEVICE_DRIVER_LOCAL_TIME");
+		Serial.println("Start GPS_Device_Driver::DoDeviceMessage - GPS_DEVICE_DRIVER_LOCAL_TIME");
 #endif // DEBUG
 		//
 	}
 	break;
+	case GPS_DEVICE_DRIVER_GET_TIME:
+	{
+#ifdef DEBUG
+		Serial.println("Start GPS_Device_Driver::DoDeviceMessage - GPS_DEVICE_DRIVER_SET_TIME");
+#endif // DEBUG
+		GetTime();
 	}
+	break;
+	case GPS_DEVICE_DRIVER_TIMEZONE:
+	{
+#ifdef DEBUG
+		Serial.println("Start GPS_Device_Driver::DoDeviceMessage - GPS_DEVICE_DRIVER_TIMEZONE");
+#endif // DEBUG
+		int timezone = message.GetIntParamByIndex(0);
+		SetTimezone(timezone);
 	}
+	break;
+	}
+}
 
+void GPS_Device_Driver::GetTime() {
+	if ((__rx == nullptr) || (__tx == nullptr))
+		return;
+
+	SerialGPS = new SoftwareSerial(__rx->pinGPIO, __tx->pinGPIO);
+	gps = new TinyGPSPlus();
+	SerialGPS->begin(9600);
+	__active = true;
+	__time_is_set = false;
+	__local_timer = 10000;
+}
+
+void GPS_Device_Driver::SetTimezone(int _timezone) {
+	sv_timezone = _timezone;
+}
+
+void GPS_Device_Driver::Exec_Get_Time() {
+	Int_Task_Msg *message = new Int_Task_Msg(GPS_DEVICE_DRIVER_GET_TIME);
+	PostMessage(&message);
+}
+
+void GPS_Device_Driver::Exec_Set_Timezone(int _timezone) {
+	Int_Task_Msg *message = new Int_Task_Msg(GPS_DEVICE_DRIVER_TIMEZONE);
+	message->AddParam(_timezone);
+	PostMessage(&message);
+}

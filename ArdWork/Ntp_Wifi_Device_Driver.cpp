@@ -1,4 +1,5 @@
 #include "Ntp_Wifi_Device_Driver.h"
+#include "Timezones.h"
 
 //#define DEBUG;
 
@@ -12,9 +13,6 @@ byte packetBuffer[NTP_PACKET_SIZE];  //buffer to hold incoming and outgoing pack
 REGISTERIMPL(Ntp_Wifi_Device_Driver);
 
 
-TimeChangeRule CEST = { "CEST", Last, Sun, Mar, 2, 120 };     //Central European Summer Time
-TimeChangeRule CET = { "CET ", Last, Sun, Oct, 3, 60 };       //Central European Standard Time
-Timezone CE(CEST, CET);
 
 
 Ntp_Wifi_Device_Driver::Ntp_Wifi_Device_Driver(Module_Driver * module, uint8_t priority) :
@@ -25,7 +23,6 @@ Ntp_Wifi_Device_Driver::Ntp_Wifi_Device_Driver(Module_Driver * module, uint8_t p
 	__utc_time = 0;
 	SetTimerDelay(500);
 }
-
 
 
 void Ntp_Wifi_Device_Driver::OnBuild_Descriptor() {

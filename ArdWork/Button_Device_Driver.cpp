@@ -26,12 +26,12 @@ void Button_Device_Driver::SetPin(IO_Pin* _pin)
 	__pin->pinMode = INPUT;
 }
 
-void Button_Device_Driver::SetPullUp()
+void Button_Device_Driver::PullUp()
 {
 	__hasPullUp = true;
 }
 
-void Button_Device_Driver::SetNoPullUp()
+void Button_Device_Driver::NoPullUp()
 {
 	__hasPullUp = false;
 }

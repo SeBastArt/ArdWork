@@ -25,19 +25,24 @@ private:
 	TinyGPSPlus *gps;
 	time_t __local_time;
 	time_t __utc_time;
+	int sv_timezone = 0;
+	int __local_timer;
 
-	uint __local_timer_delta;
-	uint __local_timer_delay;
+	IO_Pin* __rx;
+	IO_Pin* __tx;
 protected:
 	void DoUpdate(uint32_t deltaTime);
-	void displayInfo();
 	void OnInit() override;
 	void TimerTick() override;
 	void DoDeviceMessage(Int_Task_Msg message);
+	void GetTime();
+	void SetTimezone(int _timezone);
 	void OnBuild_Descriptor();
 public:
 	GPS_Device_Driver(Module_Driver* module, uint8_t priority = TASK_PRIORITY_NORMAL);
-
+	void SetPins(IO_Pin * _rx, IO_Pin * _tx);
+	void Exec_Get_Time();
+	void Exec_Set_Timezone(int _timezone);
 };
 
 #endif
