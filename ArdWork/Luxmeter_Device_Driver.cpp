@@ -19,7 +19,7 @@ Luxmeter_Device_Driver::Luxmeter_Device_Driver(Module_Driver* module, uint8_t ad
 	tsl = new Adafruit_TSL2561_Unified(adress, 1);
 	Set_Enable_AutoRange(false);
 #ifdef DEBUG
-	Serial.print("Ende Constructor Luxmeter_Device_Driver");
+	Serial.printl("Ende Constructor Luxmeter_Device_Driver");
 #endif // DEBUG
 }
 
@@ -29,7 +29,7 @@ void Luxmeter_Device_Driver::OnBuild_Descriptor() {
 	Serial.println("Start Luxmeter_Device_Driver::Build_Descriptor");
 #endif // DEBUG
 	__descriptor->name = F("Luxmeter");
-	__descriptor->descr = F("Luxmeter stellt die Steuerung des Lichtsensors bereit es erlaubt die Kontrolle &uuml;ber die Ausleseparameter und stellt Live - Werte sowie Diagramme bereit");
+	__descriptor->descr = F("estimate the env-light");
 	__descriptor->published = false;
 
 #ifdef DEBUG

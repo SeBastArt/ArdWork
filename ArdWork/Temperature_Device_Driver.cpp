@@ -20,7 +20,7 @@ void Temperature_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->descr = F("Measure the temperatur of the environment");
 	__descriptor->published = false;
 
-	FValue_CtrlElem *ctrlElem_temp = new FValue_CtrlElem(TEMPERATURE_DEVICE_DRIVER_SI_TEMPERATURE, &act_temp, F("Temperatur"), F("actual temperature"));
+	FValue_CtrlElem *ctrlElem_temp = new FValue_CtrlElem(TEMPERATURE_DEVICE_DRIVER_SI_TEMPERATURE, &act_temp, false, F("Temperatur"), F("actual temperature"));
 	ctrlElem_temp->published = true;
 	ctrlElem_temp->unit = F("°C");
 

@@ -41,7 +41,7 @@ enum ctrl_type
 	color,
 	value,
 	select,
-	group, 
+	group,
 	zeit
 };
 
@@ -67,7 +67,7 @@ protected:
 	void *__supervisor;
 	ctrl_type __type;
 public:
-	CtrlElem(int _id, void* _supervisor = nullptr, bool _isEditable = true, String _name = "Control Element Name", String _description = "Control Element Description") :
+	CtrlElem(int _id, void* _supervisor, bool _isEditable, String _name, String _description) :
 		__id(_id),
 		__supervisor(_supervisor),
 		__isEditable(_isEditable),
@@ -105,7 +105,7 @@ private:
 
 	Vector<StringContainer*> *__string_container;
 public:
-	Select_CtrlElem(int _id, void* _supervisor, String _name = "Select", String _descr = "decr") :
+	Select_CtrlElem(int _id, int* _supervisor, String _name, String _descr) :
 		CtrlElem(_id, _supervisor, false, _name, _descr)
 	{
 		__type = select;
@@ -138,7 +138,7 @@ public:
 class Group_CtrlElem : public Select_CtrlElem
 {
 public:
-	Group_CtrlElem(int _id, String _name = "Group", String _descr = "decr") :
+	Group_CtrlElem(int _id, String _name, String _descr) :
 		Select_CtrlElem(_id, nullptr, _name, _descr)
 	{
 		__type = group;
@@ -152,7 +152,7 @@ public:
 class Input_CtrlElem :public CtrlElem
 {
 public:
-	Input_CtrlElem(int _id, String* _supervisor, String _name = "Text", String _descr = "decr") :
+	Input_CtrlElem(int _id, String* _supervisor, String _name, String _descr) :
 		CtrlElem(_id, (void*)_supervisor, true, _name, _descr)
 	{
 		__type = input;
@@ -167,7 +167,7 @@ public:
 class Password_CtrlElem :public CtrlElem
 {
 public:
-	Password_CtrlElem(int _id, String* _supervisor, String _name = "Password", String _descr = "decr") :
+	Password_CtrlElem(int _id, String* _supervisor, String _name, String _descr) :
 		CtrlElem(_id, (void*)_supervisor, true, _name, _descr)
 	{
 		__type = pass;
@@ -181,7 +181,7 @@ public:
 class Color_CtrlElem :public CtrlElem
 {
 public:
-	Color_CtrlElem(int _id, void* _supervisor, String _name = "Color", String _descr = "decr") :
+	Color_CtrlElem(int _id, void* _supervisor, String _name, String _descr) :
 		CtrlElem(_id, _supervisor, false, _name, _descr)
 	{
 		__type = color;
@@ -212,12 +212,12 @@ public:
 class Time_CtrlElem :public CtrlElem
 {
 public:
-	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name = "Time", String _descr = "decr") :
+	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name, String _descr) :
 		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
 	{
 		__type = zeit;
 	};
-	
+
 	String TimeToString() {
 		time_t v_time = *reinterpret_cast<time_t*>(__supervisor);
 		String resultString = "";
@@ -247,7 +247,7 @@ public:
 class FValue_CtrlElem :public CtrlElem
 {
 public:
-	FValue_CtrlElem(int _id, float* _supervisor, bool _editable, String _name = "FValue", String _descr = "decr") :
+	FValue_CtrlElem(int _id, float* _supervisor, bool _editable, String _name, String _descr) :
 		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
 	{
 		__type = value;
@@ -261,7 +261,7 @@ public:
 class IValue_CtrlElem :public CtrlElem
 {
 public:
-	IValue_CtrlElem(int _id, int* _supervisor, bool _editable, String _name = "IValue", String _descr = "decr") :
+	IValue_CtrlElem(int _id, int* _supervisor, bool _editable, String _name, String _descr) :
 		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
 	{
 		__type = value;
@@ -294,8 +294,8 @@ private:
 public:
 	Descriptor(int _id) :
 		__id(_id),
-		__name("Driver Descriptor"),
-		__descr("Driver Description"),
+		__name("Driver"),
+		__descr("Description"),
 		__ctrl_elem_count(0),
 		__published(false) {
 		__vec_ctrlelem = new Vector<CtrlElem*>;
@@ -365,25 +365,27 @@ public:
 
 	void Load(int _driverID, void(*fw_Exec_Command)(void*, int, String), void* context) {
 #ifdef  LOAD_SAVE_DEBUG
-		Serial.println("Start Descriptor_List::Load");
+		Serial.println(F("Start Descriptor_List::Load"));
 #endif //  LOAD_SAVE_DEBUG
 		DynamicJsonBuffer jsonBuffer;
 		String file_text;
 
-		filesystem.OpenFile("/testfile.json");
+		if (!filesystem.OpenFile(F("/testfile.json")))
+			return;
+
 		file_text = filesystem.FileAsString();
 #ifdef  LOAD_SAVE_DEBUG
-		Serial.println("TextFile - ");
+		Serial.println("TextFile - "));
 		Serial.println(file_text);
-		Serial.println("- TextFile End");
+		Serial.println("- TextFile End"));
 #endif //  LOAD_SAVE_DEBUG
 		JsonObject& root = jsonBuffer.parseObject(file_text);
-	
+
 		if (!root.success()) {
-			Serial.println("parseObject - failed");
+			Serial.println(F("parseObject - failed"));
 			return;
 		}
-		
+
 		JsonArray& arr_descriptors = root["Descriptors"];
 		Descriptor *ptr_descriptor;
 		for (auto obj_descriptor : arr_descriptors) {
@@ -415,22 +417,22 @@ public:
 		}
 		filesystem.CloseFile();
 #ifdef  LOAD_SAVE_DEBUG
-		Serial.println("Loaded!");
-		Serial.println("JSON-Text: ");
+		Serial.println("Loaded!"));
+		Serial.println("JSON-Text: "));
 		root.printTo(Serial);
-		Serial.println("JSON-Text Finished!");
+		Serial.println("JSON-Text Finished!"));
 #endif //  LOAD_SAVE_DEBUG	
-		
+
 #ifdef  LOAD_SAVE_DEBUG
-		Serial.println("Ende Descriptor_List::Load");
+		Serial.println("Ende Descriptor_List::Load"));
 #endif //  LOAD_SAVE_DEBUG
 	}
 
 	void Save() {
-		
+
 		DynamicJsonBuffer jsonBuffer;
 #ifdef  LOAD_SAVE_DEBUG
-		Serial.println("JSON-File - create new one");
+		Serial.println("JSON-File - create new one"));
 #endif //  LOAD_SAVE_DEBUG	
 		JsonObject& root = jsonBuffer.createObject();
 		JsonArray& arr_descriptors = root.createNestedArray("Descriptors");
@@ -455,9 +457,9 @@ public:
 				Serial.print(" - type: "); Serial.print((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type);
 				Serial.print(" - value: "); Serial.println((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString());
 #endif //  LOAD_SAVE_DEBUG
-					obj_control["id"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id;
-					obj_control["type"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type;
-					obj_control["value"] = (String)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
+				obj_control["id"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id;
+				obj_control["type"] = (int)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type;
+				obj_control["value"] = (String)(*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
 			}
 		}
 		String text;
@@ -467,14 +469,14 @@ public:
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.print("- Save to: /testfile.json ");
 		root.printTo(Serial);
-		Serial.println("Save End - ");
+		Serial.println("Save End - "));
 #endif //  LOAD_SAVE_DEBUG
-		
+
 	}
 
 	void ModifySave() {
 #ifdef  LOAD_SAVE_DEBUG
-		Serial.println("Start Descriptor_List::Save");
+		Serial.println("Start Descriptor_List::Save"));
 #endif //  LOAD_SAVE_DEBUG
 		DynamicJsonBuffer jsonBuffer;
 
@@ -486,16 +488,16 @@ public:
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.print("Load JSON-File:");
 		Serial.println(file_text);
-		Serial.println("- Ende JSON-File -");
+		Serial.println("- Ende JSON-File -"));
 #endif //  LOAD_SAVE_DEBUG	
 
 
 		if (file_text.equals(""))
-			Serial.println("File is empty");
+			Serial.println(F("File is empty"));
 
 		if (file_text.equals("{}")) {
 #ifdef  LOAD_SAVE_DEBUG
-			Serial.println("no entries found - erase file!");
+			Serial.println("no entries found - erase file!"));
 #endif //  LOAD_SAVE_DEBUG	
 			file_text = "";
 		}
@@ -505,7 +507,7 @@ public:
 
 		if (!root.success()) {
 #ifdef  LOAD_SAVE_DEBUG
-			Serial.println("can not parse JSON-File - create new one");
+			Serial.println("can not parse JSON-File - create new one"));
 #endif //  LOAD_SAVE_DEBUG	
 			JsonObject& new_root = jsonBuffer.createObject();
 			JsonArray& arr_descriptors = new_root.createNestedArray("Descriptors");
@@ -539,7 +541,7 @@ public:
 			JsonObject& test_root = jsonBuffer.parseObject(file_text);
 
 			if (!test_root.success()) {
-				Serial.println("parseObject() failed");
+				Serial.println("parseObject() failed"));
 				return;
 			}
 			filesystem.CloseFile();
@@ -549,7 +551,7 @@ public:
 		}
 		else {
 #ifdef  LOAD_SAVE_DEBUG
-			Serial.println("JSON-File parsed successfully");
+			Serial.println("JSON-File parsed successfully"));
 #endif //  LOAD_SAVE_DEBUG
 			JsonArray& arr_descriptors = root["Descriptors"];
 			Descriptor *ptr_descriptor;
@@ -563,7 +565,7 @@ public:
 #ifdef  LOAD_SAVE_DEBUG
 						Serial.print("Found DeviceID: ");
 						Serial.print(ptr_descriptor->id);
-						Serial.println(" in JSON-file - modify entry!");
+						Serial.println(" in JSON-file - modify entry!"));
 #endif //  LOAD_SAVE_DEBUG
 						JsonArray& arr_controls = obj_descriptor["Controls"];
 						for (auto obj_control : arr_controls) {
@@ -591,7 +593,7 @@ public:
 #ifdef  LOAD_SAVE_DEBUG
 					Serial.print("No match for DeviceID: ");
 					Serial.print(ptr_descriptor->id);
-					Serial.println(" in JSON-file - create new entry!");
+					Serial.println(" in JSON-file - create new entry!"));
 #endif //  LOAD_SAVE_DEBUG
 					JsonObject& descriptor = arr_descriptors.createNestedObject();
 					descriptor["id"] = (int)ptr_descriptor->id;
@@ -628,12 +630,12 @@ public:
 			filesystem.CloseFile();
 
 			if (!test_root.success()) {
-				Serial.println("parseObject() failed");
+				Serial.println("parseObject() failed"));
 				return;
 			}
 
 
-			Serial.println("Saved!");
+			Serial.println("Saved!"));
 			Serial.println(text);
 #endif //  LOAD_SAVE_DEBUG	
 		}
@@ -641,7 +643,7 @@ public:
 
 
 #ifdef  LOAD_SAVE_DEBUG
-		Serial.println("Ende Descriptor_List::Save");
+		Serial.println("Ende Descriptor_List::Save"));
 #endif //  LOAD_SAVE_DEBUG
 	}
 
@@ -670,9 +672,9 @@ public:
 	bool GetElemById(int _id, Descriptor * _descriptor) {
 		bool return_value = false;
 		for (size_t i = 0; i < __elem_count; i++) {
-			Descriptor *t_descr = (*__vec_descriptor_elem)[i];
-			if (t_descr->id == _id) {
-				t_descr = (*__vec_descriptor_elem)[i];
+			if ((*__vec_descriptor_elem)[i]->id == _id) {
+				_descriptor = (*__vec_descriptor_elem)[i];
+				Serial.println(_descriptor->name);
 				return_value = true;
 				break;
 			}
@@ -764,9 +766,9 @@ public:
 	void NotifyConnected() { __isConnected = true; __isOnline = false;  OnNotifyConnected(); };
 	void NotifyConnectionLost() { __isConnected = false; __isOnline = false;  OnNotifyConnectionLost(); };
 	void NotifyOnline() { __isConnected = true; __isOnline = true; OnNotifyOnline(); };
-	void OnNotifyConnected() {};
-	void OnNotifyConnectionLost() {};
-	void OnNotifyOnline() {};
+	virtual void OnNotifyConnected() = 0;
+	virtual void OnNotifyConnectionLost() = 0;
+	virtual void OnNotifyOnline() = 0;
 protected:
 	bool __isOnline;
 	bool __isConnected;

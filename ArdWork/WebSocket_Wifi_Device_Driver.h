@@ -49,9 +49,9 @@ private:
 	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
 protected:
 	void OnBuild_Descriptor();
-	void OnNotifyConnected();
-	void OnNotifyConnectionLost();
-	void OnNotifyOnline();
+	void OnNotifyConnected() override;
+	void OnNotifyConnectionLost() override;
+	void OnNotifyOnline() override;
 	void DoDeviceMessage(Int_Task_Msg message);
 	void DoUpdate(uint32_t deltaTime);
 	void TimerTick() override;

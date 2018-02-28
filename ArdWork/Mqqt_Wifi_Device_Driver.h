@@ -37,9 +37,9 @@ protected:
 	Vector <String*> msg_list;
 	void DoUpdate(uint32_t deltaTime);
 	void DoDeviceMessage(Int_Task_Msg message);
-	void OnNotifyConnected();
-	void OnNotifyConnectionLost();
-	void OnNotifyOnline();
+	void OnNotifyConnected() override;
+	void OnNotifyConnectionLost() override;
+	void OnNotifyOnline() override;
 public:
 	void SetOutTopic(String topic);
 	void SetInTopic(String topic);

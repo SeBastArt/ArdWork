@@ -17,7 +17,7 @@ void Wifi_Device_Driver::callback_reply(void* arg, void *pdata) {
 		__isOnline = true;
 	}
 	else {
-		Serial.println("Ping Timeout");
+		Serial.println(F("Ping Timeout"));
 	}
 }
 
@@ -40,20 +40,19 @@ void Wifi_Device_Driver::OnBuild_Descriptor() {
 	Serial.println("Start Wifi_Device_Driver::Build_Descriptor");
 #endif // DEBUG
 	__descriptor->name = F("Wifi");
-	__descriptor->descr = F("Wifi stellt die Verbindung zum heimischen Netzwerk her oder stellt selbst einen AcessPoint bereit");
+	__descriptor->descr = F("connect to local AP");
 	__descriptor->published = true;
 
+	Input_CtrlElem *ctrlElem_SSID = new Input_CtrlElem(WIFI_DEVICE_DRIVER_SET_SSID, &__ssid, F("SSID"), F("change SSID"));
 
-	Input_CtrlElem *ctrlElem_SSID = new Input_CtrlElem(WIFI_DEVICE_DRIVER_SET_SSID, &__ssid, F("SSID"), F("SSID aendern"));
+	Password_CtrlElem *ctrlElem_pass = new Password_CtrlElem(WIFI_DEVICE_DRIVER_SET_PASSWORD, &__password, F("Passwort"), F("change password"));
 
-	Password_CtrlElem *ctrlElem_pass = new Password_CtrlElem(WIFI_DEVICE_DRIVER_SET_PASSWORD, &__password, F("Passwort"), F("Passwort aendern"));
+	Select_CtrlElem *ctrlElem_mode = new Select_CtrlElem(WIFI_DEVICE_DRIVER_SET_MODE, &__isAP, F("Wifi Mode"), F("AP or STA"));
+	ctrlElem_mode->AddMember(F("STA"));
+	ctrlElem_mode->AddMember(F("AP"));
 
-	Select_CtrlElem *ctrlElem_mode = new Select_CtrlElem(WIFI_DEVICE_DRIVER_SET_MODE, &__isAP, F("Wifi Mode"), F("Aendern des Wifi-Modes zwischen AccessPoint und client"));
-	ctrlElem_mode->AddMember("STA");
-	ctrlElem_mode->AddMember("AP");
-
-	Group_CtrlElem *ctrlElem_reconnect = new Group_CtrlElem(WIFI_DEVICE_DRIVER_RECONNECT, F("Re-Start"), F("here you can reestablish the wifi connection as AP or STA"));
-	ctrlElem_reconnect->AddMember("Reconnect");
+	Group_CtrlElem *ctrlElem_reconnect = new Group_CtrlElem(WIFI_DEVICE_DRIVER_RECONNECT, F("Re-Start"), F("restart controller"));
+	ctrlElem_reconnect->AddMember(F("Reconnect"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_SSID);
 	__descriptor->Add_Descriptor_Element(ctrlElem_pass);
@@ -178,7 +177,7 @@ void Wifi_Device_Driver::ProvideAP() {
 	if (__dnsServer != nullptr)
 		__dnsServer = nullptr;
 	__dnsServer = new DNSServer();
-
+	noInterrupts();
 	WiFi.persistent(false); // Do not write new connections to FLASH
 
 	WiFi.mode(WIFI_AP);
@@ -197,8 +196,12 @@ void Wifi_Device_Driver::ProvideAP() {
 	// if DNSServer is started with "*" for domain name, it will reply with
 	// provided IP to all DNS request
 	__dnsServer->start(DNS_PORT, "*", apIP);
+	yield();
 	StartMSDNServices();
+	yield();
 	DoNotifyConnected();
+	yield();
+	interrupts();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ProvideAP");
 #endif // DEBUG
@@ -227,16 +230,18 @@ void Wifi_Device_Driver::ConnectToWifi() {
 #endif // DEBUG
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
-	Serial.print("Try to Connect to [");
+	Serial.print(F("Try to Connect to ["));
 	Serial.print(ssid);
-	Serial.print("] with password [");
+	Serial.print(F("] with password ["));
 	Serial.print(password);
-	Serial.println("]");
-
+	Serial.println(F("]"));
+	noInterrupts();
 	WiFi.persistent(false); // Do not write new connections to FLASH
 	WiFi.mode(WIFI_STA);
-	delay(1000);
+	//delay(1000);
 	WiFi.begin(ssid, password);
+	yield();
+	interrupts();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ConnectToWifi");
 #endif // DEBUG
@@ -244,9 +249,6 @@ void Wifi_Device_Driver::ConnectToWifi() {
 }
 
 void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
-#ifdef DEBUG
-	Serial.println("Start Wifi_Device_Driver::DoUpdate");
-#endif // DEBUG
 	if ((WiFi.status() != WL_CONNECTED) && !__AP_isConnected) {
 		if (__WiFi_isConnected == true) {
 			DoNotifyConnectionLost();
@@ -298,9 +300,6 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 			__dnsServer->processNextRequest();
 		}
 	}
-#ifdef DEBUG
-	Serial.println("Ende Wifi_Device_Driver::DoUpdate");
-#endif // DEBUG
 }
 
 

@@ -79,6 +79,7 @@ public:
 	void ExecSuspend();
 	void ExecLoadPresets();
 
+	String GetName();
 	bool isSuspend() const;
 	bool isIdle() const;
 	bool isBusy() const;

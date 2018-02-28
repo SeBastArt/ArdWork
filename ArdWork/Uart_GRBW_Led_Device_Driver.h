@@ -26,7 +26,7 @@ class Uart_GRBW_Led_Device_Driver : public Device_Driver
 {
 	REGISTER(Uart_GRBW_Led_Device_Driver);
 private:
-	unsigned int sv_pattern = 0;
+	int sv_pattern = 0;
 	Color sv_color = { 255, 255, 255 };
 	float sv_relBrightness = 100;
 	static int __pixelCount;

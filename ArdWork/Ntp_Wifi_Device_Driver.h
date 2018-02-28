@@ -37,8 +37,10 @@ protected:
 	void DoUpdate(uint32_t deltaTime);
 	void TimerTick() override; 
 	void OnBuild_Descriptor();
-	void OnNotifyOnline();
 	void DoDeviceMessage(Int_Task_Msg message);
+	void OnNotifyConnected() override;
+	void OnNotifyConnectionLost() override;
+	void OnNotifyOnline() override;
 public:
 	virtual ~Ntp_Wifi_Device_Driver() {};
 	Property<time_t, Ntp_Wifi_Device_Driver> local_time{ this, nullptr, &Ntp_Wifi_Device_Driver::GetLocalTime };

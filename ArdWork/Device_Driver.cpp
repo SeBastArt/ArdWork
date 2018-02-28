@@ -10,9 +10,6 @@ Device_Driver::Device_Driver(Module_Driver* _module, uint8_t _priority) :
 	Serial.println(this->DriverId);
 #endif // DEBUG
 	__parentModule = _module;
-#ifdef DEBUG
-	Serial.print("Ende Constructor Device_Driver");
-#endif // DEBUG
 }
 
 void Device_Driver::OnMessage(Int_Task_Msg message) {

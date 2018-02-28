@@ -24,6 +24,9 @@ Device_Driver* Module_Driver::create(const std::string& classname)
 	for (std::map<std::string, Creator*>::iterator it = get_table().begin(); it != get_table().end(); ++it) {
 		if (String(it->first.c_str()).equals(classname.c_str()))
 		{
+#ifdef DEBUG
+			Serial.println("Create Device: " + String(String(it->first.c_str())));
+#endif // DEBUG
 			Device_Driver* temp = it->second->create(this);
 			this->AddDevice(temp);
 			return temp;

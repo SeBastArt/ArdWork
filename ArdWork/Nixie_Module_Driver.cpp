@@ -34,52 +34,42 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__sv_time_source = 0;
 	__timer_count = millis();
 #ifdef DEBUG
-	Serial.println("create(\"Button_Device_Driver\")");
+	Serial.println(F("create(\"Button_Device_Driver\")"));
 #endif
 	__button = (Button_Device_Driver*)(create(String(F("Button_Device_Driver")).c_str()));
 	IO_Pin* _button_pin = pinManager.GetPin("D7");
 	__button->SetPin(_button_pin);
 	__button->PullUp();
 
-#ifdef DEBUG
-	Serial.println("create(\"Wifi_Device_Driver\")");
-#endif
-	Wifi_Device_Driver* wifi_device = (Wifi_Device_Driver*)create(String(F("Wifi_Device_Driver")).c_str());
+	__wifi_device = (Wifi_Device_Driver*)create(String(F("Wifi_Device_Driver")).c_str());
 
-#ifdef DEBUG
-	Serial.println("create(\"WebSocket_Wifi_Device_Driver\")");
-#endif
-	WebSocket_Wifi_Device_Driver * temp = (WebSocket_Wifi_Device_Driver*)create(String(F("WebSocket_Wifi_Device_Driver")).c_str());
-	wifi_device->AddCommunicationClient(temp);
+	 __websocket_device = (WebSocket_Wifi_Device_Driver*)create(String(F("WebSocket_Wifi_Device_Driver")).c_str());
 
-#ifdef DEBUG
-	Serial.println("create(\"Ntp_Wifi_Device_Driver\")");
-#endif
-	Ntp_Wifi_Device_Driver* __ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
-	wifi_device->AddCommunicationClient(__ntp);
+	__wifi_device->AddCommunicationClient(__websocket_device);
 
+	//Ntp_Wifi_Device_Driver* __ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
+	//__wifi_device->AddCommunicationClient(__ntp);
+
+	//__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
+	//__gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
+	
+	//__strip = (Uart_GRBW_Led_Device_Driver*)create(String(F("Uart_GRBW_Led_Device_Driver")).c_str());
+	//__strip->SetPixelCount(28);
 #ifdef DEBUG
-	Serial.println("create(\"GPS_Device_Driver\")");
-#endif
-	__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
-	__gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
-#ifdef DEBUG
-	Serial.print("create(\"Uart_GRBW_Led_Device_Driver\")");
-#endif
-	__strip = (Uart_GRBW_Led_Device_Driver*)create(String(F("Uart_GRBW_Led_Device_Driver")).c_str());
-	__strip->SetPixelCount(28);
+	Serial.println(F("Ende Nixie_Module_Driver"));
+#endif // DEBUG
 }
 
 
 void Nixie_Module_Driver::Build_Discriptor() {
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::Build_Module_Discriptor");
+	Serial.println(F("Start Nixie_Module_Driver::Build_Module_Discriptor"));
 #endif // DEBUG	
 	__descriptor->name = F("Nixie Clock");
 	__descriptor->descr = F("a stylish digital clock");
 	__descriptor->published = true;
 
-	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"), F("Switch the build in animations"));
+	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"), F("Switch animations"));
 	ctrlElem_pattern->AddMember(F("Off"));
 	ctrlElem_pattern->AddMember(F("Fire"));
 	ctrlElem_pattern->AddMember(F("Cyclon"));
@@ -87,18 +77,18 @@ void Nixie_Module_Driver::Build_Discriptor() {
 	ctrlElem_pattern->AddMember(F("Random"));
 	ctrlElem_pattern->AddMember(F("Nixie"));
 
-	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"), F("The main color for the ambient light pattern"));
+	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"), F("main color of ambilight"));
 
-	Select_CtrlElem *ctrlElem_date_time = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME, &__sv_date_time, F("Date or Time"), F("Dsplay the Date, Time or change between both frequently"));
+	Select_CtrlElem *ctrlElem_date_time = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME, &__sv_date_time, F("Date/Time"), F("static or frequently change"));
 	ctrlElem_date_time->AddMember(F("Time"));
 	ctrlElem_date_time->AddMember(F("Date"));
 	ctrlElem_date_time->AddMember(F("Time/Date"));
 
-	Select_CtrlElem *ctrlElem_time_format = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT, &__sv_time_format, F("Time Format"), F("Select time format 12h or 24h"));
+	Select_CtrlElem *ctrlElem_time_format = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT, &__sv_time_format, F("Time Format"), F("format 12h or 24h"));
 	ctrlElem_time_format->AddMember(F("12 hours"));
 	ctrlElem_time_format->AddMember(F("24 hours"));
 
-	Select_CtrlElem *ctrlElem_time_source = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE, &__sv_time_source, F("Time Source"), F("Select the source which provides system time"));
+	Select_CtrlElem *ctrlElem_time_source = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE, &__sv_time_source, F("Time Source"), F("Select the source for system time"));
 	ctrlElem_time_source->AddMember(F("NTP-Server"));
 	ctrlElem_time_source->AddMember(F("GPS-Time"));
 
@@ -108,7 +98,7 @@ void Nixie_Module_Driver::Build_Discriptor() {
 	__descriptor->Add_Descriptor_Element(ctrlElem_time_format);
 	__descriptor->Add_Descriptor_Element(ctrlElem_time_source);
 #ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::Build_Module_Discriptor");
+	Serial.println(F("Ende Nixie_Module_Driver::Build_Module_Discriptor"));
 #endif // DEBUG
 }
 
@@ -119,13 +109,13 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 	case MessageClass_Button:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoTaskMessage - MessageClass_Button");
+		Serial.println(F("Start Nixie_Module_Driver::DoTaskMessage - MessageClass_Button"));
 #endif // DEBUG
 		ButtonMessage* pButton = (ButtonMessage*)(message);
 		if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
-				Pattern_Next();
+				//Pattern_Next();
 			}
 		}
 		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_RELEASED)
@@ -137,7 +127,7 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
-				Pattern_Off();
+				//Pattern_Off();
 			}
 		}
 		break;
@@ -153,7 +143,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_SWITCH:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_SWITCH");
+		Serial.println(F("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_SWITCH"));
 #endif // DEBUG
 		uint8_t number = message.GetIntParamByIndex(0);
 		SwitchPattern(number);
@@ -162,7 +152,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_COLOR:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_COLOR");
+		Serial.println(F("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_COLOR"));
 #endif // DEBUG
 		uint32_t rgb = (uint32_t)strtol(message.GetStringParamByIndex(0).c_str(), NULL, 16);
 		__sv_color.R = (uint8_t)((rgb >> 16) & 0xFF);
@@ -174,7 +164,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE");
+		Serial.println(F("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE"));
 #endif // DEBUG
 		int number = message.GetIntParamByIndex(0);
 		SetTimeSource(number);
@@ -183,7 +173,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT");
+		Serial.println(F("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT"));
 #endif // DEBUG
 		int number = message.GetIntParamByIndex(0);
 		SetTimeFormat(number);
@@ -192,7 +182,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 	case NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME:
 	{
 #ifdef DEBUG
-		Serial.println("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME");
+		Serial.println(F("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME"));
 #endif // DEBUG
 		int number = message.GetIntParamByIndex(0);
 		SetDateTime(number);
@@ -202,46 +192,62 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 
 
 #ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::DoModuleMessage");
+	Serial.println(F("Ende Nixie_Module_Driver::DoModuleMessage"));
 #endif // DEBUG
 }
 
 
-void Nixie_Module_Driver::SetDateTime(int _number)
-{
+void Nixie_Module_Driver::SetDateTime(int _number){
+#ifdef DEBUG
+	Serial.println(F("Start Nixie_Module_Driver::SetDateTime"));
+#endif // DEBUG
 	__sv_date_time = _number;
+#ifdef DEBUG
+	Serial.println(F("Ende Nixie_Module_Driver::SetDateTime"));
+#endif // DEBUG
 }
 
-void Nixie_Module_Driver::SetTimeFormat(int _number)
-{
+void Nixie_Module_Driver::SetTimeFormat(int _number){
+#ifdef DEBUG
+	Serial.println(F("Start Nixie_Module_Driver::SetTimeFormat"));
+#endif // DEBUG
 	__sv_time_format = _number;
+#ifdef DEBUG
+	Serial.println(F("Ende Nixie_Module_Driver::SetTimeFormat"));
+#endif // DEBUG
 }
 
-void Nixie_Module_Driver::SetTimeSource(int _number)
-{
+void Nixie_Module_Driver::SetTimeSource(int _number){
+#ifdef DEBUG
+	Serial.println(F("Start Nixie_Module_Driver::SetTimeSource"));
+#endif // DEBUG
 	__sv_time_source = _number;
 	SetTimeBySource(__sv_time_source);
+#ifdef DEBUG
+	Serial.println(F("Ende Nixie_Module_Driver::SetTimeSource"));
+#endif // DEBUG
 }
 
-void Nixie_Module_Driver::SetTimeBySource(int _timeSource)
-{
+void Nixie_Module_Driver::SetTimeBySource(int _timeSource){
+#ifdef DEBUG
+	Serial.println(F("Start Nixie_Module_Driver::SetTimeBySource"));
+#endif // DEBUG
 	switch (__sv_time_source)
 	{
 	case 0:
-		__gps->Exec_Start_Get_Time();
+		//__gps->Exec_Start_Get_Time();
 		break;
 	case 1:
-		__ntp->Exec_Start_Get_Time();
+		//__ntp->Exec_Start_Get_Time();
 		break;
 	}
+#ifdef DEBUG
+	Serial.println(F("Ende Nixie_Module_Driver::SetTimeBySource"));
+#endif // DEBUG
 }
 
 
 void Nixie_Module_Driver::TimerTick() {
-#ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::TimerTick");
-#endif // DEBUG	
-
 	switch (__sv_date_time)
 	{
 	case 0:
@@ -263,20 +269,20 @@ void Nixie_Module_Driver::TimerTick() {
 	case 5:
 	{
 #ifdef DEBUG
-		Serial.println("Nixie_Module_Driver::TimerTick - DigiClock");
+		Serial.println(F("Nixie_Module_Driver::TimerTick - DigiClock"));
 #endif // DEBUG	
-		DigiClock();
+		//DigiClock();
 	}
 	break;
 	}
-#ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::TimerTick");
-#endif // DEBUG	
+//#ifdef DEBUG
+//	Serial.println(F("Ende Nixie_Module_Driver::TimerTick"));
+//#endif // DEBUG	
 }
 
 void Nixie_Module_Driver::DigiClock() {
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::DigiClock");
+	Serial.println(F("Start Nixie_Module_Driver::DigiClock"));
 #endif // DEBUG	
 
 
@@ -411,21 +417,21 @@ void Nixie_Module_Driver::DigiClock() {
 		Serial.print(lookUp[timeArray[i]][0] + tubeindex);
 		Serial.print(" ");
 		Serial.print(lookUp[timeArray[i]][1] + tubeindex);
-		Serial.println(" ");
+		Serial.println(F(" "));
 #endif // DEBUG	
 		__strip->Exec_Set_Pixel(lookUp[timeArray[i]][0] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
 		__strip->Exec_Set_Pixel(lookUp[timeArray[i]][1] + tubeindex, __sv_color.R, __sv_color.G, __sv_color.B);
 		tubeindex = tubeindex + 20;
 	}
 #ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::DigiClock");
+	Serial.println(F("Ende Nixie_Module_Driver::DigiClock"));
 #endif // DEBUG	
 }
 
 
 void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::SwitchPattern");
+	Serial.println(F("Start Nixie_Module_Driver::SwitchPattern"));
 #endif // DEBUG
 	__activeAnimaton = _number;
 	__activeAnimaton = __activeAnimaton % __AnimationCount;
@@ -435,7 +441,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 		case 0:
 		{
 #ifdef DEBUG
-			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Off");
+			Serial.println(F("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Off"));
 #endif // DEBUG
 			__strip->Exec_Animation_Off();
 		}
@@ -443,7 +449,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 		case 1:
 		{
 #ifdef DEBUG
-			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Fire");
+			Serial.println(F("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Fire"));
 #endif // DEBUG
 			__strip->Exec_Animation_Fire();
 		}
@@ -451,7 +457,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 		case 2:
 		{
 #ifdef DEBUG
-			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Cyclon");
+			Serial.println(F("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Cyclon"));
 #endif // DEBUG
 			__strip->Exec_Animation_Cyclon();
 		}
@@ -459,7 +465,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 		case 3:
 		{
 #ifdef DEBUG
-			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Shine");
+			Serial.println(F("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Shine"));
 #endif // DEBUG
 			__strip->Exec_Animation_Shine();
 		}
@@ -467,7 +473,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 		case 4:
 		{
 #ifdef DEBUG
-			Serial.println("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Random");
+			Serial.println(F("Nixie_Module_Driver::SwitchPattern - Exec_Animation_Random"));
 #endif // DEBUG
 			__strip->Exec_Animation_Random();
 		}
@@ -475,7 +481,7 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 		case 5:
 		{
 #ifdef DEBUG
-			Serial.println("Nixie_Module_Driver::SwitchPattern - Nixie");
+			Serial.println(F("Nixie_Module_Driver::SwitchPattern - Nixie"));
 #endif // DEBUG
 			__strip->Exec_Animation_Off();
 			//Nixie will be animated
@@ -484,29 +490,29 @@ void Nixie_Module_Driver::SwitchPattern(uint8_t _number) {
 		}
 	}
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::SwitchPattern");
+	Serial.println(F("Start Nixie_Module_Driver::SwitchPattern"));
 #endif // DEBUG
 }
 
 void Nixie_Module_Driver::Set_Pattern_Color(int _r, int _g, int _b) {
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::Set_Pattern_Color");
+	Serial.println(F("Start Nixie_Module_Driver::Set_Pattern_Color"));
 #endif // DEBUG	
-	if (__strip != nullptr)
-		__strip->Exec_Animation_Color(_r, _g, _b);
+	///if (__strip != nullptr)
+		//__strip->Exec_Animation_Color(_r, _g, _b);
 #ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::Set_Pattern_Color");
+	Serial.println(F("Ende Nixie_Module_Driver::Set_Pattern_Color"));
 #endif // DEBUG	
 }
 
 void Nixie_Module_Driver::Pattern_Next()
 {
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::Pattern_Next");
+	Serial.println(F("Start Nixie_Module_Driver::Pattern_Next"));
 #endif // DEBUG	
-	SwitchPattern(++__activeAnimaton);
+	//SwitchPattern(++__activeAnimaton);
 #ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::Pattern_Next");
+	Serial.println(F("Ende Nixie_Module_Driver::Pattern_Next"));
 #endif // DEBUG	
 }
 
@@ -514,22 +520,22 @@ void Nixie_Module_Driver::Pattern_Next()
 void Nixie_Module_Driver::Pattern_Prev()
 {
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::Pattern_Prev");
+	Serial.println(F("Start Nixie_Module_Driver::Pattern_Prev"));
 #endif // DEBUG	
-	SwitchPattern(--__activeAnimaton);
+	//SwitchPattern(--__activeAnimaton);
 #ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::Pattern_Prev");
+	Serial.println(F("Ende Nixie_Module_Driver::Pattern_Prev"));
 #endif // DEBUG	
 }
 
 void Nixie_Module_Driver::Pattern_Off()
 {
 #ifdef DEBUG
-	Serial.println("Start Nixie_Module_Driver::Pattern_Off");
+	Serial.println(F("Start Nixie_Module_Driver::Pattern_Off"));
 #endif // DEBUG	
-	SwitchPattern(0);
+	//SwitchPattern(0);
 #ifdef DEBUG
-	Serial.println("Ende Nixie_Module_Driver::Pattern_Off");
+	Serial.println(F("Ende Nixie_Module_Driver::Pattern_Off"));
 #endif // DEBUG	
 }
 
