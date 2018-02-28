@@ -46,7 +46,7 @@ private:
 	void GenerateButtonGroup(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
 	void GenerateSetButton(WiFiClient * client, int _deviceId, int _cmdId);
 	static String Json_GetvalueFromKey(String _text, String _key);
-	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length);
+	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, int length);
 protected:
 	void OnBuild_Descriptor();
 	void OnNotifyConnected() override;

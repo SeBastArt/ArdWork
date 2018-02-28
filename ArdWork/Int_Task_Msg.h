@@ -9,6 +9,7 @@
 	#include "WProgram.h"
 #endif
 #include "Base_Consts.h"
+#include "Support.h"
 
 class Int_Task_Msg
 {
@@ -16,7 +17,6 @@ private:
 	uint32 __id;
 	uint8_t __param_count;
 	String __str_param;
-	String GetStringPartByNr(String data, char separator, int index);
 	uint32 GetID() const { return __id; }
 	uint8_t GetParamCount() const { return __param_count; }
 	String GetParamString()const { return __str_param; }

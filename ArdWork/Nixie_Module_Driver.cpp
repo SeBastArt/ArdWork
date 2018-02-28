@@ -50,11 +50,11 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	//Ntp_Wifi_Device_Driver* __ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
 	//__wifi_device->AddCommunicationClient(__ntp);
 
-	//__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
-	//__gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
+	__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
+	__gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
 	
-	//__strip = (Uart_GRBW_Led_Device_Driver*)create(String(F("Uart_GRBW_Led_Device_Driver")).c_str());
-	//__strip->SetPixelCount(28);
+	__strip = (Uart_GRBW_Led_Device_Driver*)create(String(F("Uart_GRBW_Led_Device_Driver")).c_str());
+	__strip->SetPixelCount(28);
 #ifdef DEBUG
 	Serial.println(F("Ende Nixie_Module_Driver"));
 #endif // DEBUG
@@ -115,7 +115,7 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 		if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_PRESSED) // any state that is pressed
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
-				//Pattern_Next();
+				Pattern_Next();
 			}
 		}
 		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_RELEASED)
@@ -127,7 +127,7 @@ void Nixie_Module_Driver::DoTaskMessage(TaskMessage * message)
 		else if (pButton->State == BUTTON_DEVICE_BUTTONSTATE_AUTOREPEAT)
 		{
 			if (pButton->Id == __button->GetButtonPinID()) {
-				//Pattern_Off();
+				Pattern_Off();
 			}
 		}
 		break;
@@ -235,10 +235,10 @@ void Nixie_Module_Driver::SetTimeBySource(int _timeSource){
 	switch (__sv_time_source)
 	{
 	case 0:
-		//__gps->Exec_Start_Get_Time();
+		//__ntp->Exec_Start_Get_Time();
 		break;
 	case 1:
-		//__ntp->Exec_Start_Get_Time();
+		__gps->Exec_Start_Get_Time();
 		break;
 	}
 #ifdef DEBUG
@@ -274,10 +274,7 @@ void Nixie_Module_Driver::TimerTick() {
 		//DigiClock();
 	}
 	break;
-	}
-//#ifdef DEBUG
-//	Serial.println(F("Ende Nixie_Module_Driver::TimerTick"));
-//#endif // DEBUG	
+	}	
 }
 
 void Nixie_Module_Driver::DigiClock() {
@@ -498,8 +495,7 @@ void Nixie_Module_Driver::Set_Pattern_Color(int _r, int _g, int _b) {
 #ifdef DEBUG
 	Serial.println(F("Start Nixie_Module_Driver::Set_Pattern_Color"));
 #endif // DEBUG	
-	///if (__strip != nullptr)
-		//__strip->Exec_Animation_Color(_r, _g, _b);
+		__strip->Exec_Animation_Color(_r, _g, _b);
 #ifdef DEBUG
 	Serial.println(F("Ende Nixie_Module_Driver::Set_Pattern_Color"));
 #endif // DEBUG	
@@ -510,7 +506,7 @@ void Nixie_Module_Driver::Pattern_Next()
 #ifdef DEBUG
 	Serial.println(F("Start Nixie_Module_Driver::Pattern_Next"));
 #endif // DEBUG	
-	//SwitchPattern(++__activeAnimaton);
+	SwitchPattern(++__activeAnimaton);
 #ifdef DEBUG
 	Serial.println(F("Ende Nixie_Module_Driver::Pattern_Next"));
 #endif // DEBUG	
@@ -522,7 +518,7 @@ void Nixie_Module_Driver::Pattern_Prev()
 #ifdef DEBUG
 	Serial.println(F("Start Nixie_Module_Driver::Pattern_Prev"));
 #endif // DEBUG	
-	//SwitchPattern(--__activeAnimaton);
+	SwitchPattern(--__activeAnimaton);
 #ifdef DEBUG
 	Serial.println(F("Ende Nixie_Module_Driver::Pattern_Prev"));
 #endif // DEBUG	

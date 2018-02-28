@@ -103,7 +103,7 @@ void Module_Driver::OnMessage(Int_Task_Msg message) {
 #ifdef DEBUG
 		Serial.println("Start Module_Driver::DoMessage- MODULE_DRIVER_SAVE");
 #endif // DEBUG
-		__descriptor_list->Save();
+		__descriptor_list->Tiny_Save();
 	}
 	break;
 	}
@@ -182,7 +182,7 @@ void Module_Driver::Set_Debug_Mode(bool _state)
 	else {
 		for (uint8_t i = 0; i < device_list->Size(); i++) {
 			Driver *device = (*device_list)[i];
-			for (size_t j = 0; j < __descriptor_list->count; j++) {
+			for (int j = 0; j < __descriptor_list->count; j++) {
 				Descriptor *t_descr = __descriptor_list->GetElemByIndex(j);
 				if (t_descr->id == device->DriverId) {
 					t_descr->published = device->isPublished();

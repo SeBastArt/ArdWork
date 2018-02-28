@@ -3,6 +3,8 @@
 // 
 
 #include "Int_Task_Msg.h"
+#include "Support.h"
+
 
 Int_Task_Msg::Int_Task_Msg(uint32 _id) {
 	__id = _id;
@@ -85,37 +87,5 @@ uint8_t Int_Task_Msg::GetCharParamByIndex(int index) {
 	return result;
 }
 
-
-String Int_Task_Msg::GetStringPartByNr(String data, char separator, int index)
-{
-	// spliting a string and return the part nr index
-	// split by separator
-
-	int stringData = 0;        //variable to count data part nr
-	String dataPart = "";      //variable to hole the return text
-
-	for (int i = 0; i < data.length(); i++) { //Walk through the text one letter at a time
-
-		if (data[i] == separator) {
-			//Count the number of times separator character appears in the text
-			stringData++;
-
-		}
-		else if (stringData == index) {
-			//get the text when separator is the rignt one
-			dataPart.concat(data[i]);
-
-		}
-		else if (stringData > index) {
-			//return text and stop if the next separator appears - to save CPU-time
-			return dataPart;
-			break;
-
-		}
-
-	}
-	//return text if this is the last part
-	return dataPart;
-}
 
 

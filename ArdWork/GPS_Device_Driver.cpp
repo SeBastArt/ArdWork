@@ -147,8 +147,6 @@ void GPS_Device_Driver::EndGPS() {
 #endif // DEBUG
 }
 
-
-
 void GPS_Device_Driver::TimerTick() {
 	__utc_time = now();
 	__local_time = ((Timezone)timezone_Arr[__sv_timezone]._timezone).toLocal(__utc_time);

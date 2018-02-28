@@ -54,5 +54,15 @@ static const timezone_struct timezone_Arr[]{
 
 };
 
+static time_t GetLocalTime(int _timezone) {
+	time_t utc_time = now();
+	time_t local_time = ((Timezone)timezone_Arr[_timezone]._timezone).toLocal(utc_time);
+	return local_time;
+}
+
+static time_t GetUTCTime() {
+	time_t utc_time = now();
+	return utc_time;
+}
 
 #endif

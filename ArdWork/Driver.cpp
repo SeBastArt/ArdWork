@@ -166,9 +166,9 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 		timer_delta = 0;
 		if (__isIdle) {
 
-			Serial.print("Driver::TimerTick - ");
-			Serial.print(this->GetName());
-			Serial.printf(" - heap size: %u\n", ESP.getFreeHeap());
+			//Serial.print("Driver::TimerTick - ");
+			//Serial.print(this->GetName());
+			//Serial.printf(" - heap size: %u\n", ESP.getFreeHeap());
 
 			TimerTick();
 		}
@@ -218,7 +218,7 @@ void Driver::DoLoadPresets() {
 #ifdef DEBUG
 	Serial.println(F("Start Driver::DoLoadPresets"));
 #endif // DEBUG
-	__descriptor_list->Load(DriverId, &fw_Exec_Command, this);
+	__descriptor_list->Tiny_Load(DriverId, &fw_Exec_Command, this);
 	__isIdle = true;
 #ifdef DEBUG
 	Serial.println(F("Ende Driver::DoLoadPresets"));

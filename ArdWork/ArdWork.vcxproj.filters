@@ -339,6 +339,9 @@
     <ClInclude Include="Timezones.h">
       <Filter>Header Files\Helper\Misc</Filter>
     </ClInclude>
+    <ClInclude Include="Support.h">
+      <Filter>Header Files\Helper\Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device_Driver.cpp">

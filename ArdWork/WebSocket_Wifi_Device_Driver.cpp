@@ -36,7 +36,7 @@ String WebSocket_Wifi_Device_Driver::Json_GetvalueFromKey(String _text, String _
 }
 
 
-void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
+void WebSocket_Wifi_Device_Driver::webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, int length) {
 #ifdef DEBUG
 	Serial.println(F("Start WebSocket_Wifi_Device_Driver::webSocketEvent"));
 #endif // DEBUG

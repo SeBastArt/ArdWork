@@ -31,10 +31,10 @@ public:
 		noInterrupts();
 		File actFile = SPIFFS.open(FileName.c_str(), "r");
 		if (!actFile) {
-			Serial.println("Failed to open config file");
+			Serial.println("Failed to open file " + FileName);
 			return false;
 		}
-		size_t size = actFile.size();
+		int size = actFile.size();
 		if (size > 2048) {
 			Serial.println("Config file size is too large");
 			return false;

@@ -11,6 +11,8 @@
 #include "Driver.h"
 #include "Timezone.h" //https://github.com/JChristensen/Timezone
 #include "ping.h"
+#include "Support.h"
+
 //#define DEBUG
 //#define LOAD_SAVE_DEBUG
 
@@ -20,6 +22,9 @@ struct Color
 	int G;
 	int B;
 };
+
+const char inner_separator = '~';
+const char outer_separator = '|';
 
 static String FloatToStr(float _value, uint8_t _digits) {
 	int int_val = round(_value);
@@ -321,7 +326,7 @@ public:
 
 	bool GetCtrlElemById(int _id, CtrlElem *_elem) {
 		bool return_value = false;
-		for (size_t i = 0; i < __ctrl_elem_count; i++) {
+		for (int i = 0; i < __ctrl_elem_count; i++) {
 			CtrlElem * t_ctrlelem = (*__vec_ctrlelem)[i];
 			if (t_ctrlelem->id == _id) {
 				_elem = (*__vec_ctrlelem)[i];
@@ -363,6 +368,69 @@ public:
 		__elem_count++;
 	}
 
+	void Tiny_Load(int _driverID, void(*fw_Exec_Command)(void*, int, String), void* context) {
+		String file_name = "";
+		file_name.concat("/");
+		file_name.concat(String(_driverID));
+		file_name.concat(".txt");
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.print(F("Try Open: ")); Serial.println(file_name);
+#endif //  LOAD_SAVE_DEBUG
+		if (!filesystem.OpenFile(file_name)) {
+			return;
+		}
+
+		String file_text = filesystem.FileAsString();
+#ifdef  LOAD_SAVE_DEBUG
+		Serial.print(F("Loaded file: ")); Serial.println(file_text);
+#endif //  LOAD_SAVE_DEBUG
+		uint8_t parts = CountChars(file_text, outer_separator); 
+		for (uint8_t i = 0; i < parts; i++)
+		{
+			String datapart = GetStringPartByNr(file_text, outer_separator, i);
+#ifdef  LOAD_SAVE_DEBUG
+			Serial.print("DataPart: " + datapart);
+#endif //  LOAD_SAVE_DEBUG
+			unsigned int contrl_id = GetStringPartByNr(datapart, inner_separator, 0).toInt();		
+			unsigned int contrl_type = GetStringPartByNr(datapart, inner_separator, 1).toInt();
+			String value = GetStringPartByNr(datapart, inner_separator, 2);
+#ifdef  LOAD_SAVE_DEBUG
+			Serial.print(String(F(" - contrl_id: ")) + String(contrl_id));
+			Serial.print(String(F(" - contrl_type: ")) + String(contrl_type));
+			Serial.println(String(F(" - value: ")) + String(value));
+#endif //  LOAD_SAVE_DEBUG
+			if ((contrl_id > 0) && !value.equals("") && (contrl_type != group)) {
+				fw_Exec_Command(context, contrl_id, value);
+			}
+		}
+	}
+
+	void Tiny_Save() {
+		for (int i = 0; i < __elem_count; i++){
+			String data;
+			for (int j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++){
+				if (((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type != zeit) &&
+					((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type != group)) {
+					data += String((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id);
+					data += inner_separator;
+					data += String((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type);
+					data += inner_separator;
+					data += (*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->ToString();
+					data += outer_separator;
+				}
+			}
+			String file_name = "";
+			file_name.concat("/");
+			file_name.concat(String((*__vec_descriptor_elem)[i]->id));
+			file_name.concat(".txt");
+#ifdef  LOAD_SAVE_DEBUG
+			Serial.println(String(F("Save data: ")) + data + String(F(" to: ") + file_name);
+#endif //  LOAD_SAVE_DEBUG
+			filesystem.SaveToFile(file_name, data);
+			data = "";
+		}
+	}
+
 	void Load(int _driverID, void(*fw_Exec_Command)(void*, int, String), void* context) {
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println(F("Start Descriptor_List::Load"));
@@ -384,7 +452,7 @@ public:
 		if (!root.success()) {
 			Serial.println(F("parseObject - failed"));
 			return;
-		}
+	}
 
 		JsonArray& arr_descriptors = root["Descriptors"];
 		Descriptor *ptr_descriptor;
@@ -413,8 +481,8 @@ public:
 						fw_Exec_Command(context, contrl_id, value);
 					}
 				}
+				}
 			}
-		}
 		filesystem.CloseFile();
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println("Loaded!"));
@@ -436,12 +504,12 @@ public:
 #endif //  LOAD_SAVE_DEBUG	
 		JsonObject& root = jsonBuffer.createObject();
 		JsonArray& arr_descriptors = root.createNestedArray("Descriptors");
-		for (size_t i = 0; i < __elem_count; i++)
+		for (int i = 0; i < __elem_count; i++)
 		{
 			JsonObject& descriptor = arr_descriptors.createNestedObject();
 			descriptor["id"] = (int)(*__vec_descriptor_elem)[i]->id;
 			JsonArray& arr_controls = descriptor.createNestedArray("Controls");
-			for (size_t j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++)
+			for (int j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++)
 			{
 				JsonObject& obj_control = arr_controls.createNestedObject();
 #ifdef  LOAD_SAVE_DEBUG
@@ -511,12 +579,12 @@ public:
 #endif //  LOAD_SAVE_DEBUG	
 			JsonObject& new_root = jsonBuffer.createObject();
 			JsonArray& arr_descriptors = new_root.createNestedArray("Descriptors");
-			for (size_t i = 0; i < __elem_count; i++)
+			for (int i = 0; i < __elem_count; i++)
 			{
 				JsonObject& descriptor = arr_descriptors.createNestedObject();
 				descriptor["id"] = (int)(*__vec_descriptor_elem)[i]->id;
 				JsonArray& arr_controls = descriptor.createNestedArray("Controls");
-				for (size_t j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++)
+				for (int j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++)
 				{
 					JsonObject& obj_control = arr_controls.createNestedObject();
 #ifdef  LOAD_SAVE_DEBUG
@@ -556,7 +624,7 @@ public:
 			JsonArray& arr_descriptors = root["Descriptors"];
 			Descriptor *ptr_descriptor;
 
-			for (size_t i = 0; i < __elem_count; i++) {
+			for (int i = 0; i < __elem_count; i++) {
 				Descriptor * ptr_descriptor = (*__vec_descriptor_elem)[i];
 				bool found = false;
 				for (auto obj_descriptor : arr_descriptors) {
@@ -569,7 +637,7 @@ public:
 #endif //  LOAD_SAVE_DEBUG
 						JsonArray& arr_controls = obj_descriptor["Controls"];
 						for (auto obj_control : arr_controls) {
-							for (size_t j = 0; j < ptr_descriptor->ctrl_count; j++) {
+							for (int j = 0; j < ptr_descriptor->ctrl_count; j++) {
 								CtrlElem * ptr_control = (*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j);
 								if (ptr_control->id == (int)obj_control["id"]) {
 									obj_control["type"] = (int)ptr_control->type;
@@ -588,7 +656,7 @@ public:
 							}
 						}
 					}
-				}
+					}
 				if (!found) {
 #ifdef  LOAD_SAVE_DEBUG
 					Serial.print("No match for DeviceID: ");
@@ -598,7 +666,7 @@ public:
 					JsonObject& descriptor = arr_descriptors.createNestedObject();
 					descriptor["id"] = (int)ptr_descriptor->id;
 					JsonArray& arr_controls = descriptor.createNestedArray("Controls");
-					for (size_t j = 0; j < ptr_descriptor->ctrl_count; j++)
+					for (int j = 0; j < ptr_descriptor->ctrl_count; j++)
 					{
 						JsonObject& obj_control = arr_controls.createNestedObject();
 
@@ -616,7 +684,7 @@ public:
 					}
 
 				}
-			}
+				}
 			String text;
 			root.printTo(text);
 			filesystem.SaveToFile("/testfile.json", text);
@@ -645,7 +713,7 @@ public:
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println("Ende Descriptor_List::Save"));
 #endif //  LOAD_SAVE_DEBUG
-	}
+			}
 
 	void Clear() {
 		__vec_descriptor_elem->Clear();
@@ -671,7 +739,7 @@ public:
 
 	bool GetElemById(int _id, Descriptor * _descriptor) {
 		bool return_value = false;
-		for (size_t i = 0; i < __elem_count; i++) {
+		for (int i = 0; i < __elem_count; i++) {
 			if ((*__vec_descriptor_elem)[i]->id == _id) {
 				_descriptor = (*__vec_descriptor_elem)[i];
 				Serial.println(_descriptor->name);
@@ -682,7 +750,7 @@ public:
 		return return_value;
 	}
 	Property<uint8_t, Descriptor_List> count{ this, nullptr, &Descriptor_List::GetElemCount };
-};
+				};
 
 
 
