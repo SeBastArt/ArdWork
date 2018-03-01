@@ -9,9 +9,10 @@
 #include "Wifi_Device_Driver.h"
 #include "WebSocket_Wifi_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
-#include "Ntp_Wifi_Device_Driver.h"
-#include "GPS_Device_Driver.h"
+#include "Time_Device_Driver.h"
 
+
+#include "Timezones.h"
 //#define DEBUG
 
 //#define four_digit
@@ -31,28 +32,25 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	__date_time = false;
 	__sv_date_time = 0;
 	__sv_time_format = 0;
-	__sv_time_source = 0;
 	__timer_count = millis();
 #ifdef DEBUG
 	Serial.println(F("create(\"Button_Device_Driver\")"));
 #endif
 	__button = (Button_Device_Driver*)(create(String(F("Button_Device_Driver")).c_str()));
-	IO_Pin* _button_pin = pinManager.GetPin("D7");
+	IO_Pin* _button_pin = pinManager.GetPin(F("D7"));
 	__button->SetPin(_button_pin);
 	__button->PullUp();
 
 	__wifi_device = (Wifi_Device_Driver*)create(String(F("Wifi_Device_Driver")).c_str());
 
-	 __websocket_device = (WebSocket_Wifi_Device_Driver*)create(String(F("WebSocket_Wifi_Device_Driver")).c_str());
+	__websocket_device = (WebSocket_Wifi_Device_Driver*)create(String(F("WebSocket_Wifi_Device_Driver")).c_str());
 
 	__wifi_device->AddCommunicationClient(__websocket_device);
 
-	//Ntp_Wifi_Device_Driver* __ntp = (Ntp_Wifi_Device_Driver*)create(String(F("Ntp_Wifi_Device_Driver")).c_str());
-	//__wifi_device->AddCommunicationClient(__ntp);
+	__time = (Time_Device_Driver*)create(String(F("Time_Device_Driver")).c_str());
+	__wifi_device->AddCommunicationClient(__time);
+	__time->SetGPSModule(pinManager.GetPin(F("D1")), pinManager.GetPin(F("D2")));
 
-	__gps = (GPS_Device_Driver*)create(String(F("GPS_Device_Driver")).c_str());
-	__gps->SetPins(pinManager.GetPin("D5"), pinManager.GetPin("D4"));
-	
 	__strip = (Uart_GRBW_Led_Device_Driver*)create(String(F("Uart_GRBW_Led_Device_Driver")).c_str());
 	__strip->SetPixelCount(28);
 #ifdef DEBUG
@@ -88,15 +86,10 @@ void Nixie_Module_Driver::Build_Discriptor() {
 	ctrlElem_time_format->AddMember(F("12 hours"));
 	ctrlElem_time_format->AddMember(F("24 hours"));
 
-	Select_CtrlElem *ctrlElem_time_source = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE, &__sv_time_source, F("Time Source"), F("Select the source for system time"));
-	ctrlElem_time_source->AddMember(F("NTP-Server"));
-	ctrlElem_time_source->AddMember(F("GPS-Time"));
-
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);
 	__descriptor->Add_Descriptor_Element(ctrlElem_date_time);
 	__descriptor->Add_Descriptor_Element(ctrlElem_time_format);
-	__descriptor->Add_Descriptor_Element(ctrlElem_time_source);
 #ifdef DEBUG
 	Serial.println(F("Ende Nixie_Module_Driver::Build_Module_Discriptor"));
 #endif // DEBUG
@@ -161,15 +154,6 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 		Set_Pattern_Color(__sv_color.R, __sv_color.G, __sv_color.B);
 	}
 	break;
-	case NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE:
-	{
-#ifdef DEBUG
-		Serial.println(F("Start Nixie_Module_Driver::DoModuleMessage - NIXIE_MODULE_DRIVER_PATTERN_TIME_SOURCE"));
-#endif // DEBUG
-		int number = message.GetIntParamByIndex(0);
-		SetTimeSource(number);
-	}
-	break;
 	case NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT:
 	{
 #ifdef DEBUG
@@ -197,7 +181,7 @@ void Nixie_Module_Driver::DoModuleMessage(Int_Task_Msg message)
 }
 
 
-void Nixie_Module_Driver::SetDateTime(int _number){
+void Nixie_Module_Driver::SetDateTime(int _number) {
 #ifdef DEBUG
 	Serial.println(F("Start Nixie_Module_Driver::SetDateTime"));
 #endif // DEBUG
@@ -207,42 +191,13 @@ void Nixie_Module_Driver::SetDateTime(int _number){
 #endif // DEBUG
 }
 
-void Nixie_Module_Driver::SetTimeFormat(int _number){
+void Nixie_Module_Driver::SetTimeFormat(int _number) {
 #ifdef DEBUG
 	Serial.println(F("Start Nixie_Module_Driver::SetTimeFormat"));
 #endif // DEBUG
 	__sv_time_format = _number;
 #ifdef DEBUG
 	Serial.println(F("Ende Nixie_Module_Driver::SetTimeFormat"));
-#endif // DEBUG
-}
-
-void Nixie_Module_Driver::SetTimeSource(int _number){
-#ifdef DEBUG
-	Serial.println(F("Start Nixie_Module_Driver::SetTimeSource"));
-#endif // DEBUG
-	__sv_time_source = _number;
-	SetTimeBySource(__sv_time_source);
-#ifdef DEBUG
-	Serial.println(F("Ende Nixie_Module_Driver::SetTimeSource"));
-#endif // DEBUG
-}
-
-void Nixie_Module_Driver::SetTimeBySource(int _timeSource){
-#ifdef DEBUG
-	Serial.println(F("Start Nixie_Module_Driver::SetTimeBySource"));
-#endif // DEBUG
-	switch (__sv_time_source)
-	{
-	case 0:
-		//__ntp->Exec_Start_Get_Time();
-		break;
-	case 1:
-		__gps->Exec_Start_Get_Time();
-		break;
-	}
-#ifdef DEBUG
-	Serial.println(F("Ende Nixie_Module_Driver::SetTimeBySource"));
 #endif // DEBUG
 }
 
@@ -274,16 +229,16 @@ void Nixie_Module_Driver::TimerTick() {
 		//DigiClock();
 	}
 	break;
-	}	
+	}
 }
 
 void Nixie_Module_Driver::DigiClock() {
 #ifdef DEBUG
 	Serial.println(F("Start Nixie_Module_Driver::DigiClock"));
 #endif // DEBUG	
+	time_t tTlocal = GetLocalTime(1);
 
-
-	time_t tTlocal = 0;
+	/*time_t tTlocal = 0;
 	switch (__sv_time_source)
 	{
 	case 0:
@@ -292,7 +247,7 @@ void Nixie_Module_Driver::DigiClock() {
 	case 1:
 		tTlocal = __ntp->local_time;
 		break;
-	}
+	}*/
 
 	int lookUp[10][2] = {
 		{ 10, 20 } ,	//0
@@ -495,7 +450,7 @@ void Nixie_Module_Driver::Set_Pattern_Color(int _r, int _g, int _b) {
 #ifdef DEBUG
 	Serial.println(F("Start Nixie_Module_Driver::Set_Pattern_Color"));
 #endif // DEBUG	
-		__strip->Exec_Animation_Color(_r, _g, _b);
+	__strip->Exec_Animation_Color(_r, _g, _b);
 #ifdef DEBUG
 	Serial.println(F("Ende Nixie_Module_Driver::Set_Pattern_Color"));
 #endif // DEBUG	

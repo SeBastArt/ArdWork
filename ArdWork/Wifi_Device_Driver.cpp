@@ -228,8 +228,7 @@ void Wifi_Device_Driver::ConnectToWifi() {
 #ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::ConnectToWifi");
 #endif // DEBUG
-	//__ssid = "FRITZ!Box 7490";
-	//__password = "59049598120613392417";
+	
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
 	Serial.print(F("Try to Connect to ["));

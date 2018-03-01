@@ -97,14 +97,8 @@
     <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\WebSocket_Wifi_Device_Driver">
       <UniqueIdentifier>{c65cc23d-e23c-4e43-a2ad-ed3ec541f380}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver">
-      <UniqueIdentifier>{7f86c344-9349-47f5-990b-05be05aeb0fe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Driver\Module_Driver\Custom_Module_Driver\Nixie_Module_Driver">
       <UniqueIdentifier>{2144fc05-e233-417e-b978-e00e8b476ca2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\GPS_Device_Driver">
-      <UniqueIdentifier>{2cec92bf-5b5e-416e-9303-4d76ee83890e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Helper\TimeZone">
       <UniqueIdentifier>{0f1535f7-fb4a-459c-8097-4d7e68274835}</UniqueIdentifier>
@@ -141,6 +135,9 @@
     </Filter>
     <Filter Include="Header Files\Pin_Manager\Custom_Controller\I2C_Controller\PCF8574">
       <UniqueIdentifier>{96ee4ccf-efec-4af2-8470-32a313a1bb5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Driver\Device_Driver\Custom_Device_Driver\Time">
+      <UniqueIdentifier>{022ec8c1-c29c-459e-91cb-5a3f82e11f01}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -288,23 +285,11 @@
     <ClInclude Include="Int_Task_Msg_Sys.h">
       <Filter>Header Files\Helper\Message_System</Filter>
     </ClInclude>
-    <ClInclude Include="Ntp_Wifi_Device_Driver.h">
-      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="Ntp_Wifi_Device_Driver_Consts.h">
-      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Wifi\Ntp_Wifi_Device_Driver</Filter>
-    </ClInclude>
     <ClInclude Include="Nixie_Module_Driver.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\Nixie_Module_Driver</Filter>
     </ClInclude>
     <ClInclude Include="Nixie_Module_Driver_Consts.h">
       <Filter>Header Files\Driver\Module_Driver\Custom_Module_Driver\Nixie_Module_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="GPS_Device_Driver.h">
-      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\GPS_Device_Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="GPS_Device_Driver_Consts.h">
-      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\GPS_Device_Driver</Filter>
     </ClInclude>
     <ClInclude Include="Timezone.h">
       <Filter>Header Files\Helper\TimeZone</Filter>
@@ -341,6 +326,12 @@
     </ClInclude>
     <ClInclude Include="Support.h">
       <Filter>Header Files\Helper\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Time_Device_Driver.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Time_Device_Driver_Consts.h">
+      <Filter>Header Files\Driver\Device_Driver\Custom_Device_Driver\Time</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -392,9 +383,6 @@
     <ClCompile Include="WebSocket_Wifi_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver</Filter>
     </ClCompile>
-    <ClCompile Include="Ntp_Wifi_Device_Driver.cpp">
-      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver</Filter>
-    </ClCompile>
     <ClCompile Include="Mqqt_Wifi_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver</Filter>
     </ClCompile>
@@ -422,9 +410,6 @@
     <ClCompile Include="OLED_Display_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver</Filter>
     </ClCompile>
-    <ClCompile Include="GPS_Device_Driver.cpp">
-      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver</Filter>
-    </ClCompile>
     <ClCompile Include="TinyGPS.cpp">
       <Filter>Header Files\Helper\TinyGPS</Filter>
     </ClCompile>
@@ -433,6 +418,9 @@
     </ClCompile>
     <ClCompile Include="Creator.cpp">
       <Filter>Source Files\Helper\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="Time_Device_Driver.cpp">
+      <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

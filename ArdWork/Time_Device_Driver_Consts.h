@@ -1,0 +1,14 @@
+#ifndef _TIME_DEVICE_DRIVER_CONSTS_h
+#define _TIME_DEVICE_DRIVER_CONSTS_h
+
+#include "Device_Driver_Consts.h"
+
+static unsigned int const TIME_DEVICE_DRIVER_TYPE = DEVICE_DRIVER_TYPE + 1004000;
+static unsigned int const TIME_DEVICE_DRIVER_LOCAL_TIME = TIME_DEVICE_DRIVER_TYPE + 1;
+static unsigned int const TIME_DEVICE_DRIVER_UTC_TIME = TIME_DEVICE_DRIVER_TYPE + 2;
+static unsigned int const TIME_DEVICE_DRIVER_TIMEZONE = TIME_DEVICE_DRIVER_TYPE + 3;
+static unsigned int const TIME_DEVICE_DRIVER_GET_TIME = TIME_DEVICE_DRIVER_TYPE + 4;
+static unsigned int const TIME_DEVICE_DRIVER_TIME_SOURCE = TIME_DEVICE_DRIVER_TYPE + 5;
+static unsigned int const TIME_DEVICE_DRIVER_LAST_MESSAGE = TIME_DEVICE_DRIVER_TIME_SOURCE;
+
+#endif

@@ -7,7 +7,6 @@
 #include "WProgram.h"
 #endif
 
-#include <ESP8266WiFi.h>
 #include <Time.h> //https://github.com/PaulStoffregen/Time
 #include "Timezone.h" //https://github.com/JChristensen/Timezone
 #include "Device_Driver.h"

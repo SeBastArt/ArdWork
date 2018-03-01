@@ -10,7 +10,8 @@ GPS_Device_Driver::GPS_Device_Driver(Module_Driver * module, uint8_t priority) :
 	__DriverType = GPS_DEVICE_DRIVER_TYPE;
 	__local_time = 0;
 	__utc_time = 0;
-	__local_timer = 5000;
+	__local_timer = 0;
+	__active = false;
 	SetTimerDelay(500);
 	__time_is_set = false;
 	__active = false;
@@ -91,15 +92,11 @@ void GPS_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		__time_is_set = true;
 		return;
 	}
-
 	if (!__active)
 		return;
-
 	if (!__time_is_set) {
 		__local_timer -= deltaTime;
-
 		while (SerialGPS->available() > 0) {
-			Serial.println(F("und rein"));
 			if (gps->encode(SerialGPS->read())) { // process gps messages
 				setTime(gps->time.hour(), gps->time.minute(), gps->time.second(), gps->date.day(), gps->date.month(), gps->date.year());
 				__time_is_set = true;
