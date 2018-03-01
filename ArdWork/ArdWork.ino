@@ -33,8 +33,8 @@
 #include "Driver.h"
 #include "Publisher.h"
 
-//#define PICTURE_NodeMCU_GRBW
-#define NIXIE_NodeMCU_GRBW
+#define PICTURE_NodeMCU_GRBW
+//#define NIXIE_NodeMCU_GRBW
 //#define COMPILE_TEST
 
 

@@ -22,7 +22,7 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	Serial.print("Start Picture_Module_Driver with ID: ");
 	Serial.println(this->DriverId);
 #endif // DEBUG
-	Driver::__descriptor_list->projectname = F("Bilderrahmen Steuerung");
+	Driver::__descriptor_list->projectname = F("Picture Frame Control");
 	__DriverType = PICTURE_MODULE_DRIVER_TYPE;
 	__envBrightness = 50;
 	__AnimationCount = 6;
@@ -60,7 +60,6 @@ void Picture_Module_Driver::Build_Discriptor() {
 	ctrlElem_pattern->AddMember("Shine");
 	ctrlElem_pattern->AddMember("Random");
 	ctrlElem_pattern->AddMember("Clock");
-	ctrlElem_pattern->AddMember("Nixie");
 
 	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"));
 
