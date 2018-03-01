@@ -22,7 +22,7 @@ Distance_Device_Driver::Distance_Device_Driver(Module_Driver* module, uint8_t pr
 
 void Distance_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->name = F("Ultrasonic Distance");
-	__descriptor->descr = F("estimate the distance to a target");
+	__descriptor->descr = F("estimate distance");
 	__descriptor->published = true;
 
 	/*Ctrl_Elem *ctrl_elem_dist = new Ctrl_Elem(DISTANCE_DEVICE_DRIVER_EXTERN_DISTANCE, F("Distance"), value, F("measure the distance to a target via ultrasonic"));

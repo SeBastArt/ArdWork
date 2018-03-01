@@ -13,8 +13,9 @@
 
 class Button_Device_Driver;
 class Uart_GRBW_Led_Device_Driver;
-class Ntp_Wifi_Device_Driver;
+class Time_Device_Driver;
 class Luxmeter_Device_Driver;
+class Wifi_Device_Driver;
 
 class Picture_Module_Driver : public Module_Driver
 {
@@ -38,8 +39,9 @@ private:
 
 	Button_Device_Driver *__button;
 	Uart_GRBW_Led_Device_Driver* __strip;
-	Ntp_Wifi_Device_Driver* __ntp;
+	Time_Device_Driver* __time;
 	Luxmeter_Device_Driver* __lux;
+	Wifi_Device_Driver* __wifi;
 protected:
 	void OnInit() override;
 	void DoModuleMessage(Int_Task_Msg message);

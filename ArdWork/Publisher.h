@@ -55,13 +55,11 @@ class CtrlElem
 private:
 	int __id;
 	String __name;
-	String __description;
 	String __unit;
 	bool __published;
 	bool __isEditable;
 	int GetId() const { return __id; }
 	String GetName() const { return __name; }
-	String GetDescrirption() const { return __description; }
 	void SetUnit(String _unit) { __unit = _unit; }
 	String GetUnit() const { return __unit; }
 	ctrl_type GetType() const { return __type; }
@@ -72,12 +70,11 @@ protected:
 	void *__supervisor;
 	ctrl_type __type;
 public:
-	CtrlElem(int _id, void* _supervisor, bool _isEditable, String _name, String _description) :
+	CtrlElem(int _id, void* _supervisor, bool _isEditable, String _name) :
 		__id(_id),
 		__supervisor(_supervisor),
 		__isEditable(_isEditable),
-		__name(_name),
-		__description(_description)
+		__name(_name)
 	{
 		__type = none;
 		__unit = "";
@@ -91,7 +88,6 @@ public:
 	Property<ctrl_type, CtrlElem> type{ this, nullptr, &CtrlElem::GetType };
 	Property<String, CtrlElem> unit{ this, &CtrlElem::SetUnit, &CtrlElem::GetUnit };
 	Property<bool, CtrlElem> editable{ this, nullptr, &CtrlElem::GetIsEditable };
-	Property<String, CtrlElem> description{ this, nullptr, &CtrlElem::GetDescrirption };
 	Property<bool, CtrlElem> published{ this, &CtrlElem::SetPublished, &CtrlElem::GetPublished };
 };
 
@@ -110,8 +106,8 @@ private:
 
 	Vector<StringContainer*> *__string_container;
 public:
-	Select_CtrlElem(int _id, int* _supervisor, String _name, String _descr) :
-		CtrlElem(_id, _supervisor, false, _name, _descr)
+	Select_CtrlElem(int _id, int* _supervisor, String _name) :
+		CtrlElem(_id, _supervisor, false, _name)
 	{
 		__type = select;
 		__string_container = new Vector<StringContainer*>;
@@ -143,8 +139,8 @@ public:
 class Group_CtrlElem : public Select_CtrlElem
 {
 public:
-	Group_CtrlElem(int _id, String _name, String _descr) :
-		Select_CtrlElem(_id, nullptr, _name, _descr)
+	Group_CtrlElem(int _id, String _name) :
+		Select_CtrlElem(_id, nullptr, _name)
 	{
 		__type = group;
 	}
@@ -157,8 +153,8 @@ public:
 class Input_CtrlElem :public CtrlElem
 {
 public:
-	Input_CtrlElem(int _id, String* _supervisor, String _name, String _descr) :
-		CtrlElem(_id, (void*)_supervisor, true, _name, _descr)
+	Input_CtrlElem(int _id, String* _supervisor, String _name) :
+		CtrlElem(_id, (void*)_supervisor, true, _name)
 	{
 		__type = input;
 	};
@@ -172,8 +168,8 @@ public:
 class Password_CtrlElem :public CtrlElem
 {
 public:
-	Password_CtrlElem(int _id, String* _supervisor, String _name, String _descr) :
-		CtrlElem(_id, (void*)_supervisor, true, _name, _descr)
+	Password_CtrlElem(int _id, String* _supervisor, String _name) :
+		CtrlElem(_id, (void*)_supervisor, true, _name)
 	{
 		__type = pass;
 	};
@@ -186,8 +182,8 @@ public:
 class Color_CtrlElem :public CtrlElem
 {
 public:
-	Color_CtrlElem(int _id, void* _supervisor, String _name, String _descr) :
-		CtrlElem(_id, _supervisor, false, _name, _descr)
+	Color_CtrlElem(int _id, void* _supervisor, String _name) :
+		CtrlElem(_id, _supervisor, false, _name)
 	{
 		__type = color;
 	};
@@ -217,8 +213,8 @@ public:
 class Time_CtrlElem :public CtrlElem
 {
 public:
-	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name, String _descr) :
-		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
+	Time_CtrlElem(int _id, long int* _supervisor, bool _editable, String _name) :
+		CtrlElem(_id, (void*)_supervisor, _editable, _name)
 	{
 		__type = zeit;
 	};
@@ -252,8 +248,8 @@ public:
 class FValue_CtrlElem :public CtrlElem
 {
 public:
-	FValue_CtrlElem(int _id, float* _supervisor, bool _editable, String _name, String _descr) :
-		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
+	FValue_CtrlElem(int _id, float* _supervisor, bool _editable, String _name) :
+		CtrlElem(_id, (void*)_supervisor, _editable, _name)
 	{
 		__type = value;
 	};
@@ -266,8 +262,8 @@ public:
 class IValue_CtrlElem :public CtrlElem
 {
 public:
-	IValue_CtrlElem(int _id, int* _supervisor, bool _editable, String _name, String _descr) :
-		CtrlElem(_id, (void*)_supervisor, _editable, _name, _descr)
+	IValue_CtrlElem(int _id, int* _supervisor, bool _editable, String _name) :
+		CtrlElem(_id, (void*)_supervisor, _editable, _name)
 	{
 		__type = value;
 	};
@@ -354,8 +350,11 @@ class Descriptor_List
 {
 private:
 	uint8_t __elem_count;
+	String __projectName;
 	Vector<Descriptor*> *__vec_descriptor_elem;
 	uint8_t GetElemCount() const { return __elem_count; }
+	String GetProjectName() const { return __projectName; }
+	void SetProjectName(String _projectName) { __projectName = _projectName; }
 public:
 	Descriptor_List() {
 		__vec_descriptor_elem = new Vector<Descriptor*>;
@@ -384,14 +383,14 @@ public:
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.print(F("Loaded file: ")); Serial.println(file_text);
 #endif //  LOAD_SAVE_DEBUG
-		uint8_t parts = CountChars(file_text, outer_separator); 
+		uint8_t parts = CountChars(file_text, outer_separator);
 		for (uint8_t i = 0; i < parts; i++)
 		{
 			String datapart = GetStringPartByNr(file_text, outer_separator, i);
 #ifdef  LOAD_SAVE_DEBUG
 			Serial.print("DataPart: " + datapart);
 #endif //  LOAD_SAVE_DEBUG
-			unsigned int contrl_id = GetStringPartByNr(datapart, inner_separator, 0).toInt();		
+			unsigned int contrl_id = GetStringPartByNr(datapart, inner_separator, 0).toInt();
 			unsigned int contrl_type = GetStringPartByNr(datapart, inner_separator, 1).toInt();
 			String value = GetStringPartByNr(datapart, inner_separator, 2);
 #ifdef  LOAD_SAVE_DEBUG
@@ -406,9 +405,9 @@ public:
 	}
 
 	void Tiny_Save() {
-		for (int i = 0; i < __elem_count; i++){
+		for (int i = 0; i < __elem_count; i++) {
 			String data;
-			for (int j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++){
+			for (int j = 0; j < (*__vec_descriptor_elem)[i]->ctrl_count; j++) {
 				if (((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type != zeit) &&
 					((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->type != group)) {
 					data += String((*__vec_descriptor_elem)[i]->GetCtrlElemByIndex(j)->id);
@@ -452,7 +451,7 @@ public:
 		if (!root.success()) {
 			Serial.println(F("parseObject - failed"));
 			return;
-	}
+		}
 
 		JsonArray& arr_descriptors = root["Descriptors"];
 		Descriptor *ptr_descriptor;
@@ -481,8 +480,8 @@ public:
 						fw_Exec_Command(context, contrl_id, value);
 					}
 				}
-				}
 			}
+		}
 		filesystem.CloseFile();
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println(F("Loaded!"));
@@ -656,7 +655,7 @@ public:
 							}
 						}
 					}
-					}
+				}
 				if (!found) {
 #ifdef  LOAD_SAVE_DEBUG
 					Serial.print("No match for DeviceID: ");
@@ -684,7 +683,7 @@ public:
 					}
 
 				}
-				}
+			}
 			String text;
 			root.printTo(text);
 			filesystem.SaveToFile("/testfile.json", text);
@@ -713,7 +712,7 @@ public:
 #ifdef  LOAD_SAVE_DEBUG
 		Serial.println(F("Ende Descriptor_List::Save"));
 #endif //  LOAD_SAVE_DEBUG
-			}
+	}
 
 	void Clear() {
 		__vec_descriptor_elem->Clear();
@@ -750,7 +749,8 @@ public:
 		return return_value;
 	}
 	Property<uint8_t, Descriptor_List> count{ this, nullptr, &Descriptor_List::GetElemCount };
-				};
+	Property<String, Descriptor_List> projectname{ this, &Descriptor_List::SetProjectName, &Descriptor_List::GetProjectName };
+};
 
 
 

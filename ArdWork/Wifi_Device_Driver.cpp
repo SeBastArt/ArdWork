@@ -40,18 +40,18 @@ void Wifi_Device_Driver::OnBuild_Descriptor() {
 	Serial.println("Start Wifi_Device_Driver::Build_Descriptor");
 #endif // DEBUG
 	__descriptor->name = F("Wifi");
-	__descriptor->descr = F("connect to local AP");
+	__descriptor->descr = F("connect to local network or broadcast an AP");
 	__descriptor->published = true;
 
-	Input_CtrlElem *ctrlElem_SSID = new Input_CtrlElem(WIFI_DEVICE_DRIVER_SET_SSID, &__ssid, F("SSID"), F("change SSID"));
+	Input_CtrlElem *ctrlElem_SSID = new Input_CtrlElem(WIFI_DEVICE_DRIVER_SET_SSID, &__ssid, F("SSID"));
 
-	Password_CtrlElem *ctrlElem_pass = new Password_CtrlElem(WIFI_DEVICE_DRIVER_SET_PASSWORD, &__password, F("Passwort"), F("change password"));
+	Password_CtrlElem *ctrlElem_pass = new Password_CtrlElem(WIFI_DEVICE_DRIVER_SET_PASSWORD, &__password, F("Passwort"));
 
-	Select_CtrlElem *ctrlElem_mode = new Select_CtrlElem(WIFI_DEVICE_DRIVER_SET_MODE, &__isAP, F("Wifi Mode"), F("AP or STA"));
+	Select_CtrlElem *ctrlElem_mode = new Select_CtrlElem(WIFI_DEVICE_DRIVER_SET_MODE, &__isAP, F("Wifi Mode"));
 	ctrlElem_mode->AddMember(F("STA"));
 	ctrlElem_mode->AddMember(F("AP"));
 
-	Group_CtrlElem *ctrlElem_reconnect = new Group_CtrlElem(WIFI_DEVICE_DRIVER_RECONNECT, F("Re-Start"), F("restart controller"));
+	Group_CtrlElem *ctrlElem_reconnect = new Group_CtrlElem(WIFI_DEVICE_DRIVER_RECONNECT, F("Re-Start"));
 	ctrlElem_reconnect->AddMember(F("Reconnect"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_SSID);
@@ -228,7 +228,8 @@ void Wifi_Device_Driver::ConnectToWifi() {
 #ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::ConnectToWifi");
 #endif // DEBUG
-	
+	__ssid = "FRITZ!Box 7490";
+	__password = "59049598120613392417";
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
 	Serial.print(F("Try to Connect to ["));

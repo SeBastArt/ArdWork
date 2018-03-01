@@ -14,7 +14,7 @@ void Button_Device_Driver::OnBuild_Descriptor() {
 	__descriptor->descr = F("a simple button");
 	__descriptor->published = false;
 	
-	Group_CtrlElem *ctrlElem_Press = new Group_CtrlElem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, F("Virtual Button"), F("You can press it, if you want"));
+	Group_CtrlElem *ctrlElem_Press = new Group_CtrlElem(BUTTON_DEVICE_DRIVER_PUSH_BUTTON, F("Virtual Button"));
 	ctrlElem_Press->AddMember(F("Press"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_Press);

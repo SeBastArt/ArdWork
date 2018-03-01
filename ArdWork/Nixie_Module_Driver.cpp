@@ -25,6 +25,7 @@ Nixie_Module_Driver::Nixie_Module_Driver(uint8_t priority) :
 	Serial.print("Start Nixie_Module_Driver with ID: ");
 	Serial.println(this->DriverId);
 #endif // DEBUG
+	Driver::__descriptor_list->projectname = F("Nixie Clock");
 	__DriverType = NIXIE_MODULE_DRIVER_TYPE;
 	__AnimationCount = 6;
 	__activeAnimaton = 5;
@@ -64,10 +65,10 @@ void Nixie_Module_Driver::Build_Discriptor() {
 	Serial.println(F("Start Nixie_Module_Driver::Build_Module_Discriptor"));
 #endif // DEBUG	
 	__descriptor->name = F("Nixie Clock");
-	__descriptor->descr = F("a stylish digital clock");
+	__descriptor->descr = F("the fckn awesome clock");
 	__descriptor->published = true;
 
-	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"), F("Switch animations"));
+	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"));
 	ctrlElem_pattern->AddMember(F("Off"));
 	ctrlElem_pattern->AddMember(F("Fire"));
 	ctrlElem_pattern->AddMember(F("Cyclon"));
@@ -75,14 +76,14 @@ void Nixie_Module_Driver::Build_Discriptor() {
 	ctrlElem_pattern->AddMember(F("Random"));
 	ctrlElem_pattern->AddMember(F("Nixie"));
 
-	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"), F("main color of ambilight"));
+	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"));
 
-	Select_CtrlElem *ctrlElem_date_time = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME, &__sv_date_time, F("Date/Time"), F("static or frequently change"));
+	Select_CtrlElem *ctrlElem_date_time = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_DATE_TIME, &__sv_date_time, F("Date/Time"));
 	ctrlElem_date_time->AddMember(F("Time"));
 	ctrlElem_date_time->AddMember(F("Date"));
 	ctrlElem_date_time->AddMember(F("Time/Date"));
 
-	Select_CtrlElem *ctrlElem_time_format = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT, &__sv_time_format, F("Time Format"), F("format 12h or 24h"));
+	Select_CtrlElem *ctrlElem_time_format = new Select_CtrlElem(NIXIE_MODULE_DRIVER_PATTERN_TIME_FORMAT, &__sv_time_format, F("Time Format"));
 	ctrlElem_time_format->AddMember(F("12 hours"));
 	ctrlElem_time_format->AddMember(F("24 hours"));
 

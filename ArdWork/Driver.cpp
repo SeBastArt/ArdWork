@@ -7,6 +7,7 @@
 //#define DEBUG
 
 int Driver::driver_count = 1000;
+
 Descriptor_List *Driver::__descriptor_list = new Descriptor_List;
 TaskManager Driver::taskManager;
 Pin_Manager Driver::pinManager;
@@ -165,11 +166,6 @@ void Driver::OnUpdate(uint32_t deltaTime) {
 	if (timer_delta > timer_delay) {
 		timer_delta = 0;
 		if (__isIdle) {
-
-			Serial.print("Driver::TimerTick - ");
-			Serial.print(this->GetName());
-			Serial.printf(" - heap size: %u\n", ESP.getFreeHeap());
-
 			TimerTick();
 		}
 	}

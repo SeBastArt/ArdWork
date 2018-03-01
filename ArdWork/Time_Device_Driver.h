@@ -24,18 +24,17 @@ class Time_Device_Driver : public Device_Driver, public CommunicationClient
 	REGISTER(Time_Device_Driver);
 private:
 	//NTP
-	int __ntp_counter;
-	static bool __time_is_set;
-	
+	static bool __NTPActive;
+	bool __ntpObserver;
 	void StartGetNTPTime();
 	static unsigned long getNTPTimestamp();
 	static unsigned long sendNTPpacket(IPAddress& address);
-	static time_t getNTP_UTCTime1970();
 	void SyncTimeWithNTP();
+	static time_t getNTP_UTCTime1970();
 	
 	
 	//GPS
-	
+	bool __GPSActive;
 	bool __hasGPSModule;
 	void StartGetGPSTime();
 	SoftwareSerial *SerialGPS;
@@ -44,16 +43,18 @@ private:
 	IO_Pin* __tx;
 	void EndGPS();
 
-	bool __GPSactive;
 	time_t __local_time;
 	time_t __utc_time;
 	int __sv_timezone = 0;
 	int __sv_time_source = 0;
-	int __local_timer;
-
+	int __resyncTimer;
+	int __resyncInterval;
+	int __SyncTimer;
+	void CheckTime(uint32_t deltaTime);
 	time_t GetLocalTime() const;
 	time_t GetUtcTime() const;
 protected:
+	void SetResyncInterval(int _time_min);
 	void SetTimeSource(int _number);
 	void SetTimezone(int _timezone);
 	void StartGetTime();
@@ -64,6 +65,7 @@ protected:
 	void DoDeviceMessage(Int_Task_Msg message);
 	void OnBuild_Descriptor();
 
+	void OnTimeIsSet();
 	//CommunicationClient
 	void OnNotifyConnected() override;
 	void OnNotifyConnectionLost() override;
@@ -77,6 +79,7 @@ public:
 	void Exec_Start_Get_Time();
 	void Exec_Set_Timezone(int _timezone);
 	void Exec_Set_Timesource(int _timesource);
+	void Exec_SetResyncInterval(int _time_min);
 };
 
 

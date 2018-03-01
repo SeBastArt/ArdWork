@@ -11,7 +11,7 @@
 #include "Mqqt_Wifi_Device_Driver.h"
 #include "Uart_RGB_Led_Device_Driver.h"
 #include "Uart_GRBW_Led_Device_Driver.h"
-#include "Ntp_Wifi_Device_Driver.h"
+#include "Time_Device_Driver.h"
 
 //#define DEBUG
 
@@ -22,6 +22,7 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	Serial.print("Start Picture_Module_Driver with ID: ");
 	Serial.println(this->DriverId);
 #endif // DEBUG
+	Driver::__descriptor_list->projectname = F("Bilderrahmen Steuerung");
 	__DriverType = PICTURE_MODULE_DRIVER_TYPE;
 	__envBrightness = 50;
 	__AnimationCount = 6;
@@ -32,11 +33,11 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	__button = (Button_Device_Driver*)(create("Button_Device_Driver"));
 	__button->SetPin(pinManager.GetPin("D7"));
 
-	Wifi_Device_Driver* wifi_device = (Wifi_Device_Driver*)create("Wifi_Device_Driver");
-	wifi_device->AddCommunicationClient((WebSocket_Wifi_Device_Driver*)create("WebSocket_Wifi_Device_Driver"));
+	__wifi = (Wifi_Device_Driver*)create("Wifi_Device_Driver");
+	__wifi->AddCommunicationClient((WebSocket_Wifi_Device_Driver*)create("WebSocket_Wifi_Device_Driver"));
 
-	__ntp = (Ntp_Wifi_Device_Driver*)create("Ntp_Wifi_Device_Driver");
-	wifi_device->AddCommunicationClient(__ntp);
+	__time = (Time_Device_Driver*)create(String(F("Time_Device_Driver")).c_str());
+	__wifi->AddCommunicationClient(__time);
 
 	__strip = (Uart_GRBW_Led_Device_Driver*)create("Uart_GRBW_Led_Device_Driver");
 	__strip->SetPixelCount(28);
@@ -52,7 +53,7 @@ void Picture_Module_Driver::Build_Discriptor() {
 	__descriptor->descr = F("control the behavior of the ambilight");
 	__descriptor->published = true;
 
-	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"), F("Switch the build in animations"));
+	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_SWITCH, &__activeAnimaton, F("switch pattern"));
 	ctrlElem_pattern->AddMember("Off");
 	ctrlElem_pattern->AddMember("Fire");
 	ctrlElem_pattern->AddMember("Cyclon");
@@ -61,13 +62,13 @@ void Picture_Module_Driver::Build_Discriptor() {
 	ctrlElem_pattern->AddMember("Clock");
 	ctrlElem_pattern->AddMember("Nixie");
 
-	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"), F("The main color for the ambient light pattern"));
+	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_COLOR, &__sv_color, F("Color"));
 
-	Select_CtrlElem *ctrlElem_autobrightness = new Select_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_AUTO_BRIGHTNESS, &__sv_autoBrightness, F("Auto Brightness"), F("set the brightness automatically"));
+	Select_CtrlElem *ctrlElem_autobrightness = new Select_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_AUTO_BRIGHTNESS, &__sv_autoBrightness, F("Auto Brightness"));
 	ctrlElem_autobrightness->AddMember("On");
 	ctrlElem_autobrightness->AddMember("Off");
 
-	FValue_CtrlElem *ctrlElem_brightess = new FValue_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS, &__sv_relBrightness, true, F("Brightness"), F("the brightness for the ambient light from 1% to 200%"));
+	FValue_CtrlElem *ctrlElem_brightess = new FValue_CtrlElem(PICTURE_MODULE_DRIVER_PATTERN_REL_BRIGHTNESS, &__sv_relBrightness, true, F("Brightness"));
 	ctrlElem_brightess->unit = "%";
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
@@ -217,7 +218,7 @@ void Picture_Module_Driver::TimerTick() {
 }
 
 void Picture_Module_Driver::AnimateClock() {
-	time_t tTlocal = __ntp->local_time;
+	time_t tTlocal = __time->local_time;
 	int Led_Count = __strip->led_count;
 
 	__strip->Exec_Set_Color_All(__sv_color.R, __sv_color.G, __sv_color.B);

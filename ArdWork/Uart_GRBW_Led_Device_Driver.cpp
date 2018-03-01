@@ -41,22 +41,22 @@ void Uart_GRBW_Led_Device_Driver::OnBuild_Descriptor() {
 	Serial.println("Start Uart_GRBW_Led_Device_Driver::Build_Descriptor");
 #endif // DEBUG
 	__descriptor->name = F("GRBW-Stripe");
-	__descriptor->descr = F("GRBW-Stripe stellt die Steuerung der GRBW-LEDs bereit es erlaubt die Kontrolle &uuml;ber die Muster und Farben");
+	__descriptor->descr = F("GRBW-Stripe");
 	__descriptor->published = false;
 
-	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(UART_GRBW_LED_DEVICE_PATTERN, &sv_pattern, F("Pattern"), F("Choose a pattern for the ambilight"));
+	Select_CtrlElem *ctrlElem_pattern = new Select_CtrlElem(UART_GRBW_LED_DEVICE_PATTERN, &sv_pattern, F("Pattern"));
 	ctrlElem_pattern->AddMember(F("Cyclon"));
 	ctrlElem_pattern->AddMember(F("Random"));
 	ctrlElem_pattern->AddMember(F("Fire"));
 	ctrlElem_pattern->AddMember(F("Shine"));
 	ctrlElem_pattern->AddMember(F("Off"));
 
-	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(UART_GRBW_LED_DEVICE_COLOR_HEX, &sv_color, F("Color"), F("Set the main color of the pattern"));
+	Color_CtrlElem *ctrlElem_color = new Color_CtrlElem(UART_GRBW_LED_DEVICE_COLOR_HEX, &sv_color, F("Color"));
 
-	FValue_CtrlElem *ctrlElem_brightess = new FValue_CtrlElem(UART_GRBW_LED_DEVICE_BRIGHTNESS, &sv_relBrightness, true, F("brightness"), F("the brightness for the ambient light from 1% to 200%"));
+	FValue_CtrlElem *ctrlElem_brightess = new FValue_CtrlElem(UART_GRBW_LED_DEVICE_BRIGHTNESS, &sv_relBrightness, true, F("brightness"));
 	ctrlElem_brightess->unit = "%";
 
-	IValue_CtrlElem *ctrlElem_PixelCount = new IValue_CtrlElem(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT, &__pixelCount, true, F("pixel count"), F("count of the pixel used in the LED-Strip"));
+	IValue_CtrlElem *ctrlElem_PixelCount = new IValue_CtrlElem(UART_GRBW_LED_DEVICE_SET_PIXEL_COUNT, &__pixelCount, true, F("pixel count"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_pattern);
 	__descriptor->Add_Descriptor_Element(ctrlElem_color);

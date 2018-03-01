@@ -70,11 +70,11 @@ void Module_Driver::OnBuild_Descriptor() {
 
 	Build_Discriptor();
 
-	Select_CtrlElem *ctrlElem_debug = new Select_CtrlElem(MODULE_DRIVER_SET_DEBUG_MODE, &__isdebug, F("Debug Mode"), F("Debug Mode On or Off - need a reload of HtmlPage"));
+	Select_CtrlElem *ctrlElem_debug = new Select_CtrlElem(MODULE_DRIVER_SET_DEBUG_MODE, &__isdebug, F("Debug Mode"));
 	ctrlElem_debug->AddMember(F("Off"));
 	ctrlElem_debug->AddMember(F("On"));
 
-	Group_CtrlElem *ctrlElem_save = new Group_CtrlElem(MODULE_DRIVER_SAVE, F("Save Config"), F("Save the configuration from all devices"));
+	Group_CtrlElem *ctrlElem_save = new Group_CtrlElem(MODULE_DRIVER_SAVE, F("Save Config"));
 	ctrlElem_save->AddMember(F("Save"));
 
 	__descriptor->Add_Descriptor_Element(ctrlElem_debug);
