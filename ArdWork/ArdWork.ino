@@ -2,37 +2,6 @@
 //#define SLEEP
 //#define COMPILE_TEST
 
-#include <TinyGPS++.h>
-#include <TaskMacros.h>
-#include <MessageTask.h>
-#include <FunctionTask.h>
-#include <espsoftwareserial\SoftwareSerial.h>
-#include <WiFiUdp.h>
-#include <WiFiServer.h>
-#include <WiFiClientSecure.h>
-#include <WiFiClient.h>
-#include <ESP8266WiFiType.h>
-#include <ESP8266WiFiSTA.h>
-#include <ESP8266WiFiScan.h>
-#include <ESP8266WiFiMulti.h>
-#include <ESP8266WiFiGeneric.h>
-#include <ESP8266WiFiAP.h>
-#include <ESP8266WiFi.h>
-#include <ArduinoOTA.h>
-#include <TimeLib.h>
-#include <Time.h>
-#include <TaskManager.h>
-#include <Task.h>
-#include "Filesystem.h"
-#include <ESP8266WebServer.h>
-#include <WebSocketsServer.h>
-#include <WebSocketsClient.h>
-#include <WebSockets.h>
-#include <ArduinoJson.h>
-#include "Timezone.h" //https://github.com/JChristensen/Timezone
-#include "Driver.h"
-#include "Publisher.h"
-
 #define PICTURE_NodeMCU_GRBW
 //#define NIXIE_NodeMCU_GRBW
 //#define COMPILE_TEST

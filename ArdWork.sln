@@ -1,23 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2011
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArdWork", "ArdWork\ArdWork.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Time", "..\..\..\Documents\Arduino\libraries\Time\Time.vcxitems", "{D97B31C7-51BE-4A4F-9847-8C23DC69151D}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoOTA", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\ArduinoOTA\ArduinoOTA.vcxitems", "{6D68E47E-7222-4418-9FAB-CF3464247E0E}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESP8266WiFi", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\ESP8266WiFi\ESP8266WiFi.vcxitems", "{F0F80A2E-91FE-4984-9E86-18E3FE32C382}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SoftwareSerial", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\SoftwareSerial\SoftwareSerial.vcxitems", "{1886D771-FD28-450E-808A-CA0C32050782}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "espsoftwareserial", "..\..\..\Documents\Arduino\libraries\espsoftwareserial\espsoftwareserial.vcxitems", "{8C533D1F-4E21-401D-8011-A24DF821A564}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Task_by_Makuna", "..\..\..\Documents\Arduino\libraries\Task_by_Makuna\Task_by_Makuna.vcxitems", "{979AA92D-91B1-4F2A-9039-A81BFE6D86B5}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TinyGPSPlus-1.0.2", "..\..\..\Documents\Arduino\libraries\TinyGPSPlus-1.0.2\TinyGPSPlus-1.0.2.vcxitems", "{22E1C36F-5A37-4FBA-AEAB-1F5A88ACA71F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,5 +20,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3CC64B86-A141-4272-849B-15063D393040}
 	EndGlobalSection
 EndGlobal

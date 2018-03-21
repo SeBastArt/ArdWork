@@ -309,9 +309,6 @@
     <ClInclude Include="Publisher.h">
       <Filter>Header Files\Helper\Misc</Filter>
     </ClInclude>
-    <ClInclude Include="TinyGPS.h">
-      <Filter>Header Files\Helper\TinyGPS</Filter>
-    </ClInclude>
     <ClInclude Include="CreatorImpl.h">
       <Filter>Header Files\Helper\Misc\Factory</Filter>
     </ClInclude>
@@ -409,9 +406,6 @@
     </ClCompile>
     <ClCompile Include="OLED_Display_Device_Driver.cpp">
       <Filter>Source Files\Driver\Device_Driver\Custom_Device_Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="TinyGPS.cpp">
-      <Filter>Header Files\Helper\TinyGPS</Filter>
     </ClCompile>
     <ClCompile Include="DNSServer.cpp">
       <Filter>Source Files\Helper</Filter>
