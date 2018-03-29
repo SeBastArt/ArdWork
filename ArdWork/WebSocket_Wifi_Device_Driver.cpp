@@ -269,9 +269,10 @@ void WebSocket_Wifi_Device_Driver::InitializeServices()
 		Serial.println(F("Start WebSocket_Wifi_Device_Driver::InitializeServices server->on"));
 		Serial.printf("before all heap size: %u\n", ESP.getFreeHeap());
 #endif // DEBUG
-		noInterrupts();
 		AsyncResponseStream *response = request->beginResponseStream("text/html");
-
+#ifdef DEBUG
+		Serial.println(F("AsyncResponseStream created"));
+#endif // DEBUG
 		response->println(F("<!DOCTYPE html>"));
 		response->println(F("<html>"));
 		SendHeader(response);
@@ -291,15 +292,16 @@ void WebSocket_Wifi_Device_Driver::InitializeServices()
 					response->println(F(">"));
 					GenerateTab(response, __descriptor_list->GetElemByIndex(I));
 					response->println(F("</div>"));
-					yield();
+					//yield();
 				}
 			}
 			response->println(F("</div>"));
 		}
 		response->println(F("</body>"));
 		response->println(F("</html>"));
+		Serial.println(F("AsyncResponseStream send"));
 		request->send(response);
-		interrupts();
+		Serial.println(F("AsyncResponseStream send Done"));
 #ifdef DEBUG
 		Serial.printf("after all heap size: %u\n", ESP.getFreeHeap());
 		Serial.println(F("Ende WebSocket_Wifi_Device_Driver::InitializeServices server->on"));

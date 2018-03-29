@@ -2,8 +2,6 @@
 //#define SLEEP
 //#define COMPILE_TEST
 
-
-
 #include "Filesystem.h"
 #include <ArduinoJson.h>
 #include "Timezone.h" //https://github.com/JChristensen/Timezone
@@ -106,6 +104,7 @@ void setup() {
 	Serial.println(F("Initialize..."));
 
 #ifdef PICTURE_NodeMCU_GRBW
+	Driver::taskManager.StartTask(picture_module);
 	picture_module->ExecStart();
 #endif
 

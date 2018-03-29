@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2011
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArdWork", "ArdWork\ArdWork.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoOTA", "..\..\..\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\2.4.0\libraries\ArduinoOTA\ArduinoOTA.vcxitems", "{6D68E47E-7222-4418-9FAB-CF3464247E0E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESPAsyncTCP", "..\..\..\Documents\Arduino\libraries\ESPAsyncTCP\ESPAsyncTCP.vcxitems", "{760A9005-5847-475C-9EC1-8C030CF9CE93}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ESPAsyncWebServer", "..\..\..\Documents\Arduino\libraries\ESPAsyncWebServer\ESPAsyncWebServer.vcxitems", "{010580F5-E60F-4FA9-9FC7-DC5F35C5A5BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -196,11 +196,8 @@ void Wifi_Device_Driver::ProvideAP() {
 	// if DNSServer is started with "*" for domain name, it will reply with
 	// provided IP to all DNS request
 	__dnsServer->start(DNS_PORT, "*", apIP);
-	yield();
 	StartMSDNServices();
-	yield();
 	DoNotifyConnected();
-	yield();
 	interrupts();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ProvideAP");
@@ -228,6 +225,8 @@ void Wifi_Device_Driver::ConnectToWifi() {
 #ifdef DEBUG
 	Serial.println("Start Wifi_Device_Driver::ConnectToWifi");
 #endif // DEBUG
+	__ssid = "FRITZ!Box 7490";
+	__password = "59049598120613392417";
 	const char* ssid = &__ssid[0];
 	const char* password = &__password[0];
 	Serial.print(F("Try to Connect to ["));
@@ -240,7 +239,6 @@ void Wifi_Device_Driver::ConnectToWifi() {
 	WiFi.mode(WIFI_STA);
 	//delay(1000);
 	WiFi.begin(ssid, password);
-	yield();
 	interrupts();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ConnectToWifi");
@@ -261,6 +259,7 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 		if (!__run_isAp) {
 			if (!__WiFi_isConnected && (__connection_try == 0)) {
+				__connection_try++;
 				ConnectToWifi();
 			}
 

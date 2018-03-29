@@ -35,7 +35,7 @@ Driver::Driver(uint8_t priority = TASK_PRIORITY_NORMAL) :
 	__isInactive = true;
 	timer_delay = 2000;
 	timer_delta = 0;
-	taskManager.StartTask(this);
+
 #ifdef DEBUG
 	Serial.println(F("Ende Constructor Driver"));
 #endif // DEBUG
