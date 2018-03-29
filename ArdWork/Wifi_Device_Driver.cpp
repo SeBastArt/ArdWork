@@ -212,7 +212,6 @@ void Wifi_Device_Driver::StartMSDNServices() {
 	Serial.println(String(__parentModule->GetDescriptor()->name).c_str());
 	MDNS.begin(String(__parentModule->GetDescriptor()->name).c_str());
 	MDNS.addService(F("http"), F("tcp"), 80);
-	MDNS.addService(F("ws"), F("tcp"), 81);
 	SetupOTA();
 	__isMSDN = true;
 

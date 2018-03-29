@@ -312,13 +312,6 @@ void WebSocket_Wifi_Device_Driver::InitializeServices()
 	Serial.println(F("Start WebSocket_Wifi_Device_Driver::InitializeServices - dynamic content Loaded"));
 #endif // DEBUG
 
-	server->begin();
-
-
-#ifdef DEBUG
-	Serial.println(F("Start WebSocket_Wifi_Device_Driver::InitializeServices - server started"));
-#endif // DEBUG
-
 	if (webSocket != nullptr) {
 		webSocket->~AsyncWebSocket();
 		webSocket = nullptr;
@@ -327,21 +320,15 @@ void WebSocket_Wifi_Device_Driver::InitializeServices()
 #ifdef DEBUG
 	Serial.println(F("Start WebSocket_Wifi_Device_Driver::InitializeServices - websocket created"));
 #endif // DEBUG
-
-	/*if (MDNS.begin(String(F("esp8266")).c_str())) {
-		Serial.println(F("MDNS responder started"));
-	}*/
-
-#ifdef DEBUG
-	Serial.println(F("Start WebSocket_Wifi_Device_Driver::InitializeServices - MDNS started"));
-#endif // DEBUG
-
 	webSocket->onEvent(webSocketEvent);
 	server->addHandler(webSocket);
 #ifdef DEBUG
 	Serial.println(F("Start WebSocket_Wifi_Device_Driver::InitializeServices - websocket started"));
 #endif // DEBUG
-
+	server->begin();
+#ifdef DEBUG
+	Serial.println(F("Start WebSocket_Wifi_Device_Driver::InitializeServices - server started"));
+#endif // DEBUG
 #ifdef DEBUG
 	Serial.println(F("Ende WebSocket_Wifi_Device_Driver::InitComm"));
 #endif // DEBUG
