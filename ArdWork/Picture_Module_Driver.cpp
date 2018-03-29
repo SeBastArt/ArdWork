@@ -32,6 +32,7 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 
 	__button = (Button_Device_Driver*)(create("Button_Device_Driver"));
 	__button->SetPin(pinManager.GetPin("D7"));
+	//__button->PullUp();
 
 	__wifi = (Wifi_Device_Driver*)create("Wifi_Device_Driver");
 	__wifi->AddCommunicationClient((WebSocket_Wifi_Device_Driver*)create("WebSocket_Wifi_Device_Driver"));
@@ -42,7 +43,7 @@ Picture_Module_Driver::Picture_Module_Driver(uint8_t priority) :
 	__strip = (Uart_GRBW_Led_Device_Driver*)create("Uart_GRBW_Led_Device_Driver");
 	__strip->SetPixelCount(28);
 
-	__lux = (Luxmeter_Device_Driver*)create("Luxmeter_Device_Driver");
+	//__lux = (Luxmeter_Device_Driver*)create("Luxmeter_Device_Driver");
 }
 
 void Picture_Module_Driver::Build_Discriptor() {
