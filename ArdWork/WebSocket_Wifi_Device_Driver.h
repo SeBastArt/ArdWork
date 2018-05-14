@@ -9,8 +9,8 @@
 #include "WProgram.h"
 #endif
 
-#include <WebSocketsServer.h>
-#include <ESP8266WebServer.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncWebSocket.h>
 #include <ESP8266mDNS.h>
 
 #include "Device_Driver.h"
@@ -29,24 +29,24 @@ class WebSocket_Wifi_Device_Driver : public Device_Driver, public CommunicationC
 {
 	REGISTER(WebSocket_Wifi_Device_Driver);
 private:
-	static ESP8266WebServer *server;
-	static WebSocketsServer *webSocket;
+	static AsyncWebServer *server;
+	static AsyncWebSocket  *webSocket;
 	static event_msg __event_msg;
 
 	void InitializeServices();
 
-	void GenerateNav(WiFiClient * client, Descriptor_List * _descriptor_list);
-	void GenerateTab(WiFiClient * client, Descriptor * _descriptor);
-	void GenerateForm(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
-	void GenerateDecending(WiFiClient * client, CtrlElem * _ctrl_elem);
-	void GenerateColor(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
-	void GenerateSelect(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
-	void GenerateMultiOption(WiFiClient * client, CtrlElem * _ctrl_elem);
-	void GenerateInput(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
-	void GenerateButtonGroup(WiFiClient * client, int _deviceId, CtrlElem * _ctrl_elem);
-	void GenerateSetButton(WiFiClient * client, int _deviceId, int _cmdId);
+	void GenerateNav(AsyncResponseStream *response, Descriptor_List * _descriptor_list);
+	void GenerateTab(AsyncResponseStream *response, Descriptor * _descriptor);
+	void GenerateForm(AsyncResponseStream *response, int _deviceId, CtrlElem * _ctrl_elem);
+	void GenerateDecending(AsyncResponseStream *response, CtrlElem * _ctrl_elem);
+	void GenerateColor(AsyncResponseStream *response, int _deviceId, CtrlElem * _ctrl_elem);
+	void GenerateSelect(AsyncResponseStream *response, int _deviceId, CtrlElem * _ctrl_elem);
+	void GenerateMultiOption(AsyncResponseStream *response, CtrlElem * _ctrl_elem);
+	void GenerateInput(AsyncResponseStream *response, int _deviceId, CtrlElem * _ctrl_elem);
+	void GenerateButtonGroup(AsyncResponseStream *response, int _deviceId, CtrlElem * _ctrl_elem);
+	void GenerateSetButton(AsyncResponseStream *response, int _deviceId, int _cmdId);
 	static String Json_GetvalueFromKey(String _text, String _key);
-	static void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, int length);
+	static void webSocketEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t * data, size_t len);
 protected:
 	void OnBuild_Descriptor();
 	void OnNotifyConnected() override;
