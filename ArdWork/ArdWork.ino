@@ -6,7 +6,7 @@
 #include <TaskMacros.h>
 #include <MessageTask.h>
 #include <FunctionTask.h>
-#include <espsoftwareserial\SoftwareSerial.h>
+#include <SoftwareSerial.h>
 #include <WiFiUdp.h>
 #include <WiFiServer.h>
 #include <WiFiClientSecure.h>
