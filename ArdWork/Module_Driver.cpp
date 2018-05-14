@@ -28,7 +28,6 @@ Device_Driver* Module_Driver::create(const std::string& classname)
 			Serial.println("Create Device: " + String(String(it->first.c_str())));
 #endif // DEBUG
 			Device_Driver* temp = it->second->create(this);
-			taskManager.StartTask(temp);
 			this->AddDevice(temp);
 			return temp;
 		}

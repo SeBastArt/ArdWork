@@ -196,8 +196,11 @@ void Wifi_Device_Driver::ProvideAP() {
 	// if DNSServer is started with "*" for domain name, it will reply with
 	// provided IP to all DNS request
 	__dnsServer->start(DNS_PORT, "*", apIP);
+	yield();
 	StartMSDNServices();
+	yield();
 	DoNotifyConnected();
+	yield();
 	interrupts();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ProvideAP");
@@ -212,6 +215,7 @@ void Wifi_Device_Driver::StartMSDNServices() {
 	Serial.println(String(__parentModule->GetDescriptor()->name).c_str());
 	MDNS.begin(String(__parentModule->GetDescriptor()->name).c_str());
 	MDNS.addService(F("http"), F("tcp"), 80);
+	MDNS.addService(F("ws"), F("tcp"), 81);
 	SetupOTA();
 	__isMSDN = true;
 
@@ -238,6 +242,7 @@ void Wifi_Device_Driver::ConnectToWifi() {
 	WiFi.mode(WIFI_STA);
 	//delay(1000);
 	WiFi.begin(ssid, password);
+	yield();
 	interrupts();
 #ifdef DEBUG
 	Serial.println("Ende Wifi_Device_Driver::ConnectToWifi");
@@ -258,7 +263,6 @@ void Wifi_Device_Driver::DoUpdate(uint32_t deltaTime) {
 		}
 		if (!__run_isAp) {
 			if (!__WiFi_isConnected && (__connection_try == 0)) {
-				__connection_try++;
 				ConnectToWifi();
 			}
 
